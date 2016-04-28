@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+    
+<style type="text/css">
+.div1{
+    background-color: green;
+    width: 200px;
+    height: 400px;
+}
+.div2{
+    background-color: #ccc;
+    width: 50px;
+    height: 20px;
+    padding-right: 50%;
+    padding-top: 10%;
+}
+</style>
+
+</head>
+<body>
+
+<!--
+css 中 margin 和 padding 的值如果是百分比形式 那么计算其值的时候是按照其所在的父容器的宽度计算的
+
+上面的 div2 原大定义小为 50x20 加上 padding 后 最终大小为 150x40
+
+原因
+padding-right: 50%;  其父容器宽度为 200 所以 50% 就是 200*50%=100 所以最终宽度为 50+100=150
+padding-top: 10%;  其父容器宽度为 200 所以 10% 就是 200*10%=20 所以最终高度为 20+20=40
+-->
+<div class="div1">
+    <div class="div2"></div>
+</div>
+
+</body>
+</html>
