@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>svg path</title>
+
+<style>
+.container {
+    border: 1px solid red;
+}
+</style>
+</head>
+<body>
+
+<!--
+1. 移动命令 
+    M x y  -- Move To
+        移动到 x y 坐标 此命令只移动 不画线
+
+2. 画线命令
+    L x y  -- Line To
+        在当前位置和 x y 位置画一条线
+    H x
+        绘制水平线到 x 位置
+    V y
+        绘制垂直线到 y 位置
+
+3. 闭合路径命令
+    Z
+        从当前点画一条直线到路径的起点
+
+4. 曲线命令
+    弧形
+        A rx ry xrotation large-arc-flag sweep-flag x y
+            rx  -- x 轴半径
+            ry  -- y 轴半径
+            xrotation  -- 椭圆的 x 轴与水平正向方向夹角
+            large-arc-flag  -- 弧线大小 1 表示大角度弧线 0 为小角度弧线
+            sweep-flag  -- 弧线方向 0 逆时针 1 顺时针
+            x  -- 终点坐标
+            y  -- 终点坐标
+-->
+<svg class="container" 
+    width="600" height="600"
+    xmlns="http://www.w3.org/2000/svg" version="1.1"
+    xmlns:xlink="http://www.w3.org/1999/xlink" >
+
+    <path d="M 50 50, L 200 50" stroke="green"></path>
+    <path d="M 200 50, H 300, V 150, H 200, Z" fill="green"></path>
+    <path d="M 100 100, A 20 20, 0, 1, 0, 100 140" fill="green" stroke="red"></path>
+</svg>
+
+</body>
+</html>
