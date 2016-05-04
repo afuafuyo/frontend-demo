@@ -758,13 +758,14 @@ Netfilter
 ----------------------------------------
             |           tables
 过滤点      |---------------------------
-chain       |   filter |  nat  |  mangle
+chain       |  filter |  nat  |  mangle
 ----------------------------------------
-INPUT       |  可用    |       |  可用
-FORWARD     |  可用    |       |  可用
-OUTPUT      |  可用    |  可用 |  可用
-PREROUTING  |          |  可用 |  可用
-POSTROUTING |          |  可用 |  可用
+INPUT       |   yes   |       |   yes
+FORWARD     |   yes   |       |   yes
+OUTPUT      |   yes   |  yes  |   yes
+PREROUTING  |         |  yes  |   yes
+POSTROUTING |         |  yes  |   yes
+----------------------------------------
 
 规则
     数据包按照第一个匹配的规则执行相关动作 就不再去匹配其它规则
