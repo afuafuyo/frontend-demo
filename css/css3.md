@@ -1,4 +1,4 @@
-###### 响应式布局
+### 响应式布局
 
 <pre>
 媒体查询
@@ -17,7 +17,7 @@
             orientation
 </pre>
 
-###### 背景
+### 背景
 
 <pre>
 background-attachment: scroll | fixed;
@@ -27,7 +27,8 @@ background-attachment: scroll | fixed;
     不管取什么值 背景都不随其容器滚动条滚动
 </pre>	
 
-###### 字体
+### 字体
+
 <pre>
 1. 声明字体
     @font-face {props}
@@ -43,7 +44,8 @@ background-attachment: scroll | fixed;
     font-family: '自定义字体名';
 </pre>
 
-###### 动画
+### 动画
+
 <pre>
 1. 定义动画
     语法
@@ -90,7 +92,8 @@ background-attachment: scroll | fixed;
 	}
 </pre>	
 
-###### 变形
+### 变形
+
 <pre>
 变形都是相对自身来说的
 
@@ -134,7 +137,8 @@ background-attachment: scroll | fixed;
                 y 值除了具体数值外也可以是 top center bottom
 </pre>
 
-###### 3d 场景
+### 3d 场景
+
 <pre>
 要显示 3d 效果 首先要创建一个 3d 场景
 1. perspective: length;
@@ -149,7 +153,8 @@ background-attachment: scroll | fixed;
     规定子元素按照 平面 或者 3d 效果显示
 </pre>
 
-###### 过渡
+### 过渡
+
 <pre>
 1. 语法
     transition: transition-property transition-duration transition-timing-function transition-delay;
@@ -161,4 +166,5 @@ background-attachment: scroll | fixed;
 
 3. 例
     div {transition: background 0.5s ease-in, color 0.3s ease-out;}
+
 </pre>
