@@ -2,6 +2,8 @@
 module.exports = {
     // 多文件时
     /*
+    entry: ["./entry1.js", "./entry2.js"]
+    or
     entry: {
         js1: './src/entry.js'
     },
