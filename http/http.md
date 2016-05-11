@@ -54,7 +54,7 @@ Date: Thu, 13 Jul 2000 05:46:53 GMT
 Content-Length: 2291
 Content-Type: text/html
 Cache-control: private
-
+< 注意这里有一个空行 >
 从这行开始是服务器返回数据 ...
 </pre>
 
