@@ -7,15 +7,15 @@
 ### HTTP 1.0 的会话方式
 
 + 四个步骤
-![image](imgs/socket.jpg)
++ ![image](imgs/socket.jpg)
 + 浏览器与 WEB 服务器的连接过程是短暂的，每次连接只处理一个请求和响应。对每一个页面的访问，浏览器与 WEB 服务器都要建立一次单独的连接
 + 浏览器到 WEB 服务器之间的所有通讯都是完全独立分开的请求和响应对
-![image](imgs/eachlink.jpg)
++ ![image](imgs/eachlink.jpg)
 
 ### 浏览器访问多图网页的过程
 
 + 访问过程
-![image](imgs/access.jpg)
++ ![image](imgs/access.jpg)
 
 ### HTTP 1.1 与 HTTP 1.0 的比较
 
@@ -23,7 +23,7 @@
   - 在一个TCP连接上可以传送多个HTTP请求和响应
   - 多个请求和响应过程可以重叠进行
   - 增加了更多的请求头和响应头
-![image](imgs/multilink.jpg)
++ ![image](imgs/multilink.jpg)
 
 ### HTTP 请求消息
 
