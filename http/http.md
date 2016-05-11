@@ -55,9 +55,7 @@ Content-Length: 2291
 Content-Type: text/html
 Cache-control: private
 
-< html>
-< head>
-...
+从这行开始是服务器返回数据 ...
 </pre>
 
 ### HTTP 消息 其他细节
@@ -81,7 +79,7 @@ Cache-control: private
 ### HTTP 消息头
 
 + 使用消息头，可以实现 HTTP 客户机与服务器之间的条件请求和应答，消息头相当于服务器和浏览器之间的一些暗号指令
-+ 消息头格式： 一个头字段名称，然后依次是冒号、空格、值、回车和换行符
++ 消息头格式： **一个头字段名称，然后依次是冒号、空格、值、回车和换行符**
   - eg. Accept-Language: en-us
 + 消息头字段名是不区分大小写的，但习惯上将每个单词的第一个字母大写
 + 整个消息头部分中的各行消息头可按任何顺序排列
@@ -114,7 +112,7 @@ POST /post.html HTTP/1.1
 Host:
 Content-Type: application/x-www-form-urlencoded
 Content-Length: 22
-
+< 注意这里有一个空行 >
 param1=xxx&param2=yyy
 </pre>
 **注意上面我们实际传的参数长度是 21 ，但是 Content-Length 是 22 ，这时服务器会等待我们继续输入剩下的一个字节，若 Content-Length 为 20 的话，这时服务器会把多余的一个截掉**
