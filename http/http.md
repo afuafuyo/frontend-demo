@@ -31,15 +31,15 @@
 一个请求行、若干消息头、以及实体内容。其中的一些消息头和实体内容都是可选的， **消息头和实体内容之间用空行隔开**
 + 举例
 <pre>
-GET /index.html HTTP/1.1
-Accept: */*
-Accept-Language: en-us
-Connection: Keep-Alive
-Host: localhost
-Content-Length: 0
-User-Agent: Mozilla/4.0
-Accept-Encoding: gzip, deflate
-< 注意这里有一个空行 >
+GET /index.html HTTP/1.1            <-- 请求行
+Accept: */*                         <--
+Accept-Language: en-us                 |
+Connection: Keep-Alive                 |
+Host: localhost                        | 消息头
+Content-Length: 0                      |
+User-Agent: Mozilla/4.0                |
+Accept-Encoding: gzip, deflate      <--
+< empty line >                      <-- 一个空行
 </pre>
 
 ### HTTP 响应消息
@@ -48,14 +48,14 @@ Accept-Encoding: gzip, deflate
 一个状态行、若干消息头、以及实体内容 ，其中的一些消息头和实体内容都是可选的， **消息头和实体内容之间用空行隔开**
 + 举例
 <pre>
-HTTP/1.1 200 OK
-Server: Microsoft-IIS/5.0
-Date: Thu, 13 Jul 2000 05:46:53 GMT
-Content-Length: 2291
-Content-Type: text/html
-Cache-control: private
-< 注意这里有一个空行 >
-从这行开始是服务器返回数据 ...
+HTTP/1.1 200 OK                         <-- 状态行
+Server: Microsoft-IIS/5.0               <--
+Date: Thu, 13 Jul 2000 05:46:53 GMT        |
+Content-Length: 2291                       | 消息头
+Content-Type: text/html                    | 
+Cache-control: private                  <--
+< empty line >                          <-- 一个空行     
+data from server ...                    <-- 实体内容
 </pre>
 
 ### HTTP 消息 其他细节
@@ -79,11 +79,12 @@ Cache-control: private
 ### HTTP 消息头
 
 + 使用消息头，可以实现 HTTP 客户机与服务器之间的条件请求和应答，消息头相当于服务器和浏览器之间的一些暗号指令
-+ 消息头格式： **一个头字段名称，然后依次是冒号、空格、值、回车和换行符**
-  - eg. Accept-Language: en-us
++ 消息头格式
+  - **一个头字段名称，然后依次是冒号、空格、值、回车和换行符** eg. Accept-Language: en-us
 + 消息头字段名是不区分大小写的，但习惯上将每个单词的第一个字母大写
 + 整个消息头部分中的各行消息头可按任何顺序排列
-+ 消息头又可以分为 **通用信息头、请求头、响应头、实体头** 等四类
++ 消息头分为
+  - **通用信息头、请求头、响应头、实体头**
 + 许多请求头字段都允许客户端在值部分指定多个可接受的选项，多个项之间以逗号分隔
   - Accept-Encoding: gzip, compress
 + 有些头字段可以出现多次，例如，响应消息中可以包含有多个 Warning 头字段
@@ -112,7 +113,7 @@ POST /post.html HTTP/1.1
 Host:
 Content-Type: application/x-www-form-urlencoded
 Content-Length: 22
-< 注意这里有一个空行 >
+< empty line >
 param1=xxx&param2=yyy
 </pre>
 **注意上面我们实际传的参数长度是 21 ，但是 Content-Length 是 22 ，这时服务器会等待我们继续输入剩下的一个字节，若 Content-Length 为 20 的话，这时服务器会把多余的一个截掉**
