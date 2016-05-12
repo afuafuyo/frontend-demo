@@ -54,7 +54,7 @@ Date: Thu, 13 Jul 2000 05:46:53 GMT        |
 Content-Length: 2291                       | 消息头
 Content-Type: text/html                    | 
 Cache-control: private                  <--
-< empty line >                          <-- 一个空行     
+< empty line >                          <-- 一个空行
 data from server ...                    <-- 实体内容
 </pre>
 
