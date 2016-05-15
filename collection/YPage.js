@@ -1,4 +1,3 @@
-```javascript
 /**
  * 前端分页类
  *
@@ -137,4 +136,3 @@ YPage.prototype = {
         this.initPageEvent();
     }
 };
-```
