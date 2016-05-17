@@ -20,12 +20,12 @@ module.exports = {
     
     // 配置我们需要的插件
     // 如果不想自动生成 html 那么你自己的 html 中需要手动引入 webpack 打包的 bundle.js 文件
-    // 比如我们自己的 index.html 引入 js http://localhost:8080/public/bundle.js
-    // 如果使用了此插件 那么我们直接访问 http://localhost:8080/ 就能访问到自动生成的 html 文件
+    // 比如我们自己的 index.html 引入 js http://domain:port/public/bundle.js
+    // 如果使用了此插件 那么我们直接访问 http://domain:port/ 就能访问到自动生成的 html 文件
     // 这个 html 自动引入了 bundle.js
     // 注意 
     //   如果设置了 publicPath 那么访问自动生成的 html 时需要在 url 上加上 publicPath 的值才能访问到
-    //   http://localhost:8080/public/
+    //   http://domain:port/public/
     /*
     plugins: [
         new HtmlwebpackPlugin({

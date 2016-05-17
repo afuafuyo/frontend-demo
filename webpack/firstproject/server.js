@@ -2,7 +2,10 @@ var WebpackDevServer = require("webpack-dev-server");
 var webpack = require("webpack");
 
 var config = require('./webpack.config');
-// 每次修改代码自动刷新页面的配置
+// 配置修改代码自动刷新
+// 1. 使用 api 添加自动刷新功能
+// 2. 在页面中引入 js 实现自动刷新 即 <script src="/webpack-dev-server.js"></script>
+// 这里我们使用第一种方式实现自动刷新
 config.entry.app.unshift("webpack-dev-server/client?http://localhost:8080/");
 var compiler = webpack(config);
 
