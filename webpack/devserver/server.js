@@ -3,9 +3,9 @@ var webpack = require("webpack");
 
 var config = require('./webpack.config');
 // 配置修改代码自动刷新
-// 1. 使用 api 添加自动刷新功能
-// 2. 在页面中引入 js 实现自动刷新 即 <script src="/webpack-dev-server.js"></script>
-// 这里我们使用第一种方式实现自动刷新
+//      1. 添加 webpack-dev-server/client?http://<path>:<port>/ 配置到所有的 entry 中
+//      2. 在页面中引入 js 实现自动刷新 即 <script src="/webpack-dev-server.js"></script>
+//      这里我们使用第一种方式把配置放到我们的 entry ( 这里只有一个 entry ) 中实现自动刷新
 config.entry.app.unshift("webpack-dev-server/client?http://localhost:8080/");
 var compiler = webpack(config);
 
