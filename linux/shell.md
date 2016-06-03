@@ -21,6 +21,7 @@ source 命令
         调用 /etc/profile.d/*.sh
 
     2. /etc/profile.d/*.sh
+        存放自定义环境配置
 
     3. ~/.bash_profile
         调用 ~/.bashrc
@@ -159,6 +160,17 @@ source 命令
     suid 意味着如果某个用户对属于自己的 shell 脚本设置了某种权限 那么其他用户在执行这一脚本时也会具有其属主的相应权限
     guid 执行相应脚本的用户将具有该文件所属用户组中用户的权限
 
+    在 Unix 进程中涉及多个用户 ID 和用户组 ID
+        1). 实际用户 ID 和实际用户组 ID 
+            标识我是谁 也就是登录用户的 uid 和 gid
+            比如 Linux 以 simon 登录 在 Linux 运行的所有的命令的实际用户 ID 都是 simon 的uid 实际用户组 ID 都是 simon 的 gid ( 可以用 id 命令查看 )
+            
+        2). 有效用户 ID 和有效用户组 ID
+            进程用来决定我们对资源的访问权限
+            一般情况下 有效用户 ID 等于实际用户ID 有效用户组 ID 等于实际用户组ID
+            然而当有设置 SUID 位时 则有效用户 ID 等于文件的所有者的 uid 而不是实际用户ID
+            如果设置了 SGID 位 则有效用户组 ID 等于文件所有者的 gid 而不是实际用户组ID
+    
 7. umask
     在 /etc/profile 中设置
     当最初登录到系统中时 umask 命令确定了你创建文件的缺省模式
