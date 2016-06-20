@@ -1,0 +1,17 @@
+{
+  "name": "splitcss",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^1.13.0",
+    "css-loader": "^0.23.1",
+    "style-loader": "^0.13.1",
+    "extract-text-webpack-plugin": "^1.0.1"
+  }
+}
