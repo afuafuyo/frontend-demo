@@ -11,16 +11,17 @@ var app = express();
 app.use(function (req, res) {
     match({ routes, location: req.url }, (err, redirectLocation, renderProps) => {
         if (err) {
-            res.status(500).end(`Internal Server Error ${err}`);
+            res.sendStatus(500).end(`Internal Server Error ${err}`);
             
         } else if (redirectLocation) {
             res.redirect(redirectLocation.pathname + redirectLocation.search);
             
         } else if (renderProps) {
-            res.status(200).send(ReactDOMServer.renderToString( <RouterContext {...renderProps}/> ));
+            // `RoutingContext` has been renamed to `RouterContext`.
+            res.send(ReactDOMServer.renderToString( <RouterContext {...renderProps}/> ));
             
         } else {
-            res.status(404).end('Not found');
+            res.sendStatus(404).end('Not found');
         }
     });
 });
