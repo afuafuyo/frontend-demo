@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>card</title>
+<style rel="stylesheet">
+html, body {
+    width: 100%;
+    height: 100%;
+}
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+.y-card {
+    position: relative;
+    height: 100%;
+}
+.y-card-rotatewrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100vw;
+    
+    -webkit-animation: myRotate 30s linear infinite;
+}
+.y-card-rotatecontent {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #eee;
+    border-radius: 50%;
+}
+.y-card-rotatecontent > a {
+    position: absolute;
+    display: inline-block;
+    text-align: center;
+    width: 80px;
+    height: 120px;
+    top: 50%;
+    left: 50%;
+    margin-top: -60px;
+    margin-left: -40px;
+    
+    /* 定义旋转中心 */
+    transform-origin: center center;
+    color: #fff;
+    background-color: #008c00;
+}
+
+@-webkit-keyframes myRotate {
+    from {transform: rotate(0deg); }
+    to {transform: rotate(-360deg);}
+}
+</style>
+</head>
+<body>
+<div class="y-card">
+    <div class="y-card-rotatewrapper">
+        <div class="y-card-rotatecontent" id="rotate">
+            <a href="javascript:;">1</a>
+            <a href="javascript:;">2</a>
+            <a href="javascript:;">3</a>
+            <a href="javascript:;">4</a>
+        </div>
+    </div>
+</div>
+<script>
+function RotateCard(rotateObj) {
+    this.cards = null;
+    this.rotateObj = rotateObj;
+    
+    this.init();
+}
+RotateCard.prototype = {
+    constructor: RotateCard,
+    init: function() {
+        this.cards = this.rotateObj.getElementsByTagName('a');
+    },
+    render: function() {
+        // 元素夹角
+        var total = this.cards.length,
+            gap = 360 / total;
+            
+        for(var i=0; i<total; i++) {
+            this.cards[i].style.transform = 'rotate('+ i * gap +'deg) translate(0px, -300px)';
+        }
+    }
+};
+
+new RotateCard(document.getElementById('rotate')).render();
+</script>
+
+</body>
+</html>

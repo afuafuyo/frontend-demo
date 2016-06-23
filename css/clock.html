@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>clock</title>
+<style>
+.y-clock {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    background-color: #292a38;
+    border-radius: 50%;
+}
+.y-clock-axis {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: 50%;
+    left: 50%;
+    margin-top: -5px;
+    margin-left: -5px;
+    background-color: #fff;
+}
+
+.y-clock-minute-line,
+.y-clock-hour-line {
+    position: absolute;
+    display: inline-block;
+    top: 50%;
+    left: 50%;
+    /* 让旋转中心在 水平左侧 垂直中心 */
+    transform-origin: left center;
+}
+.y-clock-minute-line {
+    width: 10px;
+    height: 2px;
+    /* 先旋转再平移才能使刻度放到正确位置 */
+    /*
+    transform: rotate(-30deg) translate(90px, -50%);
+    */
+    background-color: red;
+}
+.y-clock-hour-line {
+    width: 20px;
+    height: 2px;
+    /*
+    transform: rotate(0deg) translate(80px, -50%);
+    */
+    background-color: red;
+}
+</style>
+</head>
+<body>
+<div class="y-clock">
+    <div class="y-clock-axis"></div>
+    <div class="y-clock-minute" id="minute">
+        <!--<i class="y-clock-minute-line"></i>-->
+    </div>
+    <div class="y-clock-hour" id="hour">
+        <!--<i class="y-clock-hour-line"></i>-->
+    </div>
+    <div class="y-clock-number"></div>
+</div>
+<script>
+function draw(wrapperObj, className, totalLine, translateX) {
+    var gap = 360 / totalLine;
+    var str = '';
+    for(var i=0; i<totalLine; i++) {
+        str += '<i class="'+ className +'" style="transform: rotate('+ i * gap +'deg) translate('+ translateX +'px, -50%)"></i>'
+    }
+    
+    wrapperObj.innerHTML = str;
+}
+
+draw(document.getElementById('minute'), 'y-clock-minute-line', 60, 90);
+draw(document.getElementById('hour'), 'y-clock-hour-line', 12, 80);
+</script>
+</body>
+</html>
