@@ -1033,7 +1033,12 @@ POSTROUTING |         |  yes  |   yes
         修改后不需要重启就能生效
 
 1. 查看 linux 支持的 shell
-    查看 /etc/shells 文件
+    查看 /etc/shells 文件可能有如下可用 shell
+    
+    /bin/sh    ( 已经被 /bin/bash 所取代 )
+    /bin/bash  ( linux 预设的 shell )
+    /bin/tcsh  ( 整合 C Shell 提供更多的功能 )
+    /bin/csh   ( 已经被 /bin/tcsh 所取代 )
 
 2. shell 执行方式
     2.1 基本输出

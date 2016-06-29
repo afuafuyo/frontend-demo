@@ -36,22 +36,15 @@ source 命令
 /**
  * 环境变量配置文件作用
  */
-调用顺序
-1. 正常登录到命令行配置文件调用过程
-    /etc/profile
-    -> ~/.bash_profile
-    -> ~/.bashrc
-    -> /etc/bashrc
-    -> 命令提示符
+正常登录到命令行配置文件调用过程
+    实线为主流程 虚线为中间调用流程
 
-    1.1	命令行切换 shell 时配置文件调用
-        /etc/bashrc
-        -> /etc/profile.d/*.sh
-
-2. /etc/profile
-    -> /etc/profile.d/*.sh
-    -> /etc/profile.d/lang.sh
-    -> /etc/sysconfig/i18n
+    /etc/profile  ————>  ~/.bash_profile  ————>  bash 界面
+        |                       |
+        |                       |-->  ~/.bashrc
+        |                                  |
+        |                                  |-->  /etc/bashrc
+        |-->  /etc/profile.d/*.sh                    
 
 /**
  * 其他配置文件
