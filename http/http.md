@@ -101,7 +101,7 @@ data from server ...                    <-- 实体内容
 ### 使用 GET 和 POST 方式传递参数
 
 + 常见的在 URL 地址后面可以附加一些参数
-  - http://www.abc.com/get.html?param1=xxx&param2=yyy
+  - http://www.xxx.com/get.html?param1=xxx&param2=yyy
 
 + GET 方式
   - 举例： GET /get.html?param1=xxx&param2=yyy HTTP/1.1
@@ -135,12 +135,48 @@ param1=xxx&param2=yyy
 ### 通用信息头
 
 + 通用信息头字段既能用于请求消息，也能用于响应消息，它包括一些与被传输的实体内容没有关系的常用消息头字段
-+ Cache-Control: no-cache
-+ Connection: close/Keep-Alive
++ Cache-Control: cache-directive
+    - 用于控制 HTTP 缓存 ( 在 HTTP/1.0 中可能部分没实现 仅仅实现了 Pragma: no-cache )
+    - cache-directive 部分值可为如下
+        + max-age=[xx seconds]
+            - 设置缓存最大的有效时间
+        + public
+            - 响应会被缓存 并且在多用户间共享
+        + private
+            - 响应只能够作为私有的缓存 不能在用户间共享
+        + no-cache
+            - 响应不会被缓存 而是实时向服务器端请求资源
+        + no-store
+            - 在任何条件下响应都不会被缓存 并且不会被写入到客户端的磁盘里
+        
++ Connection: close|Keep-Alive
+    - 在 HTTP1.0 和 HTTP1.1 协议中都有对 KeepAlive 持久连接的支持 HTTP1.0 需要在请求消息中增加 Connection: keep-alive 头才能够支持 而 HTTP1.1 默认所有连接就是持久的
 + Date: Tue, 11 Jul 2000 18:23:51 GMT
+    - 表示消息发送的时间
 + Pragma: no-cache
-+ Trailer: Date
+    - 作用同 HTTP1.1 的 Cache-Control: no-cache
 + Transfer-Encoding: chunked
+    - 代表报文采用了分块编码
+    - 分块机制
+        + 每个分块包含十六进制的长度值和数据
+        + 长度值独占一行
+        + 长度不包括它结尾的 CRLF 也不包括分块数据结尾的 CRLF
+        + 最后一个分块长度值必须为 0 对应的分块数据没有内容 表示实体结束
+```javascript
+require('net').createServer(function(sock) {
+    sock.on('data', function(data) {
+        sock.write('HTTP/1.1 200 OK\r\n');
+        sock.write('Transfer-Encoding: chunked\r\n');
+        sock.write('\r\n');
+        sock.write('b\r\n');  // 分块传输的实体内容的块长度 这里是 11
+        sock.write('12345678912\r\n');
+        sock.write('5\r\n');  // 第二个分块
+        sock.write('12345\r\n');
+        sock.write('0\r\n');  // 最后一个分块
+        sock.write('\r\n');
+    });
+}).listen(9090, '127.0.0.1');
+```
 + Upgrade: HTTP/2.0, SHTTP/1.3
 + Via: HTTP/1.1 Proxy1, HTTP/1.1 Proxy2 
 + Warning: any text
@@ -164,8 +200,8 @@ param1=xxx&param2=yyy
   - Max-Forwards: 1
   - Proxy-Authorization: Basic enh4OjEyMzQ1Ng==
   - Range: bytes=100-599
-    + Range: bytes=100-  表示从 100 个字节后
-    + Range: bytes=-100  表示从 100 个字节前
+        + Range: bytes=100-  表示从 100 个字节后
+        + Range: bytes=-100  表示从 100 个字节前
   - Referer: http://www.xxx.org/index.html
   - TE: trailers,deflate
   - User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64)
