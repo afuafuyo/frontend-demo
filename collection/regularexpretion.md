@@ -41,26 +41,26 @@
                     + 取消子模式后子模式就不存在了 匹配的数组中就不包含该项 不能再引用该子模式了
                     + 取消子模式有以下几种
                         - (?:pattern) 单纯取消子模式
-                            + ```javascript 'windows7'.match(/windows(xp|7|8)/) --> ["windows7", "7"] ```
-                            + ```javascript 'windows7'.match(/windows(?:xp|7|8)/) --> ["windows7"] ```
+                            + ``` 'windows7'.match(/windows(xp|7|8)/) --> ["windows7", "7"] ```
+                            + ``` 'windows7'.match(/windows(?:xp|7|8)/) --> ["windows7"] ```
                         - (?=pattern) 正向肯定预查 模式匹配时查出不含子模式的字符串
-                            + ```javascript 'windows7'.match(/windows(?=xp|7|8)/) --> ["windows"] ```
+                            + ``` 'windows7'.match(/windows(?=xp|7|8)/) --> ["windows"] ```
                         - (?!pattern) 正向否定预查 模式不匹配时查出不含子模式的字符串
-                            + ```javascript 'windows7'.match(/windows(?!xp|7|8)/) --> null ```
-                            + ```javascript 'windows10'.match(/windows(?!xp|7|8)/) --> ["windows"] ```
+                            + ``` 'windows7'.match(/windows(?!xp|7|8)/) --> null ```
+                            + ``` 'windows10'.match(/windows(?!xp|7|8)/) --> ["windows"] ```
                 - 反向引用 可以在模式中直接将子模式取出来 再作为正则表达式的一部分使用
                     + \1 取第一个子模式 \2 取第二个子模式 ...
                     + javascript 常用 $1 $2 来引用第一个和第二个子模式
                     + php 中双引号里会解释转义字符 所以在双引号里要用 "\\1" 来取第一个子模式 在单引号中用一个斜线即可 '\1'
                     + 例子 往一段字符串两端加 p 标签
-                        - ```javascript 'abcd'.replace(/(\w+)/, '<p>$1</p>') --> <p>abcd</p> ```
+                        - ``` 'abcd'.replace(/(\w+)/, '<p>$1</p>') --> <p>abcd</p> ```
 
         - 贪婪模式
             + 正则表达式特点是贪婪模式
             + 在匹配次数元字符后面加上一个问号 ? 则可取消贪婪模式
             + 例子
-                - ```javascript 'abcd_abcd'.match(/a\w+d/) --> ["abcd_abcd"] ```
-                - ```javascript 'abcd_abcd'.match(/a\w+?d/) --> ["abcd"] ```
+                - ``` 'abcd_abcd'.match(/a\w+d/) --> ["abcd_abcd"] ```
+                - ``` 'abcd_abcd'.match(/a\w+?d/) --> ["abcd"] ```
         
 4. 模式修正符
     + 放在定界符外 "/.../模式修正符"
