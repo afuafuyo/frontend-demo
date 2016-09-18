@@ -107,6 +107,7 @@ YPage.prototype = {
     initPageEvent: function() {
         var _self = this;
         this.mountNode.onclick = function(e) {
+            e = e || window.event;
             var src = e.target || e.srcElement;
             if(1 === src.nodeType && 'A' === src.tagName.toUpperCase()) {
                 _self.currentPage = parseInt(src.getAttribute('data-page'));
