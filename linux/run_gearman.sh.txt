@@ -1,0 +1,81 @@
+#!/bin/sh
+#
+# worker 服务管理工具
+#
+PHPCMD=`which php`
+# 第一个命令行参数
+STATUS_PARAM=$1
+# 存放 works 的目录
+WORKS_PATH='/sproot/cli/gearman'
+# 存放 pid 文件的目录
+PID_PATH='/var/run'
+# 服务列表
+workers_user="worker_participants"
+
+# 开始
+if [ ! -x $PHPCMD ]; then
+		echo "php not found	or access denied"
+		exit 1;
+fi
+
+if [ "$STATUS_PARAM" != "start" -a "$STATUS_PARAM" != "stop"  -a "$STATUS_PARAM" != "status" ]; then
+	   echo	"just support : start|stop|status";
+	   exit	1;
+fi
+
+# 开启服务
+start() {	
+	worker_type=$1;
+	eval workers="$"workers_${worker_type}
+	
+	if [ -f	"$PID_PATH/${worker_type}.pid" ]; then
+		echo "worker ${worker_type} has runing"
+		cat	"${PID_PATH}/${worker_type}.pid"
+		exit 1;
+		
+	else
+		echo "begin	start worker ...";
+		for worker in $workers
+		do
+			nohup ${PHPCMD} ${WORKS_PATH}/${worker}.php > /dev/null &
+			# 记录进程 id
+			echo $! > "$PID_PATH/${worker_type}.pid"
+		done
+	fi
+}
+
+# 关闭服务
+stop() {
+	worker_type=$1;
+
+	if [ -f	"$PID_PATH/${worker_type}.pid" ]; then
+		echo "begin stop ${worker_type} workers"
+		for	pid in `cat "$PID_PATH/${worker_type}.pid"` 
+		do
+			kill -9 $pid
+		done
+		rm -f "$PID_PATH/${worker_type}.pid"
+	else
+		echo "sorry work is not running";
+	fi
+	exit 1;
+}
+
+# 服务状态
+status() {	
+	worker_type=$1;
+	if [ -f "$PID_PATH/${worker_type}.pid" ];then
+		echo "workers ${worker_type} is runing"
+	else
+		echo "worker ${worker_type} is not runing"
+	fi
+	exit;
+}
+
+case "$2" in
+	'user')
+		${STATUS_PARAM} user
+	;;
+	*)
+	echo "no such node"
+esac

@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# update project code to newest
+#
+export LC_CTYPE=zh_CN.UTF-8
+export LANG=zh_CN.UTF-8
+
+svn update /home/mypro/ --username xxx --password xxx --no-auth-cache
+
+if [ $? -ne 0 ]; then
+    echo 'hook error: svn update failed'
+fi

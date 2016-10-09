@@ -1,0 +1,70 @@
+#!/bin/sh
+#
+# 从 svn 最新代码目录复制除了版本库之外的代码到服务器下
+#
+#PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/opt/local/bin:$HOME/bin
+#echo $PATH
+
+# src_dir 是 svn hook 提交的目录 每次提交代码时 这个目录会 update 一次
+# 以便和版本库同步
+SRC_DIR="/home/builder/sp_dev"
+DST_DIR="/home/builder/sp_dist"
+
+# 发布
+export2dist() {
+	if [ -z "$1" ]; then
+		exit 1;
+	fi
+
+	# 复制源目录到目标目录
+	rsync -vrptE --delete --exclude ".svn/"  --exclude ".git/" $SRC_DIR/$1 $DST_DIR/
+}
+
+# 检查源目录
+if [ ! -d $SRC_DIR ]; then
+	echo "$SRC_DIR not found or not a directory"
+	echo " usage: svn "
+	exit 1;
+fi
+
+# 检查目标目录
+[ -d $DST_DIR ] || mkdir $DST_DIR
+if [ ! -d $DST_DIR ]; then
+	echo "Directory $DST_DIR can not access"
+	exit 1;
+fi
+
+# 第一个参数
+if [ -z "$1" ]; then
+	echo "Usage: $0 [huitong]"
+	exit 1;
+fi
+        for static_file in `grep -E '(.css|.js)' pull.log |awk -F'static/' '{print $2}'`
+        do
+                echo cp -f $SRC_DIR/static/$static_file $DST_DIR/static/$static_file
+                cp -f $SRC_DIR/static/$static_file $DST_DIR/static/$static_file
+                if [ -f $DST_DIR/$static_file ];then
+                #        ./yuicompress.sh $DST_DIR/$static_file;
+                echo   ./yuicompress.sh $DST_DIR/static/$static_file;
+                fi
+        done
+        for static_file in `grep -E '(.gif|.jpeg|.jpg|.png)' pull.log |awk -F'static/' '{print $2}'`
+        do
+                echo cp -f $SRC_DIR/static/$static_file $DST_DIR/static/$static_file
+                cp -f $SRC_DIR/static/$static_file $DST_DIR/static/$static_file
+        done
+
+}
+
+# 执行
+for i in $*
+do
+	case "$i" in
+		huitong)
+			export2dist huitong 
+		;;
+		*)
+			echo "no such node"
+	esac
+done
+
