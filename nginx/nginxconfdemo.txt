@@ -1,0 +1,86 @@
+
+#user nobody;
+worker_processes 1;
+
+error_log logs/error.log;
+
+#pid logs/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile      on;
+    keepalive_timeout    65;
+    client_max_body_size 500m; 
+    #gzip  on;
+    server_names_hash_bucket_size 64;
+
+    server {
+        listen       80;
+        server_name  localhost;
+        charset      utf-8;
+		root         d:/www/;
+        location / {
+            index  index.html index.php;
+			autoindex on;
+			autoindex_localtime on;
+        }
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+        location ~ \.php$ {
+            fastcgi_param YUBA_ENVIRONMENT 'development';
+
+            fastcgi_pass   127.0.0.1:9000;
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            include        fastcgi_params;
+        }
+    }
+    
+    server {
+        listen       8080;
+        server_name  120.27.31.238;
+		root         d:/www/project/;
+
+        location / {
+            index index.php;
+            try_files $uri @rewrite;
+        }
+        location @rewrite {
+			rewrite ^(.*)$ /index.php?r=$1;
+		}
+        location ~ \.php$ {
+            fastcgi_pass   127.0.0.1:9000;
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            include        fastcgi_params;
+        }
+	}
+    
+    server {
+        listen       80;
+        server_name  www.domain.com;
+		root         d:/www/project2;
+
+        location / {
+            index index.php;
+			try_files $uri @rewrite;
+        }
+		location @rewrite {
+			rewrite ^(.*)$ /index.php?r=$1;
+		}
+        location ~ \.php$ {
+            fastcgi_pass   127.0.0.1:9000;
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            include        fastcgi_params;
+        }
+	}
+    
+}
