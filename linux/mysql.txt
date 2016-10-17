@@ -1,0 +1,8 @@
+1. 查看 mysql 读取 my.cnf 配置文件顺序
+    首先找到 mysqld 服务的位置
+        which mysqld
+    执行如下命令 就能看到 mysql 加载的配置文件
+        mysqld --verbose --help | grep -A 1 'Default options'
+
+
+

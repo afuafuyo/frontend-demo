@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# update project code to newest
+# update another dir project code
 #
 export LC_CTYPE=zh_CN.UTF-8
 export LANG=zh_CN.UTF-8
