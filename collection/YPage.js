@@ -114,7 +114,7 @@ YPage.prototype = {
                 _self.currentPage > _self.totalPages && (_self.currentPage = _self.totalPages);
                 _self.currentPage < 1 && (_self.currentPage = 1);
                 if(null !== _self.onChange) {
-                    _self.onChange(_self.currentPage);
+                    _self.onChange(_self.currentPage, e);
                 }
             }
         };
