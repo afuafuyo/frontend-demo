@@ -6,7 +6,7 @@
  *
  * var page = new YPage(12, 10);
  * page.setConfig('showTotal', true);
- * page.onChange = function(currentPage) {
+ * page.onChange = function(currentPage, e) {
  *      console.log(currentPage);
  *      page.render(document.getElementById(mountNode));
  * };
