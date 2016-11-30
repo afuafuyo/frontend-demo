@@ -15,9 +15,17 @@ function LinkQueue() {
 }
 LinkQueue.prototype = {
     constructor: LinkQueue
+    
+    /**
+     * 返回队列大小
+     */
     ,size: function() {
         return this.size;
     }
+    
+    /**
+     * 返回队列头
+     */
     ,take: function() {
         // 为空直接返回
         if(this.headNode === this.tailNode) {
@@ -42,6 +50,12 @@ LinkQueue.prototype = {
         
         return data;
     }
+    
+    /**
+     * 入队列
+     *
+     * @param Object data 数据
+     */
     ,put: function(data) {
         var node = new LinkQueue.Node(data, null);
         // 队尾指向新节点
@@ -51,6 +65,10 @@ LinkQueue.prototype = {
         // 计数
         this.size++;
     }
+    
+    /**
+     * toString
+     */
     ,toString: function() {
         var str = '[ ', current;
         for(current = this.headNode.next; null !== current; current = current.next) {
