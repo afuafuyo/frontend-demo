@@ -1,20 +1,20 @@
 /**
  * 链队列
  *
- * var list = new LinkQueue();
+ * var list = new LinkedQueue();
  * list.put({xxx});
  * list.put({yyy});
  * list.take();
  */
-function LinkQueue() {
+function LinkedQueue() {
     this.headNode = null;
     this.tailNode = null;
     this.size = 0;
     
-    this.headNode = this.tailNode = new LinkQueue.Node(null, null);
+    this.headNode = this.tailNode = new LinkedQueue.Node(null, null);
 }
-LinkQueue.prototype = {
-    constructor: LinkQueue
+LinkedQueue.prototype = {
+    constructor: LinkedQueue
     
     /**
      * 返回队列大小
@@ -57,7 +57,7 @@ LinkQueue.prototype = {
      * @param Object data 数据
      */
     ,put: function(data) {
-        var node = new LinkQueue.Node(data, null);
+        var node = new LinkedQueue.Node(data, null);
         // 队尾指向新节点
         this.tailNode.next = node;
         // 重新指定尾节点
@@ -78,7 +78,7 @@ LinkQueue.prototype = {
         return str + ' ]';
     }
 };
-LinkQueue.Node = function(data, next) {
+LinkedQueue.Node = function(data, next) {
     this.data = data;
     this.next = next;
 }
