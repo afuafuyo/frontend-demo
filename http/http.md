@@ -344,7 +344,7 @@ require('net').createServer(function(sock) {
 
 
 
-+ If-Modified-Since: [time]
++ If-Modified-Since: [UTCTIMEString]
 
     - 与实体头 Last-Modified 对应
 
@@ -394,7 +394,7 @@ require('net').createServer(function(sock) {
 
 + 实体头用作实体内容的元信息 描述了实体内容的属性 包括实体信息类型 长度 压缩方法 最后一次修改时间 数据有效期等
 
-+ Last-Modified: Tue, 11 Jul 2000 18:23:51 GMT
++ Last-Modified: [UTCTIMEString]
 
     - 请求的资源的最后修改时间
    
@@ -422,7 +422,7 @@ require('net').createServer(function(sock) {
 
     - 实体内容对应的 MIME 信息
     
-+ Expires: Tue, 11 Jul 2000 18:23:51 GMT
++ Expires: [UTCTIMEString]
     
     - 响应过期的日期和时间
 
