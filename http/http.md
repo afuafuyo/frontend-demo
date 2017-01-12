@@ -290,102 +290,141 @@ require('net').createServer(function(sock) {
 
 + Upgrade: HTTP/2.0, SHTTP/1.3
 
-+ Via: HTTP/1.1 Proxy1, HTTP/1.1 Proxy2 
+    - 向服务器指定某种传输协议以便服务器进行转换
+
++ Via: HTTP/1.1 Proxy1, HTTP/1.1 Proxy2
+
+    - 通知中间网关或代理服务器地址
 
 + Warning: any text
+
+    - 关于实体内容的警告信息
 
 ### 请求头
 
 + 请求头字段用于客户端在请求消息中向服务器传递附加信息，主要包括客户端可以接受的数据类型、压缩方法、语言、以及发出请求的超链接所属网页的 URL 地址等信息
-    - Accept: text/html,image/*
+
++ Referer: http://www.xxx.org/index.html
+
+    - 先前网页的地址 即来路
     
-    - Accept-Charset: ISO-8859-1,unicode-1-1
++ User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64)
+
+    - 发出请求的用户信息
+
++ Accept: text/html,image/*
     
-    - Accept-Encoding: gzip,compress
+    - 指定客户端能够接收的内容类型
     
-    - Accept-Language: en-gb,zh-cn
++ Accept-Charset: ISO-8859-1,unicode-1-1
+
+    - 浏览器可以接受的字符编码集
     
-    - Authorization: Basic enh4OjEyMzQ1Ng==
++ Accept-Encoding: gzip,compress
+
+    - 指定浏览器可以支持的 web 服务器返回内容压缩编码类型
     
-    - Expect: 100-continue
++ Accept-Language: en-gb,zh-cn
+
+    - 浏览器可接受的语言
     
-    - From: xxx@xxx.org
++ Authorization: Basic enh4OjEyMzQ1Ng==
+
+    - HTTP 授权的授权证书
+
++ From: xxx@xxx.org
+
+    - 发出请求的用户的 Email
+
++ Host: www.xxx.org:80
+
+    - 指定想要请求的服务器的 域名/IP 和 端口号
     
-    - Host: www.xxx.org:80
+    - 在 HTTP 1.1 中不能缺失 host 字段，如果缺失，服务器返回 400 bad request 但 host 字段可以是空值
+
+
+
++ If-Modified-Since: [time]
+
+    - 与实体头 Last-Modified 对应
+
+    - 客户端持有的资源的时间 其值等于服务器发送的 Last-Modified 头字段的值
     
-    - If-Match: "xyzzy", "r2d2xxxx"
+    - 客户端发送请求时会携带该头字段 以便服务器进行验证资源是否需要更新 如果不需要则返回 304
     
-    - If-Modified-Since: Tue, 11 Jul 2000 18:23:51 GMT
+    - 只能根据时间来判断资源是否更新
+
++ If-None-Match: [ETag]
+
+    - 与响应头 ETag 对应
+
+    - 客户端持有的资源的信息 其值等于服务器发送的 ETag 头字段的值
+
+    - 客户端发送请求时会携带该头字段 以便服务器利用该值进行资源对比 如果资源的计算值和该字段值相等则返回 304
+
++ Range: bytes=100-599
+
+    - 响应头 Accept-Ranges 标示服务器是否支持 Range 如果支持 则 Accept-Ranges: bytes 如果不支持 则 Accept-Ranges: none
     
-    - If-None-Match: "xyzzy", "r2d2xxxx"
+    - 客户端发送请求时会携带该头字段 如果没有 那么 If-Range 会没忽略
+
+    - Range: bytes=100-  表示从 100 个字节到结尾
     
-    - If-Range: Tue, 11 Jul 2000 18:23:51 GMT
-    
-    - If-Unmodified-Since: Tue, 11 Jul 2000 18:23:51 GMT
-    
-    - Max-Forwards: 1
-    
-    - Proxy-Authorization: Basic enh4OjEyMzQ1Ng==
-    
-    - Range: bytes=100-599
-        + Range: bytes=100-  表示从 100 个字节后
-        + Range: bytes=-100  表示从 100 个字节前
-        
-    - Referer: http://www.xxx.org/index.html
-    
-    - TE: trailers,deflate
-    
-    - User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64)
+    - Range: bytes=-100  表示从开始到 100 个字节
+
++ If-Range: [Etag|Http-Date]
+
+    - 其值可以是 Etag 响应头或者 Last-Modified 实体头返回的值
+
+    - 与 Range 配合使用实现断点下载
 
 ### 响应头
 
-+ 响应头字段用于服务器在响应消息中向客户端传递附加信息，包括服务程序名，被请求资源需要的认证方式，被请求资源已移动到的新地址等信息
++ 响应头字段用于服务器在响应消息中向客户端传递附加信息 包括服务程序名 被请求资源需要的认证方式 被请求资源已移动到的新地址等信息
     
-    - Accept-Range: bytes
-    
-    - Age: 315315315
-    
-    - Etag: b38b9-17dd-367c5dcd
-    
-    - Location: http://www.xxx.org/index.html
-    
-    - Proxy-Authenticate: BASIC realm="xxx"
-    
-    - Retry-After: Tue, 11 Jul 2000 18:23:51 GMT
-    
-    - Server: Microsoft-IIS/5.0
-    
-    - Vary: Accept-Language
-    
-    - WWW-Authenticate: BASIC realm="xxx"
++ Accept-Range: [bytes|none]
+
+    - 标示服务器是否支持 Range
+
++ Etag: [与资源关联的一个值]
+
+    - 服务器返回的与资源有关的一个值
 
 ### 实体头
 
-+ 实体头用作实体内容的元信息，描述了实体内容的属性，包括实体信息类型、长度、压缩方法、最后一次修改时间、数据有效期等
-    
-    - Allow: GET,POST
-    
-    - Content-Encoding: gzip
-    
-    - Content-Language: zh-cn
-    
-    - Content-Length: 80
-    
-    - Content-Location: http://www.xxx.org/content.html
-    
-    - Content-MD5: ABCDABCDABCDABCDABCDAB==
-    
-    - Content-Range: bytes 2543-4532/7898
-    
-    - Content-Type: text/html; charset=GB2312
-    
-    - Expires: Tue, 11 Jul 2000 18:23:51 GMT
-    
-    - Last-Modified: Tue, 11 Jul 2000 18:23:51 GMT
++ 实体头用作实体内容的元信息 描述了实体内容的属性 包括实体信息类型 长度 压缩方法 最后一次修改时间 数据有效期等
 
-+ Content-MD5
++ Last-Modified: Tue, 11 Jul 2000 18:23:51 GMT
 
-浏览器虽然接收到了服务器返回的内容，但是不敢肯定服务器发送的内容在传输过程中是否发生了损坏，那就可以通过这个 Content-MD5 来验证
+    - 请求的资源的最后修改时间
+   
++ Allow: GET,POST
+
+    - 允许的请求方式
+    
++ Content-Encoding: gzip
+
+    - 实体内容压缩方式
+    
++ Content-Language: zh-cn
+
+    - 实体内容语言
+    
++ Content-Length: 80
+
+    - 实体内容长度
+    
++ Content-Range: bytes 2543-4532/7898
+
+    - 在整个实体内容中本部分的字节位置
+    
++ Content-Type: text/html; charset=utf-8
+
+    - 实体内容对应的 MIME 信息
+    
++ Expires: Tue, 11 Jul 2000 18:23:51 GMT
+    
+    - 响应过期的日期和时间
 
 ### 扩展头
 
