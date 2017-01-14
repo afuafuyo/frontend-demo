@@ -360,9 +360,11 @@ require('net').createServer(function(sock) {
 
 + Range: bytes=100-599
 
+    - 指定一个资源的字节位置
+
     - 响应头 Accept-Ranges 标示服务器是否支持 Range 如果支持 则 Accept-Ranges: bytes 如果不支持 则 Accept-Ranges: none
     
-    - 客户端发送请求时会携带该头字段 如果没有 那么 If-Range 会没忽略
+    - 如果服务器支持 客户端发送请求时会携带该头字段 如果没有 那么 If-Range 会没忽略
 
     - Range: bytes=100-  表示从 100 个字节到结尾
     
@@ -372,7 +374,7 @@ require('net').createServer(function(sock) {
 
     - 其值可以是 Etag 响应头或者 Last-Modified 实体头返回的值
 
-    - 与 Range 配合使用实现断点下载
+    - 与 Range Content-Range 配合使用实现断点下载
 
 ### 响应头
 
@@ -412,7 +414,7 @@ require('net').createServer(function(sock) {
     
 + Content-Range: bytes 2543-4532/7898
 
-    - 在整个实体内容中本部分的字节位置
+    - 在整个实体内容中本部分的字节位置 7898 为总长度
     
 + Content-Type: text/html; charset=utf-8
 
