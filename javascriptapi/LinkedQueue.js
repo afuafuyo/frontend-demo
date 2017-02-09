@@ -67,12 +67,21 @@ LinkedQueue.prototype = {
     }
     
     /**
+     * 清空
+     */
+    clear() {
+        while(0 !== this.size) {
+            this.take();
+        }
+    }
+    
+    /**
      * toString
      */
     ,toString: function() {
         var str = '[ ', current;
         for(current = this.headNode.next; null !== current; current = current.next) {
-            str += current.data.toString() + ' ';
+            str += current.data + ' ';
         }
         
         return str + ' ]';
