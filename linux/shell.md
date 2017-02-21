@@ -11,6 +11,8 @@ source 命令
 
 默认环境变量配置文件
     1. /etc/profile
+        System wide environment and startup programs, for login setup
+    
         定义 USER 变量
         定义 LONGNAMW 变量
         定义 MAIL 变量
@@ -21,17 +23,21 @@ source 命令
         调用 /etc/profile.d/*.sh
 
     2. /etc/profile.d/*.sh
-        存放自定义环境配置
+        不建议修改 /etc/profile 如果想修改一些配置 好的做法是在 /etc/profile.d 目录新建一个 shell 文件来覆盖某设置
 
     3. ~/.bash_profile
+        User specific environment and startup programs
+    
         调用 ~/.bashrc
         追加 $HOME/bin 到 PATH 变量
         
     4. ~/.bashrc
+        User specific aliases and functions
+    
         定义别名
         
     5. /etc/bashrc
-        非正常登录配置
+        System wide functions and aliases
 
 /**
  * 环境变量配置文件作用
@@ -107,7 +113,8 @@ source 命令
     ---------------------------------------------------
     |             |    user   |   group   |   other   | 所有者 同组用户 其他人权限
     ---------------------------------------------------
-    第 11 位为 SUID 位 第 10 位为 SGID 位 第 9 位为 sticky 位 第 8-0 位分为三组为 所有者 同组用户 其他人权限 
+    第 11 位为 SUID 位 第 10 位为 SGID 位 第 9 位为 sticky 位
+    第 8-0 位分为三组为 所有者 同组用户 其他人权限 
     
     rwxr-xr-x 表示为 111101101 及 755
         所有者 读写执行权限
@@ -214,7 +221,7 @@ find [path ...] [expression]
  * xargs
  */
 将参数列表转换成小块分段传递给其他命令 以避免参数列表过长的问题
-可以取一个命令的输出作为另一个命令的参数
+可以取一个命令的输出作为另一个命令的输入参数
 
 查找 .log 文件并删除
     find ./ -name '*.log' | xargs rm -f
@@ -450,7 +457,6 @@ wc [选项] 文件名
     -l  -- 只统计行数
     -w  -- 只统计单词数
     -m  -- 只统计字符数
-
 
 /**
  * 条件判断

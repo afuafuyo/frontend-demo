@@ -756,7 +756,7 @@ netfilter 支持通过以下方式对数据包进行分类
 
 Netfilter
 ----------------------------------------
-            |           tables
+            |      build in tables
 过滤点      |---------------------------
 chain       |  filter |  nat  |  mangle
 ----------------------------------------
@@ -767,14 +767,36 @@ PREROUTING  |         |  yes  |   yes
 POSTROUTING |         |  yes  |   yes
 ----------------------------------------
 
+规则表
+
+filter 表包含三个链 INPUT FORWARD OUTPUT
+    作用是过滤数据包
+
+nat 表包含三个链 PREROUTING POSTROUTING OUTPUT
+    作用是用于网络地址转换
+
+mangle 表包含五个链 PREROUTING POSTROUTING INPUT OUTPUT FORWARD
+    作用是修改数据包的服务类型
+
+规则链
+
+INPUT 进来的数据包应用此规则链中的策略
+
+OUTPUT 外出的数据包应用此规则链中的策略
+
+FORWARD 转发数据包时应用此规则链中的策略
+
+PREROUTING 对数据包作路由选择前应用此链中的规则
+    所有的数据包进来的时侯都先由这个链处理
+
+POSTROUTING 对数据包作路由选择后应用此链中的规则
+    所有的数据包出来的时侯都先由这个链处理
+
 规则
     数据包按照第一个匹配的规则执行相关动作 就不再去匹配其它规则
 
 创建规则
     iptables [-t table] chain rule-specification [options]
-
-    例子
-    iptables -t filter -A INPUT -s 192.168.1.2 -j DROP
     参数
         -t  -- 指定使用的表
         -A  -- append 方式指定过滤点 (chain)
@@ -786,6 +808,9 @@ POSTROUTING |         |  yes  |   yes
         --dport  -- 指定目标端口
         
         -j  -- 匹配后的动作
+
+    例子
+    iptables -t filter -A INPUT -s 192.168.1.2 -j DROP
         
 /**
  * 备份 恢复
