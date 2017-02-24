@@ -7,7 +7,7 @@ function WaterFall() {
     this.wrapperWidth = 1200;
     this.colClass = 'x-wf-col';
     this.colWidth = 224;
-    this.imgIndex = 0;  // 在一个容器中需要的图片的位置
+    this.imgIndex = 1;  // 在一个容器中需要的图片的位置
     this.colGapVertical = 30;
     
     this.batchFalls = 0;
@@ -18,6 +18,7 @@ function WaterFall() {
 }
 WaterFall.prototype = {
     constructor: WaterFall,
+    // 查找类名为指定值的父元素
     findParent: function(obj, className) {
         var ret = obj.parentNode;
         if(className !== ret.className) {
@@ -26,14 +27,16 @@ WaterFall.prototype = {
         
         return ret;
     },
+    // 生成一个全是零的数组
     fillZero: function(num) {
-        var ret = [];
+        var ret = new Array(num);
         for(var i=0; i<num; i++) {
-            ret.push(0);
+            ret[i] = 0;
         }
         
         return ret;
     },
+    // 数组中的最小值的索引
     minIndex: function() {
         var min = Math.min.apply(null, this.heightArr);
         var idx = -1;
@@ -47,14 +50,19 @@ WaterFall.prototype = {
     
         return idx;
     },
-    imgLoaded: function(imgEle, isColElement) {
-        var colsElement = isColElement ? imgEle : this.findParent(imgEle, this.colClass);
+    // 布局
+    imgLoaded: function(element, isColElement) {
+        var colElement = isColElement ? element :
+            this.findParent(element, this.colClass);
         var minIndex = this.minIndex();
         
         // 放到一行中最低的地方
-        colsElement.style.cssText = 'top:'+ this.heightArr[minIndex] +'px; left:'+ (this.colWidth*minIndex + this.colGapHorizontal*minIndex) +'px;';
+        colElement.style.cssText = 'top:'+ this.heightArr[minIndex] +
+            'px; left:'+ (this.colWidth*minIndex + this.colGapHorizontal*minIndex) +'px;';
         
-        this.heightArr[minIndex] = this.heightArr[minIndex] + colsElement.offsetHeight + this.colGapVertical;
+        // 当前元素的高度存入数组
+        this.heightArr[minIndex] = this.heightArr[minIndex] +
+            colElement.offsetHeight + this.colGapVertical;
         
         this.batchFalls--;
         if(this.batchFalls <= 0) {
@@ -78,16 +86,17 @@ WaterFall.prototype = {
             if(undefined !== (img = colsElements[i].getElementsByTagName('img')[this.imgIndex])) {
                 if(img.complete) {
                     this.imgLoaded(img, false);
+                    
                 } else {
                     img.onload = function(e){
                         _self.imgLoaded(this, false);
                     };
                 }
                 
-            } else {
-                this.imgLoaded(colsElements[i], true);
+                continue;
             }
             
+            this.imgLoaded(colsElements[i], true);
         }
         img = null;
     }
