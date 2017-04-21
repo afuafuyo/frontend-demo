@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Document</title>
+    <title>Range 范围</title>
 </head>
 <body>
-<p>a<b>b</b>123</p>
+<p contenteditable="true">a<b>b</b>123</p>
 <div>x<b>y</b></div>
 <script>
 
 // 创建 range
 var range = document.createRange();
 
-// 1. 使用 setStart setEnd 创建一段区域
 /*
+// 1. 使用 setStart setEnd 创建一段区域
 var startNode = document.getElementsByTagName('p').item(0);
 var startOffset = 0;  // 从 0 索引开始 即从 a 开始
 range.setStart(startNode, startOffset);
@@ -28,6 +28,15 @@ range.selectNode(document.getElementsByTagName('p').item(0));
 
 console.log(range)
 console.log('result:', range.toString());  // result: ab123
+
+// 折叠选取 折叠后的选取不包含任何数据
+var range2 = document.createRange();
+range2.selectNode(document.getElementsByTagName('p').item(0));
+document.getElementsByTagName('p').item(0).focus();
+range2.collapse(true);
+
+console.log(range2)
+console.log('collapsed result:', range2.toString());  // collapsed result:
 </script>
 </body>
 </html>

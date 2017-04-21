@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Selection 拖蓝</title>
+</head>
+<body>
+<div contenteditable="true">this is div</div>
+
+<script>
+var div = document.getElementsByTagName('div').item(0);
+var s = window.getSelection();
+
+if(s.rangeCount > 0) s.removeAllRanges();
+
+// 创建 range 并加入到 selection 中
+var range = document.createRange();
+// 有 contenteditable 属性时直接传 div 不会有拖蓝
+range.selectNode(div.firstChild);
+// 语法 selection.addRange(range)
+s.addRange(range);
+
+console.log('selection is:' + s.toString());
+
+// 2 秒后将光标定位到结尾
+// 语法 selection.collapse(parentNode, offset);
+setTimeout(() => {
+    div.focus();
+    
+    //s.collapseToEnd();
+    s.collapse(div, 1);
+}, 2000);
+
+</script>
+</body>
+</html>
