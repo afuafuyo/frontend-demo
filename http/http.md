@@ -338,8 +338,6 @@ require('net').createServer(function(sock) {
     
     - 在 HTTP 1.1 中不能缺失 host 字段 如果缺失 服务器返回 400 bad request 但 host 字段可以是空值
 
-
-
 + If-Modified-Since: [UTCTIMEString]
 
     - 与实体头 Last-Modified 对应
