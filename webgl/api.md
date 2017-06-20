@@ -30,12 +30,58 @@
     模板缓冲区   |   0              |   gl.clearStencil(s)
     ---------------------------------------------------------------------------
     
+3. WebGLShader 着色器
     
+    1) 顶点着色器
+        用来描述定点特性 位置 颜色 等
     
+    2) 片元着色器
+        进行逐片元处理 光照等
     
+4. WebGLProgram 程序
     
-    
-    
-    
-    
+    WebGLProgram 将编译后的着色器连接到 webgl 上
+
+5. 绘制
+
+    gl.drawArrays(mode, first, count)
+
+    mode 绘制方式
+        gl.LINES
+        gl.LINE_STRIP
+        gl.LINE_LOOP
+        gl.TRIANGLES
+        gl.TRIANGLE_STRIP
+        gl.TRIANGLES_FAN
+        
+    first 从哪个点开始绘制
+    count 绘制需要用到多少个顶点
+
+
+
+
+
+
+
+
+
+
+
+
+
 </pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
