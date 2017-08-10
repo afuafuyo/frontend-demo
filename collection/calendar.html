@@ -255,10 +255,6 @@ YCalendar.prototype = {
     parseDate: function(date) {
         var ret = {};
         
-        if('' === date) {
-            return ret;
-        }
-        
         var matches = date.match(this.dateRegExp);
         
         if(null !== matches) {
