@@ -82,8 +82,6 @@ function YScrollBar() {
 YScrollBar.prototype = {
     constructor: YScrollBar,
     step: function(delta) {
-        console.log(delta)
-    
         // page up -> content scroll down
         if(delta > 0) {
             this.top = this.top + this.stepLength;
