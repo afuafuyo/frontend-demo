@@ -1,0 +1,166 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>scroll bar</title>
+<style>
+.yscrollbar {
+    position: relative;
+}
+.yscrollbar-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+.yscrollbar-bar {
+    position: absolute;
+    z-index: 600;
+    top: 0;
+    right: 0;
+    width: 6px;
+    height: 30px;
+    background-color: #666;
+    border-radius: 3px;
+    display: none;
+}
+.yscrollbar:hover .yscrollbar-bar {
+    display: block;
+}
+</style>
+</head>
+<body>
+    
+    <div id="demo" class="yscrollbar" style="width: 300px; height: 400px; overflow: hidden; border: 1px solid red">
+        <div class="yscrollbar-content">
+        
+        <div>这是一行</div>
+        <p>这是一行</p>
+        <ul>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+            <li>这是一段文本</li>
+        </ul>
+        
+        
+        </div>
+    </div>
+
+<script>
+function YScrollBar() {
+    this.doc = document;
+    
+    this.wrapper = null;
+    this.content = null;
+    this.bar = null;
+    
+    this.clientHeight = 0;
+    this.scrollHeight = 0;
+    this.stepLength = 10;
+    this.top = 0;
+}
+YScrollBar.prototype = {
+    constructor: YScrollBar,
+    step: function(delta) {
+        console.log(delta)
+    
+        // page up -> content scroll down
+        if(delta > 0) {
+            this.top = this.top + this.stepLength;
+            
+            if(this.top >= 0) {
+                this.top = 0;
+            }
+            
+        } else {
+            // page down -> content scroll up
+            this.top = this.top - this.stepLength;
+            
+            if(this.top < -(this.scrollHeight - this.clientHeight)) {
+                this.top = -(this.scrollHeight - this.clientHeight);
+            }
+        }
+        
+        this.content.style.top = this.top + 'px';
+        this.bar.style.top =  -this.top * this.clientHeight / this.scrollHeight + 'px';
+    },
+    handlerWheel: function(e) {
+        if(!e) {
+            e = window.event;
+        }
+        
+        var delta = 0;
+        
+        if(e.wheelDelta) {
+            delta = e.wheelDelta / 120;
+            
+        } else if(e.detail) {
+            delta = -e.detail / 3;
+        }
+        
+        this.step(delta);
+    },
+    initStructure: function() {
+        this.bar = this.doc.createElement('div');
+        this.bar.className = 'yscrollbar-bar';
+        this.wrapper.insertBefore(this.bar, this.wrapper.firstChild);
+        
+        var scrollHeight = this.scrollHeight = this.content.scrollHeight;
+        var clientHeight = this.clientHeight = this.wrapper.clientHeight;
+        
+        this.bar.style.height = clientHeight * clientHeight / scrollHeight + 'px';
+    },
+    initEvent: function() {
+        var wrapper = this.wrapper;
+        var self = this;
+    
+        // main browser
+        wrapper.onmousewheel = function(e) {
+            self.handlerWheel(e);
+        };
+        wrapper = null;
+    },
+    render: function(id) {
+        this.wrapper = this.doc.getElementById(id);
+        this.content = this.wrapper.querySelector('.yscrollbar-content');
+        
+        this.initStructure();
+        this.initEvent();
+    }
+};
+
+
+new YScrollBar().render('demo')
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
