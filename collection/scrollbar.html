@@ -21,11 +21,14 @@
     width: 6px;
     height: 30px;
     background-color: #666;
+    
+    opacity: 0;
     border-radius: 3px;
-    display: none;
+    
+    transition: opacity .5s;
 }
 .yscrollbar:hover .yscrollbar-bar {
-    display: block;
+    opacity: 1;
 }
 </style>
 </head>
@@ -131,10 +134,19 @@ YScrollBar.prototype = {
         var wrapper = this.wrapper;
         var self = this;
     
-        // main browser
-        wrapper.onmousewheel = function(e) {
-            self.handlerWheel(e);
-        };
+        // Firefox
+        if(undefined === wrapper.onmousewheel) {
+            wrapper.addEventListener('DOMMouseScroll', function(e) {
+                self.handlerWheel(e);
+            }, false);
+        
+        } else {
+            // Main browser
+            wrapper.onmousewheel = function(e) {
+                self.handlerWheel(e);
+            };
+        }
+        
         wrapper = null;
     },
     render: function(id) {
