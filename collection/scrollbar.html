@@ -61,6 +61,9 @@
         </ul>
     </div>
 
+    <input type="button" onclick="document.querySelector('.yscrollbar-content').innerHTML+=document.querySelector('.yscrollbar-content').innerHTML;" value="追加内容">
+    <input type="button" onclick="s.reRender()" value="重新渲染">
+    
 <script>
 function YScrollBar() {
     this.doc = document;
@@ -74,7 +77,7 @@ function YScrollBar() {
     this.top = 0;
     
     this.options = {
-        stepLength: 20
+        stepLength: 30
     };
 }
 YScrollBar.prototype = {
@@ -129,11 +132,6 @@ YScrollBar.prototype = {
         
         this.wrapper.appendChild(this.bar);
         this.wrapper.appendChild(this.content);
-        
-        var scrollHeight = this.scrollHeight = this.content.scrollHeight;
-        var clientHeight = this.clientHeight = this.wrapper.clientHeight;
-        
-        this.bar.style.height = clientHeight * clientHeight / scrollHeight + 'px';
     },
     initEvent: function() {
         var wrapper = this.wrapper;
@@ -154,16 +152,27 @@ YScrollBar.prototype = {
         
         wrapper = null;
     },
+    reRender: function() {
+        var scrollHeight = this.scrollHeight = this.content.scrollHeight;
+        var clientHeight = this.clientHeight = this.wrapper.clientHeight;
+        
+        this.bar.style.height = Math.floor(Math.max(2, clientHeight * clientHeight / scrollHeight)) + 'px';
+    
+        return this;
+    },
     render: function(id) {
         this.wrapper = this.doc.getElementById(id);
         
         this.initStructure();
+        this.reRender();
         this.initEvent();
+        
+        return this;
     }
 };
 
 
-new YScrollBar().render('demo')
+var s = new YScrollBar().render('demo');
 </script>
 </body>
 </html>
