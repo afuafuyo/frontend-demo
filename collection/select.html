@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Select</title>
+    
+<style>
+.yselect {
+    position: relative;
+    display: inline-block;
+    background-color: #fff;
+    height: 26px;
+    line-height: 26px;
+    padding: 0 12px;
+    font-size: 14px;
+    color: rgba(0, 0, 0, .6);
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    transition: border-color .5s;
+}
+.yselect:focus,
+.yselect:hover {
+    border-color: #49a9ee
+}
+.yselect-list {
+    position: absolute;
+    z-index: 600;
+    left: 0;
+    top: 28px;
+    width: 100%;
+    max-height: 300px;
+    border: 1px solid #eee;
+    border-top: 0;
+    background-color: #fff;
+    overflow-y: auto;
+    display: none;
+}
+.yselect-list span {
+    display: block;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 6px;
+}
+.yselect-list span:hover {
+    background-color: #eee;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+    
+    <div id="demo" class="yselect" style="width: 120px">
+        <div class="yselect-list">
+            <span data-role="item" data-value="1">选项1</span>
+            <span data-role="item" data-value="2">选项2</span>
+            <span data-role="item" data-value="3">选项3</span>
+            <span data-role="item" data-value="4">选项4</span>
+            <span data-role="item" data-value="5">选项5</span>
+            <span data-role="item" data-value="6">选项6</span>
+            <span data-role="item" data-value="7">选项7</span>
+            <span data-role="item" data-value="8">选项8</span>
+            <span data-role="item" data-value="9">选项9</span>
+            <span data-role="item" data-value="0">选项0</span>
+        </div>
+    </div>
+    
+    <br/><br/><br/>
+    
+    <div id="demo2" class="yselect" style="width: 80px"></div>
+
+<script>
+function YSelect() {
+    this.doc = document;
+    this.select = null;
+    this.value = null;
+    this.list = null;
+}
+YSelect.prototype = {
+    constructor: YSelect,
+    eventHandler: function(e) {
+        e = e || window.event;
+        
+        var target = e.target || e.srcElement;
+        
+        if('block' !== this.list.style.display) {
+            this.list.style.display = 'block';
+            
+        } else {
+            this.list.style.display = 'none';
+        }
+        
+        if('item' === target.getAttribute('data-role')) {
+            this.value.setAttribute('data-value', target.getAttribute('data-value'));
+            this.value.innerHTML = target.innerHTML;
+        }
+    },
+    initStructure: function(items) {
+        this.value = this.doc.createElement('span');
+        this.value.className = 'yselect-value';
+        
+        if(undefined !== items) {
+            var ret = '';
+            for(var i=0,len=items.length; i<len; i++) {
+                ret += '<span data-role="item" data-value="'+ items[i].value +'">'+ items[i].text +'</span>'
+            }
+            
+            this.list = this.doc.createElement('div');
+            this.list.className = 'yselect-list';
+            this.list.innerHTML = ret;
+            
+            this.value.setAttribute('data-value', items[0].value);
+            this.value.innerHTML = items[0].text;
+                        
+        } else {
+            this.list = this.select.querySelector('.yselect-list');
+            var first = this.list.querySelector('[data-role="item"]');
+            
+            this.value.setAttribute('data-value', first.getAttribute('data-value'));
+            this.value.innerHTML = first.innerHTML;
+        }
+        
+        this.select.appendChild(this.value);
+        this.select.appendChild(this.list);
+    },
+    getValue: function() {
+        return this.value.getAttribute('data-value');
+    },
+    /**
+     * 渲染
+     *
+     * @param {String} id
+     * @param {Array} items
+     * [ {text: '选项', value: 1} ]
+     */
+    render: function(id, items) {
+        var self = this;
+        var select = this.select = this.doc.getElementById(id);
+        
+        this.initStructure(items);
+        
+        select.onclick = function(e) {
+            self.eventHandler(e);
+        };
+        select = null;
+        
+        return this;
+    }
+};
+
+var demo = new YSelect().render('demo')
+var demo2 = new YSelect().render('demo2', [{text: '男', value: 1}, {text: '女', value: 0}])
+</script>
+</body>
+</html>
