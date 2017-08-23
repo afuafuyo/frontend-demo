@@ -55,7 +55,7 @@
 </head>
 <body>
     
-    <div id="demo" class="yselect" style="width: 120px">
+    <div id="demo" class="yselect" data-value="9" style="width: 120px">
         <div class="yselect-list">
             <span data-role="item" data-value="1">选项1</span>
             <span data-role="item" data-value="2">选项2</span>
@@ -72,7 +72,7 @@
     
     <br/><br/><br/>
     
-    <div id="demo2" class="yselect" style="width: 80px"></div>
+    <div id="demo2" class="yselect" data-value="0" style="width: 80px"></div>
 
 <script>
 function YSelect() {
@@ -157,6 +157,21 @@ YSelect.prototype = {
         
         this.select.appendChild(this.value);
         this.select.appendChild(this.list);
+        
+        // 默认值
+        var value = null;
+        var list = null;
+        if(null !== (value = this.select.getAttribute('data-value'))) {
+            list = this.list.querySelectorAll('[data-role="item"]');
+            for(var i=0,len=list.length; i<len; i++) {
+                if(value === list[i].getAttribute('data-value')) {
+                    this.value.setAttribute('data-value', list[i].getAttribute('data-value'));
+                    this.value.innerHTML = list[i].innerHTML;
+                    
+                    break;
+                }
+            }
+        }
     },
     getValue: function() {
         return this.value.getAttribute('data-value');
@@ -181,7 +196,7 @@ YSelect.prototype = {
         
         this.E.addHandler(this.doc, 'click', function(e){
             self.closeList();
-        })
+        });
         
         return this;
     }
