@@ -83,8 +83,38 @@ function YSelect() {
 }
 YSelect.prototype = {
     constructor: YSelect,
+    E: {
+        addHandler: function(ele, type, func) {
+            if(ele.addEventListener) {
+                ele.addEventListener(type, func, false);
+                
+            } else if(ele.attachEvent) {
+                ele.attachEvent('on' + type, func);
+                
+            } else {
+                ele['on' + type] = func;	
+            }
+        },	
+        removeHandler: function(ele, type, func) {
+            if(ele.removeEventListener) {
+                ele.removeEventListener(type, func, false);
+                
+            } else if(ele.detachEvent) {
+                ele.detachEvent('on' + type, func);
+                
+            } else {
+                ele['on' + type] = null;	
+            }
+        }
+    },
+    closeList: function() {
+        this.list.style.display = 'none';
+    },
     eventHandler: function(e) {
         e = e || window.event;
+        
+        e.stopPropagation && e.stopPropagation();
+        e.cancelBubble = true;
         
         var target = e.target || e.srcElement;
         
@@ -148,6 +178,10 @@ YSelect.prototype = {
             self.eventHandler(e);
         };
         select = null;
+        
+        this.E.addHandler(this.doc, 'click', function(e){
+            self.closeList();
+        })
         
         return this;
     }
