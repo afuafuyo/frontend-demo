@@ -80,6 +80,7 @@ function YSelect() {
     this.select = null;
     this.value = null;
     this.list = null;
+    this.onchange = null;
 }
 YSelect.prototype = {
     constructor: YSelect,
@@ -128,6 +129,8 @@ YSelect.prototype = {
         if('item' === target.getAttribute('data-role')) {
             this.value.setAttribute('data-value', target.getAttribute('data-value'));
             this.value.innerHTML = target.innerHTML;
+            
+            null !== this.onchange && this.onchange(target.getAttribute('data-value'));
         }
     },
     initStructure: function(items) {
@@ -202,8 +205,14 @@ YSelect.prototype = {
     }
 };
 
-var demo = new YSelect().render('demo')
+var demo = new YSelect().render('demo');
+demo.onchange = function(v) {
+    console.log(v)
+};
 var demo2 = new YSelect().render('demo2', [{text: '男', value: 1}, {text: '女', value: 0}])
+demo2.onchange = function(v) {
+    console.log(v)
+};
 </script>
 </body>
 </html>
