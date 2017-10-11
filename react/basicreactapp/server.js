@@ -31,4 +31,6 @@ var server = new WebpackDevServer(webpack(config), {
     hot: true,
     publicPath: config.output.publicPath
 });
-server.listen(8080, "localhost", function() {});
+server.listen(8080, "localhost", () => {
+    console.log('listen on 8080')
+});
