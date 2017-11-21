@@ -7,7 +7,7 @@
 <body>
 <div id="app"></div>
 
-<!-- bundle js 会由 webpack 插件自动插入 -->
-<script src="<%=htmlWebpackPlugin.options.publicPath%>mylib.js"></script>
+<!-- bundle js 会由 webpack 插件自动插入 这里引入自己的库 -->
+<script src="<%=htmlWebpackPlugin.options.staticPath%>/mylib.js"></script>
 </body>
 </html>

@@ -10,7 +10,7 @@ module.exports = {
     output: {
         path: __dirname + '/dist',
         filename: 'bundle.js',
-        publicPath: '/public/'
+        publicPath: '/public'
     },
     module: {
         loaders: [
@@ -30,7 +30,8 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'containers/index.html'
+            template: 'containers/index.html',
+            staticPath: '/public'
         }),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
