@@ -18,14 +18,15 @@
     z-index: 600;
     top: 0;
     right: 0;
-    width: 6px;
+    width: 8px;
     height: 30px;
     background-color: #666;
     
+    /*
     opacity: 0;
-    border-radius: 3px;
-    
     transition: opacity .5s;
+    */
+    border-radius: 3px;
 }
 .yscrollbar:hover .yscrollbar-bar {
     opacity: 1;
@@ -67,6 +68,7 @@
 <script>
 function YScrollBar() {
     this.doc = document;
+    this.win = window;
     
     this.wrapper = null;
     this.content = null;
@@ -75,6 +77,13 @@ function YScrollBar() {
     this.clientHeight = 0;
     this.scrollHeight = 0;
     this.top = 0;
+    
+    // drag
+    this.previousY = 0;
+    this.previousScrollTop = 0;
+    this.barHeight = 0;
+    this.wrapperHeight = 0;
+    this.contentHeight = 0;
     
     this.options = {
         stepLength: 30
@@ -151,6 +160,50 @@ YScrollBar.prototype = {
         }
         
         wrapper = null;
+        
+        // bar drag
+        this.bar.onmousedown = function(e) {
+            self._mouseDown(e);
+        };
+    },
+    _mouseDown: function(e) {
+        e = e || this.win.event;
+        var self = this;
+            
+        this.previousY = e.clientY;
+        this.previousScrollTop = parseInt(this.bar.style.top.replace('px', '')) || 0;
+        this.barHeight = this.bar.clientHeight;
+        this.wrapperHeight = this.wrapper.clientHeight;
+        this.contentHeight = this.content.clientHeight;
+        
+        this.wrapper.onmousemove = function(e){ self._mousemove(e); };
+        this.wrapper.onmouseup = function(e){ self._mouseup(e); };
+    },
+    _mousemove : function(e) {
+        e = e || this.win.event;
+        
+        var distance = e.clientY - this.previousY;
+        var percent = 0;
+        if(this.previousScrollTop + distance <= 0) {
+            distance = -this.previousScrollTop;
+        }
+        if(this.previousScrollTop + distance >= this.wrapperHeight - this.barHeight) {
+            distance = this.wrapperHeight - this.barHeight - this.previousScrollTop;
+        }
+        
+        this.bar.style.top = this.previousScrollTop + distance + 'px';
+        percent = (this.previousScrollTop + distance) / this.wrapperHeight;
+        this.content.style.top = -this.contentHeight * percent + 'px';
+    },
+    _mouseup : function(e) {
+		this.wrapper.onmousemove = null;
+	},
+    getStyle: function(element) {
+        if('function' === typeof this.win.getComputedStyle) {
+            return this.win.getComputedStyle(element, null);
+        }
+        
+        return element.currentStyle;
     },
     reRender: function() {
         var scrollHeight = this.scrollHeight = this.content.scrollHeight;

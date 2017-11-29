@@ -93,7 +93,7 @@ YSelect.prototype = {
                 ele.attachEvent('on' + type, func);
                 
             } else {
-                ele['on' + type] = func;	
+                ele['on' + type] = func;
             }
         },	
         removeHandler: function(ele, type, func) {
@@ -104,7 +104,7 @@ YSelect.prototype = {
                 ele.detachEvent('on' + type, func);
                 
             } else {
-                ele['on' + type] = null;	
+                ele['on' + type] = null;
             }
         }
     },
