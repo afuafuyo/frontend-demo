@@ -13,20 +13,29 @@ module.exports = {
         publicPath: '/public'
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loader: 'babel-loader',
-                query: {
-                    // 用到了两个 babel 预设
-                    // 一个用来转译 es6 代码
-                    // 一个用来转译 react 代码
-                    // 这两个预设需手动安装
-                    presets: ['es2015', 'react']
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        // 用到了两个 babel 预设
+                        // 一个用来转译 es6 代码
+                        // 一个用来转译 react 代码
+                        // 这两个预设需手动安装
+                        presets: ['es2015', 'react']
+                    }
                 }
+            },
+            {
+                test: /\.css$/,
+                // css loader 实现模块化加载 css 文件
+                // style loader 实现把加载的 css 文件插入 html 的 <style> 中
+                // 也可以使用其它插件生成一个单独的 css 文件 而不是插入到 html 的 <style> 中
+                use: ['style-loader', 'css-loader']
             }
-        ]
+        ],
     },
     plugins: [
         new HtmlWebpackPlugin({
