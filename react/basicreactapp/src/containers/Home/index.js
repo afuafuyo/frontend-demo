@@ -1,8 +1,14 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import css from './style.css';
 
-export default class Home extends React.Component {
+class Home extends React.Component {
+    
+    componentDidMount() {
+        console.log('home page: ', this.props);
+    }
+    
     render() {
         return (
         <div className="home-wrapper">
@@ -11,3 +17,7 @@ export default class Home extends React.Component {
         )
     }
 }
+
+export default connect(function(state){
+    return { homeR: state.homeR };
+})(Home);
