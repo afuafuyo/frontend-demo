@@ -5,7 +5,7 @@ const NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'develop';
 
 module.exports = {
     entry: {
-        app: [__dirname + '/app.js']
+        app: ['./src/index.js']
     },
     output: {
         path: __dirname + '/dist',
@@ -30,7 +30,8 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'containers/index.html',
+            template: 'src/index.html',
+            // 自定义属性
             staticPath: '/public'
         }),
         new webpack.HotModuleReplacementPlugin(),

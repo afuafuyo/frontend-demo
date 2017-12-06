@@ -29,6 +29,7 @@ config.entry.app.unshift("webpack-dev-server/client?http://localhost:8080/",
 
 var server = new WebpackDevServer(webpack(config), {
     hot: true,
+    disableHostCheck: true,
     publicPath: config.output.publicPath
 });
 server.listen(8080, "localhost", () => {
