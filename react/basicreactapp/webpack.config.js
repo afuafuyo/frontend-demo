@@ -1,5 +1,6 @@
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'develop';
 
@@ -32,8 +33,21 @@ module.exports = {
                 test: /\.css$/,
                 // css loader 实现模块化加载 css 文件
                 // style loader 实现把加载的 css 文件插入 html 的 <style> 中
-                // 也可以使用其它插件生成一个单独的 css 文件 而不是插入到 html 的 <style> 中
-                use: ['style-loader', 'css-loader']
+                //use: ['style-loader', 'css-loader']
+                
+                // 使用插件生成一个单独的 css 文件 而不是插入到 html 的 <style> 中
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: 'css-loader'
+                })
+            },
+            {
+                test: /\.(png|jpg|gif)$/,
+                use: [
+                    {
+                        loader: 'file-loader'
+                    }
+                ]
             }
         ],
     },
@@ -49,5 +63,6 @@ module.exports = {
                 NODE_ENV: JSON.stringify(NODE_ENV)
             }
         }),
+        new ExtractTextPlugin('bundle.css')
     ]
 };
