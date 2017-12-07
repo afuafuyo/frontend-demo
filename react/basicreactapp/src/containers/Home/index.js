@@ -6,7 +6,7 @@ import css from './style.css';
 class Home extends React.Component {
     
     componentDidMount() {
-        console.log('home page: ', this.props);
+        console.log('home page: ', this.props.dispatch);
     }
     
     render() {

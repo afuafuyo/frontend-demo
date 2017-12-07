@@ -22,8 +22,8 @@ function enhancer(createStore) {
         
         store.originDispatch = store.dispatch;
         store.dispatch = function(action) {
-            if(typeof action === 'function') {
-                return action(dispatch);
+            if('function' === typeof action) {
+                return action(store.dispatch);
             }
             
             return store.dispatch(action);
@@ -50,5 +50,5 @@ render(
         </Switch>
     </HashRouter>
 </Provider>,
-    document.getElementById('app')
+document.getElementById('app')
 );
