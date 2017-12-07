@@ -4,11 +4,12 @@ const initialState = {
 };
 
 export default function HomeReducer(state = initialState, action) {
-    switch('todo') {
-        case '1':
+    switch(action.type) {
+        case 'HOME_DATA_LOAD_SUCCESS':
+            // return Object.assign({}, state, {loading: false, data: action.data});
             return {
                 loading: false,
-                data: []
+                data: action.data
             };
         default:
             return state;
