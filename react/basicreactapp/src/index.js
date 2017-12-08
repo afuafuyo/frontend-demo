@@ -23,7 +23,7 @@ function enhancer(createStore) {
         store.originDispatch = store.dispatch;
         store.dispatch = function(action) {
             if('function' === typeof action) {
-                return action(store.originDispatch);
+                return action(store.dispatch);
             }
             
             return store.originDispatch(action);
