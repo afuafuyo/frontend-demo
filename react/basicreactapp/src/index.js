@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { HashRouter, Switch, Route } from 'react-router-dom';
 
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 
 import Home from './containers/Home';
 import A from './containers/A';
@@ -31,6 +31,25 @@ function enhancer(createStore) {
         return store;
     };
 }
+// dispatch endhancer
+function applyMiddlewareEnhancer(api) {
+    var newDispatch = api.dispatch;
+    var getState = api.getState;
+    
+    return function(oldDispatch) {
+        
+        // 最终返回值是 dispatch
+        return function(action) {
+            console.log('------ run my midware');
+            if('function' === typeof action) {
+                return action(newDispatch);
+            }
+            
+            return oldDispatch(action);
+        };
+        
+    };
+}
 const store = createStore(
     combineReducers({
         homeR: HomeReducer
@@ -39,6 +58,7 @@ const store = createStore(
     // 如果存在 enhancer 那么 createStore 返回值是 enhancer 的结果
     // enhancer 必须保证原来 createStore 返回的值 ( 比如 dispatch 或 getState) 在 enhancer 中也返回
     ,enhancer
+    //,,applyMiddleware(applyMiddlewareEnhancer)
 );
 
 render(
