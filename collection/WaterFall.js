@@ -4,10 +4,11 @@
  * @author yu
  */
 function WaterFall() {
+    this.doc = document;
+    
+    this.colElementClass = 'x-wf-col';
     this.wrapperWidth = 1200;
-    this.colClass = 'x-wf-col';
     this.colWidth = 224;
-    this.imgIndex = 1;  // 在一个容器中需要的图片的位置
     this.colGapVertical = 30;
     
     this.batchFalls = 0;
@@ -52,8 +53,9 @@ WaterFall.prototype = {
     },
     // 布局
     imgLoaded: function(element, isColElement) {
-        var colElement = isColElement ? element :
-            this.findParent(element, this.colClass);
+        var colElement = isColElement
+            ? element
+            : this.findParent(element, this.colElementClass);
         var minIndex = this.minIndex();
         
         // 放到一行中最低的地方
@@ -73,17 +75,20 @@ WaterFall.prototype = {
     /**
      * 布局方法
      *
-     * @param Element colsElements 需要布局的元素
+     * @param String colElementClass 需要布局的元素
      * @param Function callback 回调
      */
-    fall: function(colsElements, callback) {
+    fall: function(colElementClass, colImageSelector, callback) {
         var _self = this;
-        this.batchFalls = colsElements.length;
+        var colElements = this.doc.querySelectorAll('.' + colElementClass);
+        
+        this.colElementClass = colElementClass;
+        this.batchFalls = colElements.length;
         this.callback = callback;
         
         var img = null;
         for(var i=0; i<this.batchFalls; i++) {
-            if(undefined !== (img = colsElements[i].getElementsByTagName('img')[this.imgIndex])) {
+            if(null !== (img = colElements[i].querySelector(colImageSelector))) {
                 if(img.complete) {
                     this.imgLoaded(img, false);
                     
@@ -96,7 +101,7 @@ WaterFall.prototype = {
                 continue;
             }
             
-            this.imgLoaded(colsElements[i], true);
+            this.imgLoaded(colElements[i], true);
         }
         img = null;
     }
