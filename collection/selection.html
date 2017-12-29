@@ -25,10 +25,10 @@ console.log('selection is:' + s.toString());
 // 2 秒后将光标定位到结尾
 // 语法 selection.collapse(parentNode, offset);
 setTimeout(() => {
-    div.focus();
+    //div.focus();
     
-    //s.collapseToEnd();
-    s.collapse(div, 1);
+    s.collapseToEnd();
+    //s.collapse(div, 1);
 }, 2000);
 
 </script>
