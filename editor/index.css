@@ -1,0 +1,244 @@
+/**
+ * util
+ */
+.xeditor-dialog-tabs {
+    height: 40px;
+    border-bottom: 1px solid #ccc;
+}
+.xeditor-dialog-tabs a {
+    display: inline-block;
+    line-height: 40px;
+    font-size: 14px;
+    color: #555;
+    padding: 0 12px;
+    text-decoration: none;
+}
+.xeditor-dialog-tabs a:hover,
+.xeditor-dialog-tabs a.active {
+    border-bottom: 1px solid #f70;
+}
+.xeditor-clear {
+    height: 1px;
+    overflow: hidden;
+    font-size: 0;
+    clear: both;
+}
+.xeditor-btn {
+    display: inline-block;
+    padding: 4px 0;
+    width: 80px;
+    text-align: center;
+    font-size: 14px;
+    background-color: #fff;
+    color: #6e6e6e;
+    cursor: pointer;
+    border: 1px solid #dadada;
+    border-radius: 2px;
+}
+.xeditor-btn-primary {
+    color: #fff;
+    background-color: #f70;
+    border-color: #f70;
+}
+.xeditor-dialog-footer {
+    padding: 8px 10px 8px 10px;
+    text-align: right;
+}
+.xeditor-inputtext-wrapper {
+    margin-top: 10px;
+    padding: 0 8px;
+    border: 1px solid #e7eaf1;
+    border-radius: 3px;
+}
+.xeditor-inputtext-wrapper.active {
+    border-color: #b3b3b3;
+}
+.xeditor-inputtext-wrapper input[type="text"] {
+    display: inline-block;
+    padding: 10px 0;
+    width: 100%;
+    border: 0;
+    outline: none;
+}
+
+
+
+/**
+ * begining
+ */
+.xeditor-wrapper {
+    border-bottom: 1px solid #e7eaf1;
+}
+.xeditor-widgets-wrapper {
+    padding: 6px 0;
+    border-top: 1px solid #e7eaf1;
+    border-bottom: 1px solid #e7eaf1;
+}
+.xeditor-widgets-separator {
+    display: inline-block;
+    height: 28px;
+    width: 1px;
+    margin: 0 5px;
+    vertical-align: top;
+    background-color: #e7eaf1;
+}
+.xeditor-content-wrapper {}
+.xeditor-content-root {
+    padding: 12px 20px;
+    outline: none;
+}
+
+
+/**
+ * icons
+ */
+.xeditor-icon {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    margin: 0 6px;
+    background-image: url(./icons/icon.png);
+    background-repeat: no-repeat;
+    background-color: transparent;
+    border: 0;
+    vertical-align: top;
+    outline: none;
+}
+.xeditor-icon:hover,
+.xeditor-icon.active {
+    background-color: #ebebeb;
+}
+.xeditor-icon-bold {
+    background-position: 8px 6px;
+}
+.xeditor-icon-emotion {
+    background-position: 3px -165px;
+}
+.xeditor-icon-link {
+    background-position: 3px -518px;
+}
+.xeditor-icon-image {
+    background-position: 4px -122px;
+}
+.xeditor-icon-blockquote {
+    background-position: 5px -356px;
+}
+
+/* dialog */
+#xeditor-dialog-dialog {
+    color: #808080;
+}
+
+/* emotion */
+.xeditor-emotion-wrapper {}
+.xeditor-emotion-content {
+    padding: 10px 5px;
+}
+.xeditor-emotion-item {
+    display: inline-block;
+    padding: 3px 5px;
+    margin: 5px 3px;
+    color: #111;
+    text-decoration: none;
+    transition: background-color .2s linear;
+    border-radius: 4px;
+}
+.xeditor-emotion-item:hover {
+    background-color: #ddd;
+}
+
+/* link */
+.xeditor-link-title {
+    font-size: 20px;
+    text-align: center;
+    padding: 20px 0;
+}
+.xeditor-link-content {
+    margin: 10px 20px 20px 20px;
+}
+
+/* image */
+.xeditor-uploadimage-content {}
+.xeditor-uploadimage-content-local {
+    height: 132px;
+    overflow: hidden;
+}
+.xeditor-uploadimage-content-remote {
+    margin: 0 20px;
+}
+.xeditor-uploadimage-remote-preview {
+    margin-top: 10px;
+    max-height: 300px;
+    text-align: center;
+    overflow: auto;
+}
+.xeditor-uploadimage-remote-preview img {
+    max-width: 100%;
+}
+.xeditor-uploadimage-imageitem {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    float: left;
+    margin: 10px 0 0 10px;
+    background-color: #eee;
+    overflow: hidden;
+}
+.xeditor-uploadimage-imageitem img {
+    width: 120px;
+}
+.xeditor-uploadimage-imageitem:hover .xeditor-uploadimage-delete {
+    display: inline-block;
+    background-color: #f70;
+    color: #fff;
+}
+.xeditor-uploadimage-progress {
+    position: absolute;
+    left: 10px;
+    top: 60px;
+    display: block;
+    height: 6px;
+    width: 100px;
+    overflow: hidden;
+    border: 1px solid #f70;
+    border-radius: 2px;
+}
+.xeditor-uploadimage-percent {
+    position: absolute;
+    display: block;
+    height: 100%;
+    width: 1%;
+    background-color: #f70;
+}
+.xeditor-uploadimage-delete {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    line-height: 18px;
+    text-align: center;
+    color: #111;
+    font-size: 20px;
+    text-decoration: none;
+    display: none;
+}
+.xeditor-uploadimage-uploadbtn {
+    width: 116px;
+    height: 116px;
+    float: left;
+    margin-top: 10px;
+    margin-left: 10px;
+    background: url(./icons/upload.png) no-repeat center center;
+    border: 2px dashed #b3b3b3;
+}
+.xeditor-uploadimage-uploadbtn:hover {
+    border-color: #f70;
+}
+.xeditor-uploadimage-input {
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
