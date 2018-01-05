@@ -6,6 +6,38 @@
  * maybe need IE10+
  *
  * @author yu
+ *
+ * eg.
+ *
+ * var up = new XEditorFileUpload('elementId', {
+ *      server: 'http://localhost/upload.php'
+ * });
+ *
+ * up.fileQueuedHandler = function(file) {
+ *      // 一个文件加入队列后触发
+ *      // 可以在这里渲染上传进度页面
+ * }
+ *
+ * up.filesQueuedCompleteHandler = function(obj) {
+ *      // 所有文件加入队列后触发
+ *      // 可以在这里调用上传方法开始上传
+ * }
+ *
+ * up.uploadProgressHandler = function(file, percent) {
+ *      // 上传进度回调
+ *      // 可以在这里处理进度条
+ * }
+ *
+ * up.uploadSuccessHandler = function(file, serverData) {
+ *      // 一个文件上传完成触发
+ *      // serverData 为服务器返回的数据
+ *      // 可以在这里对服务器返回的数据进行处理
+ * }
+ *
+ * up.uploadCompleteHandler = function() {
+ *      // 队列中所有文件上传完成触发
+ * }
+ *
  */
 XEditorFileUpload = function(id, options) {
     this.doc = document;
