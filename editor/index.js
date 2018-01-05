@@ -8,17 +8,19 @@
 'use strict';
 
 function XEditor(id, options) {
+    this.id = id;
     this.doc = document;
     this.wrapper = null;
     this.widgetsWrapper = null;
     this.contentWrapper = null;
     this.root = null;
+    this.events = {};
     this.fragment = this.doc.createDocumentFragment();
     
-    this.id = id;
     this.widgetControllerInstances = {};
     // 假设同一时间只会有同一个类型的动作发生 所以所有动作共用一个定时器
     this.reactionTimer = 0;
+    
     this.configs = {
         reactionTime: 200,
         widgets: ['bold', 'blockquote', '-', 'emotion', 'image', 'link'],
@@ -44,14 +46,12 @@ XEditor.prototype = {
         
         return origin;
     },
-    // https://w3c.github.io/editing/execCommand.html#methods-to-query-and-execute-commands
     execCommand: function(aCommandName, aShowDefaultUI, aValueArgument) {
         XEditor.editing.execCommand(aCommandName, aShowDefaultUI, aValueArgument);
     },
     queryCommandState: function(command) {
         return XEditor.editing.queryCommandState(command);
     },
-    
     init: function(options) {
         if(undefined !== options) {
             this.extend(this.configs, options);
@@ -63,14 +63,14 @@ XEditor.prototype = {
         
         this.initWidgets();
         this.initContent();
-        
         this.render();
         
         this.initEvent();
-        
         this.initRange();
+        this.runPlugins();
+        
+        this.fireEvent('ready');
     },
-    
     initWidgets: function() {
         this.widgetsWrapper = this.doc.createElement('div');
         this.widgetsWrapper.className = 'xeditor-widgets-wrapper';
@@ -153,6 +153,11 @@ XEditor.prototype = {
         XEditor.editing.saveCurrentRange(new XEditor.Range(range));
         XEditor.editing.resumeSelection();
     },
+    runPlugins: function() {
+        for(var name in XEditor.plugins) {
+            XEditor.plugins[name](this);
+        }
+    },
     handlerWidgetClickEvent: function(e) {
         e = e || window.event;
         var target = e.target || e.srcElement;
@@ -202,19 +207,38 @@ XEditor.prototype = {
     },
     
     /**
-     * API
+     * 获取内容
      */
     getContent: function() {
         return this.root.innerHTML.replace(/&#8203;/g, '');
     },
+    /**
+     * 设置内容
+     *
+     * @param {String} data
+     */
+    setContent: function(data) {
+        this.root.innerHTML = '<p>'+ data +'</p>';
+        
+        XEditor.editing.clearAllRanges();
+    },
+    /**
+     * 获取纯文本内容
+     */
     getPlainText: function() {
         return XEditor.tools.string
             .filterTags(this.root.innerHTML)
             .replace(/&#8203;/g, '');
     },
+    /**
+     * 清空内容
+     */
     clearEditor: function() {
         this.root.innerHTML = '<p><br/></p>';
     },
+    /**
+     * 销毁
+     */
     destroy: function() {
         this.deleteEvent();
         
@@ -226,11 +250,56 @@ XEditor.prototype = {
         this.widgetsWrapper = null;
         this.contentWrapper = null;
         this.root = null;
+    },
+    fireEvent: function(eventName, data) {
+        var handlersArray = this.events[eventName];
+        
+        if(undefined === handlersArray) {
+            return;
+        }
+        
+        for(var i=0, len=handlersArray.length; i<len; i++) {
+            handlersArray[i](this, data);
+        }
+    },
+    addEventListener: function(eventName, handler) {
+        if(undefined === this.events[eventName]) {
+            this.events[eventName] = [];
+        }
+        
+        this.events[eventName].push(handler);
+    },
+    removeEventListener: function(eventName, handler) {
+        if(undefined === this.events[eventName]) {
+            return;
+        }
+        
+        if(undefined === handler) {
+            delete this.events[eventName];
+            
+        } else {
+            for(let i=0,len=this.events[eventName].length; i<len; i++) {
+                if(handler === this.events[eventName][i]) {
+                    this.events[eventName].splice(i, 1);
+                }
+            }
+        }
     }
 };
 
 /**
- * 插件容器
+ * plugins 简单的插件
+ *
+ * {name: callback ...}
+ *
+ */
+XEditor.plugins = {};
+
+/**
+ * 部件容器
+ *
+ * {name: Function ...}
+ *
  */
 XEditor.widgetControllers = {};
 XEditor.registerWidgetController = function(name, processer) {
@@ -302,6 +371,151 @@ XEditor.tools = {
             }
         }
     }
+};
+
+/**
+ * 对外 API - Selection & Range & execCommand
+ */
+XEditor.editing = {
+    // 记录光标位置
+    currentRange: null,
+    saveCurrentRange: function(range) {
+        if(undefined !== range) {
+            XEditor.editing.currentRange = range;
+            
+            return;
+        }
+        
+        var getRange = XEditor.Range.getSingleRangeFromNativeSelection();
+        
+        if(null !== getRange) {
+            XEditor.editing.currentRange = getRange;
+        }
+    },
+    clearAllRanges: function() {
+        var selection = window.getSelection();
+        
+        if(selection.rangeCount > 0) {
+            selection.removeAllRanges();
+        }
+        
+        XEditor.editing.currentRange = null;
+    },
+    resumeSelection: function() {
+        if(null === XEditor.editing.currentRange) {
+            return;
+        }
+        
+        var selection = window.getSelection();
+        
+        if(selection.rangeCount > 0) {
+            selection.removeAllRanges();
+        }
+        
+        selection.addRange(XEditor.editing.currentRange.nativeRange);
+    },
+    diffApi: {
+        insertHTML: function(aShowDefaultUI, aValueArgument) {
+            var doc = document;
+            var range = XEditor.editing.currentRange;
+            var tmpElement = null;
+            
+            if(null === range) {
+                return;
+            }
+            
+            if(doc.queryCommandSupported('insertHTML')) {
+                doc.execCommand('insertHTML', aShowDefaultUI, aValueArgument);
+            
+                return;
+            }
+            
+            // ie
+            range.deleteContents();
+            range.collapse();
+            
+            var p = range.getClosestContainerElement();
+            p.innerHTML += aValueArgument;
+        }
+    },
+    // https://w3c.github.io/editing/execCommand.html#methods-to-query-and-execute-commands
+    execCommand: function(aCommandName, aShowDefaultUI, aValueArgument) {
+        // 执行命令前 需要知道光标的位置
+        XEditor.editing.resumeSelection();
+        
+        if(undefined !== XEditor.editing.diffApi[aCommandName]) {
+            XEditor.editing.diffApi[aCommandName](
+                aShowDefaultUI, aValueArgument);
+            
+            return;
+        }
+        
+        document.execCommand(aCommandName, aShowDefaultUI, aValueArgument);
+    },
+    queryCommandState: function(command) {
+        return document.queryCommandState(command);
+    }
+};
+XEditor.Range = function(nativeRange) {
+    this.nativeRange = nativeRange;
+    
+    this.collapsed = nativeRange.collapsed;
+    this.startContainer = nativeRange.startContainer;
+    this.endContainer = nativeRange.endContainer;
+    this.startOffset = nativeRange.startOffset;
+    this.endOffset = nativeRange.endOffset;
+    this.commonAncestorContainer  = nativeRange.commonAncestorContainer ;
+}
+XEditor.Range.prototype = {
+    constructor: XEditor.Range,
+    getClosestContainerElement: function() {
+        var ret = this.commonAncestorContainer;
+        
+        return 1 === ret.nodeType ? ret : ret.parentNode;
+    },
+    setStart: function(startNode, startOffset) {
+        this.nativeRange.setStart(startNode, startOffset);
+    },
+    setEnd: function(endNode, endOffset) {
+        this.nativeRange.setEnd(endNode, endOffset);
+    },
+    insertNode: function(newNode) {
+        this.nativeRange.insertNode(newNode);
+    },
+    collapse: function(toStart) {
+        this.nativeRange.collapse(toStart);
+    },
+    selectNode: function(referenceNode) {
+        this.nativeRange.selectNode(referenceNode);
+    },
+    selectNodeContents: function(referenceNode) {
+        this.nativeRange.selectNodeContents(referenceNode);
+    },
+    deleteContents: function() {
+        this.nativeRange.deleteContents();
+    }
+};
+XEditor.Range.getSingleRangeFromNativeSelection = function() {
+    var selection = null;
+    
+    if('function' === typeof window.getSelection) {
+        selection = window.getSelection();
+        
+        if(0 === selection.rangeCount) {
+            return null;
+        }
+        
+        return new XEditor.Range(selection.getRangeAt(0));
+    }
+    
+    return null;
+};
+XEditor.Range.createNativeRange = function() {
+    if('function' === typeof document.createRange) {
+        return document.createRange();
+    }
+    
+    return null;
 };
 
 /**
@@ -479,150 +693,6 @@ XEditor.Dialog.prototype = {
     }
 };
 
-/**
- * 对外 API - Selection & Range & execCommand
- */
-XEditor.editing = {
-    // 记录光标位置
-    currentRange: null,
-    saveCurrentRange: function(range) {
-        if(undefined !== range) {
-            XEditor.editing.currentRange = range;
-            
-            return;
-        }
-        
-        var getRange = XEditor.Range.getSingleRangeFromNativeSelection();
-        
-        if(null !== getRange) {
-            XEditor.editing.currentRange = getRange;
-        }
-    },
-    clearAllRanges: function() {
-        var selection = window.getSelection();
-        
-        if(selection.rangeCount > 0) {
-            selection.removeAllRanges();
-        }
-        
-        XEditor.editing.currentRange = null;
-    },
-    resumeSelection: function() {
-        if(null === XEditor.editing.currentRange) {
-            return;
-        }
-        
-        var selection = window.getSelection();
-        
-        if(selection.rangeCount > 0) {
-            selection.removeAllRanges();
-        }
-        
-        selection.addRange(XEditor.editing.currentRange.nativeRange);
-    },
-    diffApi: {
-        insertHTML: function(aShowDefaultUI, aValueArgument) {
-            var doc = document;
-            var range = XEditor.editing.currentRange;
-            var tmpElement = null;
-            
-            if(null === range) {
-                return;
-            }
-            
-            if(doc.queryCommandSupported('insertHTML')) {
-                doc.execCommand('insertHTML', aShowDefaultUI, aValueArgument);
-            
-                return;
-            }
-            
-            // ie
-            range.deleteContents();
-            range.collapse();
-            
-            var p = range.getClosestContainerElement();
-            p.innerHTML += aValueArgument;
-        }
-    },
-    execCommand: function(aCommandName, aShowDefaultUI, aValueArgument) {
-        // 执行命令前 需要知道光标的位置
-        XEditor.editing.resumeSelection();
-        
-        if(undefined !== XEditor.editing.diffApi[aCommandName]) {
-            XEditor.editing.diffApi[aCommandName](
-                aShowDefaultUI, aValueArgument);
-            
-            return;
-        }
-        
-        document.execCommand(aCommandName, aShowDefaultUI, aValueArgument);
-    },
-    queryCommandState: function(command) {
-        return document.queryCommandState(command);
-    }
-};
-XEditor.Range = function(nativeRange) {
-    this.nativeRange = nativeRange;
-    
-    this.collapsed = nativeRange.collapsed;
-    this.startContainer = nativeRange.startContainer;
-    this.endContainer = nativeRange.endContainer;
-    this.startOffset = nativeRange.startOffset;
-    this.endOffset = nativeRange.endOffset;
-    this.commonAncestorContainer  = nativeRange.commonAncestorContainer ;
-}
-XEditor.Range.prototype = {
-    constructor: XEditor.Range,
-    getClosestContainerElement: function() {
-        var ret = this.commonAncestorContainer;
-        
-        return 1 === ret.nodeType ? ret : ret.parentNode;
-    },
-    setStart: function(startNode, startOffset) {
-        this.nativeRange.setStart(startNode, startOffset);
-    },
-    setEnd: function(endNode, endOffset) {
-        this.nativeRange.setEnd(endNode, endOffset);
-    },
-    insertNode: function(newNode) {
-        this.nativeRange.insertNode(newNode);
-    },
-    collapse: function(toStart) {
-        this.nativeRange.collapse(toStart);
-    },
-    selectNode: function(referenceNode) {
-        this.nativeRange.selectNode(referenceNode);
-    },
-    selectNodeContents: function(referenceNode) {
-        this.nativeRange.selectNodeContents(referenceNode);
-    },
-    deleteContents: function() {
-        this.nativeRange.deleteContents();
-    }
-};
-XEditor.Range.getSingleRangeFromNativeSelection = function() {
-    var selection = null;
-    
-    if('function' === typeof window.getSelection) {
-        selection = window.getSelection();
-        
-        if(0 === selection.rangeCount) {
-            return null;
-        }
-        
-        return new XEditor.Range(selection.getRangeAt(0));
-    }
-    
-    return null;
-};
-XEditor.Range.createNativeRange = function() {
-    if('function' === typeof document.createRange) {
-        return document.createRange();
-    }
-    
-    return null;
-};
-
 
 /**
  * bold
@@ -687,6 +757,10 @@ function XEditorEmotion(button) {
 }
 XEditorEmotion.prototype = {
     constructor: XEditorEmotion,
+    close: function() {
+        XEditor.Lock.getInstance().unLock();
+        XEditor.Dialog.getInstance().close();
+    },
     bindEvent: function() {
         var _self = this;
         var wrap = this.editor.doc.querySelector('.xeditor-emotion-content');
@@ -698,6 +772,8 @@ XEditorEmotion.prototype = {
             
             if(null !== em) {
                 _self.editor.execCommand('insertHTML', false, em);
+                
+                _self.close();
             }
         };
         wrap = null;

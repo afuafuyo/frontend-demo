@@ -17,10 +17,16 @@
 </div>
     
 <script>
+XEditor.plugins['myplugin'] = function(editor) {
+    editor.addEventListener('ready', (editor, data) => {
+        editor.setContent('Hello');
+    });
+};
 var editor = new XEditor('editor', {
     // 图片上传地址
     server: 'http://localhost:8080/up.php'
 });
+
 
 function getContent() {
     console.log(editor.getContent());
