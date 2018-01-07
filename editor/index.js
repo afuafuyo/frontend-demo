@@ -23,7 +23,7 @@ function XEditor(id, options) {
     
     this.configs = {
         reactionTime: 200,
-        widgets: ['bold', 'blockquote', '-', 'emotion', 'image', 'link'],
+        widgets: ['bold', 'blockquote', 'italic', '-', 'emotion', 'image', 'link'],
         placeholder: '',
         minHeight: '120',
         
@@ -1226,3 +1226,38 @@ XEditorBlockQuote.prototype = {
     }
 };
 XEditor.registerWidgetController('blockquote', XEditorBlockQuote);
+
+/**
+ * italic
+ */
+function XEditorItalic(button) {
+    this.button = button;
+}
+XEditorItalic.prototype = {
+    constructor: XEditorItalic,
+    onClick: function(editor) {
+        var range = XEditor.editing.currentRange;
+
+        if(null === range) {
+            return;
+        }
+
+        if(range.collapsed) {
+            return;
+        }
+        editor.execCommand('italic', false, null);
+        
+        this.changeStatus(editor);
+    },
+    changeStatus: function(editor) {
+        var ret = editor.queryCommandState('italic');
+        if(true === ret) {
+            XEditor.tools.dom.addClass(this.button, 'active');
+            
+            return;
+        }
+        
+        XEditor.tools.dom.removeClass(this.button, 'active');
+    }
+};
+XEditor.registerWidgetController('italic', XEditorItalic);

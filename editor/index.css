@@ -123,6 +123,9 @@
 .xeditor-icon-blockquote {
     background-position: 5px -356px;
 }
+.xeditor-icon-italic {
+    background-position: 8px -278px;
+}
 
 /* dialog */
 #xeditor-dialog-dialog {
