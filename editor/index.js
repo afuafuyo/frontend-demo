@@ -1082,13 +1082,13 @@ XEditorImage.prototype = {
         this.initUpload();
     },
     initUpload: function() {
-        if(undefined === window.XEditorFileUpload) {
+        if(undefined === window.XFileUpload) {
             return;
         }
         
         var _self = this;
         
-        this.uploader = new XEditorFileUpload('xeditor-uploadimage-inputfile', {
+        this.uploader = new XFileUpload('xeditor-uploadimage-inputfile', {
             server: this.editor.configs.server
         });
         
