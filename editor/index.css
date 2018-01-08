@@ -97,7 +97,7 @@
     width: 26px;
     height: 26px;
     margin: 0 6px;
-    background-image: url(./icons/icon.png);
+    background-image: url(./icons/icon-all.png);
     background-repeat: no-repeat;
     background-color: transparent;
     border: 0;
@@ -125,6 +125,9 @@
 }
 .xeditor-icon-italic {
     background-position: 8px -278px;
+}
+.xeditor-icon-code {
+    background-position: 4px -592px;
 }
 
 /* dialog */

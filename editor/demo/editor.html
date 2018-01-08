@@ -18,8 +18,9 @@
     
 <script>
 XEditor.plugins['myplugin'] = function(editor) {
-    editor.addEventListener('ready', (editor, data) => {
-        editor.setContent('Hello');
+    editor.addEventListener('ready', function(editor, data) {
+        editor.setContent('hello');
+        console.log('done')
     });
 };
 var editor = new XEditor('editor', {
