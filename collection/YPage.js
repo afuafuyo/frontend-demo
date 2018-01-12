@@ -1,15 +1,18 @@
 /**
  * 前端分页类
  *
- * @param int totalRecords 记录总数
- * @param int pageSize 分页大小
+ * @param {Number} totalRecords 记录总数
+ * @param {Number} pageSize 分页大小
  *
  * var page = new YPage(12, 10);
+ *
  * page.setConfig('showTotal', true);
+ *
  * page.onChange = function(currentPage, e) {
  *      console.log(currentPage);
  *      page.render(document.getElementById(mountNode));
  * };
+ *
  * page.render(document.getElementById(mountNode));
  *
 .y-page {
@@ -42,6 +45,7 @@
     background-color: #eee;
     text-decoration: none;
 }
+ *
  */
 function YPage(totalRecords, pageSize) {
     this.totalRecords = totalRecords;
@@ -109,10 +113,12 @@ YPage.prototype = {
         this.mountNode.onclick = function(e) {
             e = e || window.event;
             var src = e.target || e.srcElement;
+            
             if(1 === src.nodeType && 'A' === src.tagName.toUpperCase()) {
                 _self.currentPage = parseInt(src.getAttribute('data-page'));
                 _self.currentPage > _self.totalPages && (_self.currentPage = _self.totalPages);
                 _self.currentPage < 1 && (_self.currentPage = 1);
+                
                 if(null !== _self.onChange) {
                     _self.onChange(_self.currentPage, e);
                 }
