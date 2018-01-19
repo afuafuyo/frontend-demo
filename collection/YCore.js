@@ -72,10 +72,7 @@
         ,trigger: function(eventName, param) {
             if(undefined !== loader.handlers[eventName]) {
                 for(var i=0,len=loader.handlers[eventName].length; i<len; i++) {
-                    
-                    undefined === param
-                        ? loader.handlers[eventName][i]()
-                        : loader.handlers[eventName][i].apply(null, param);
+                    loader.handlers[eventName][i](param);
                 }
             }
         }
@@ -158,10 +155,10 @@
                 throw new TypeError('The id must be String');
             }
             if(null !== depends && '[object Array]' !== Object.prototype.toString.call(depends)) {
-                throw new TypeError('The depends must be null or Array');
+                throw new TypeError('The depends of module '+ id +' must be null or Array');
             }
             if('function' !== typeof procedure) {
-                throw new TypeError('The procedure must be Function');
+                throw new TypeError('The procedure of module '+ id +' must be Function');
             }
             
             var module = new Module(id, depends, procedure);
@@ -199,7 +196,7 @@
     };
     Module.prototype = {
         constructor: Module
-        ,rebuildDepends: function() {            
+        ,rebuildDepends: function() {
             /**
              * [ {id: id, truePath: truePath} ... ]
              */
@@ -223,6 +220,7 @@
         }
         ,fetchModules: function() {
             var _self = this;
+            // 需要从远程获取的资源 包括 js css
             var ret = {length: 0};
             
             // 先从缓存中取
@@ -285,6 +283,11 @@
             
             // 依赖还未加载或还未编译 模块就不能编译
             for(var i=0; i<len; i++) {
+                // css 不用编译 跳过
+                if(this.depends[i].indexOf('.css') > 0) {
+                    continue;
+                }
+                
                 if(!Module.exists(this.depends[i]) ||
                     !Module.get(this.depends[i]).compiled) {
                 
@@ -308,7 +311,10 @@
                 } else {
                     args = new Array(len);
                     for(var i=0; i<len; i++) {
-                        args[i] = Module.get(this.depends[i]).result;
+                        // css 没有模块缓存
+                        args[i] = Module.exists(this.depends[i])
+                            ? Module.get(this.depends[i]).result
+                            : null;
                     }
                     
                     ret = this.procedure.apply(null, args);
@@ -363,6 +369,8 @@
             node.onload = node.onerror = node.onreadystatechange = function(e) {
                 undefined === e && (e = global.event);
                 
+                var isCss = 
+                
                 if('load' === e.type || 'error' === e.type || _self.READY_STATE_REG.test(this.readyState)) {
                     // ensure only run once and handle memory leak in IE
                     this.onload = this.onerror = this.onreadystatechange = null;
@@ -394,14 +402,14 @@
                     node.rel = 'stylesheet';
                     node.href = this.depends[id];
                     
-                } else {
-                    this.listen(node);
-                    
+                } else {                    
                     node.async = true;
                     node.src = this.depends[id];
                 }
                 
-                loader.trigger('nodeCreate', [node, isCss]);
+                this.listen(node);
+                
+                loader.trigger('nodeCreate', node);
                 
                 undefined !== this.baseElement ?
                     this.head.insertBefore(node, this.baseElement) :
