@@ -1,7 +1,7 @@
 /**
  * js loader
  *
- * 没有处理依赖循环
+ * @author yu
  *
  * loader.config({
  *     baseUrl: 'http://xxx.com/js',
@@ -24,7 +24,6 @@
  *     console.log(a)
  * })
  *
- * @author yu
  */
 (function(global) {
     'use strict';
@@ -239,17 +238,6 @@
                 }
                 x++;
             }
-            /*
-            for(var i=0,len=this.depends.length; i<len; i++) {
-                if(Module.exists(this.depends[i])) {
-                    loader.log(this.depends[i] + ' load from cache');
-                    
-                    Module.get(this.depends[i]).parentModules.push(this);
-                    
-                    Module.get(this.depends[i]).execute();
-                }
-            }
-            */
             
             if(null === this.buildedDepends) {
                 this.rebuildDepends();
@@ -435,8 +423,9 @@
         }
     };
 
-
+    // 分发
     global.loader = loader;
+    
     // 兼容
     if(undefined === global.define) {
         global.define = loader.define;
