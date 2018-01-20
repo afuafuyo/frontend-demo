@@ -181,8 +181,7 @@
         this.result = null;
         this.compiled = false;
         
-        this.buildDepends = new Array(this.depends.length);
-        this.rebuildDepends();
+        this.buildedDepends = null;
     };
     Module.cachedModules = { /* id: module */ };
     Module.save = function(id, module) {
@@ -197,24 +196,29 @@
     Module.prototype = {
         constructor: Module
         ,rebuildDepends: function() {
+            var i = 0;
+            var len = this.depends.length;
+            
+            this.buildedDepends = new Array(len);
+            
             /**
              * [ {id: id, truePath: truePath} ... ]
              */
-            for(var i=0,len=this.depends.length,tmp=null; i<len; i++) {
+            for(var tmp=null; i<len; i++) {
                 tmp = loader.getAlias('@' + this.depends[i]);
                 
                 // 详细数据
-                this.buildDepends[i] = {
+                this.buildedDepends[i] = {
                     'id': this.depends[i],
                     'truePath': '' === tmp
                         ? loader.baseUrl + '/' + this.depends[i]
                         : tmp
                 };
                 
-                // 是不是 css
+                // js 文件需要加后缀
                 if(-1 === this.depends[i].indexOf('.css') &&
                     -1 === this.depends[i].indexOf('.js')) {
-                    this.buildDepends[i]['truePath'] += '.js';
+                    this.buildedDepends[i]['truePath'] += '.js';
                 }
             }
         }
@@ -247,10 +251,14 @@
             }
             */
             
-            // 过滤已经缓存的模块
-            for(var i=0,len=this.buildDepends.length; i<len; i++) {
-                if(!Module.exists(this.buildDepends[i].id)) {
-                    ret[this.buildDepends[i].id] = this.buildDepends[i].truePath;
+            if(null === this.buildedDepends) {
+                this.rebuildDepends();
+            }
+            
+            // 远程只获取没有缓存的模块
+            for(var i=0,len=this.depends.length; i<len; i++) {
+                if(!Module.exists(this.depends[i])) {
+                    ret[this.depends[i]] = this.buildedDepends[i].truePath;
                     ret.length++;
                 }
             }
@@ -261,13 +269,15 @@
             
             delete ret.length;
             
-            new Remote(ret, function(errorType, id, src){
-                loader.log(src + ' load from remote: ' + errorType);
+            new Remote(ret, function(eventType, id, isCss, resource){
+                loader.log(resource + ' load from remote: ' + eventType);
+                
+                if(isCss) {
+                    return;
+                }
                 
                 var m = Module.get(id);
-                
                 m.parentModules.push(_self);
-                
                 m.execute();
                 
             }).fetch();
@@ -359,7 +369,7 @@
         
         this.depends = depends;
         this.callback = callback;
-        this.additionalProperty = 'data-dep';
+        this.dependIdAttribute = 'data-dep';
     };
     Remote.prototype = {
         constructor : Remote
@@ -369,19 +379,22 @@
             node.onload = node.onerror = node.onreadystatechange = function(e) {
                 undefined === e && (e = global.event);
                 
-                var isCss = 
+                var isCss = 'LINK' === this.nodeName.toUpperCase();
                 
                 if('load' === e.type || 'error' === e.type || _self.READY_STATE_REG.test(this.readyState)) {
                     // ensure only run once and handle memory leak in IE
                     this.onload = this.onerror = this.onreadystatechange = null;
                     
                     // remove the script to reduce memory leak
-                    _self.head.removeChild(this);
+                    if(!isCss) {
+                        _self.head.removeChild(this);
+                    }
                     
                     // callback
                     _self.callback(e.type,
-                        this.getAttribute(_self.additionalProperty),
-                        this.getAttribute('src'));
+                        this.getAttribute(_self.dependIdAttribute),
+                        isCss,
+                        this.getAttribute('data-uri'));
                     
                     _self = null;
                 }
@@ -396,7 +409,7 @@
             for(var id in this.depends) {
                 isCss = this.IS_CSS_REG.test(id);
                 node = this.doc.createElement(isCss ? 'link' : 'script');
-                node.setAttribute(this.additionalProperty, id);
+                node.setAttribute(this.dependIdAttribute, id);
                 
                 if(isCss) {
                     node.rel = 'stylesheet';
@@ -406,6 +419,8 @@
                     node.async = true;
                     node.src = this.depends[id];
                 }
+                
+                node.setAttribute('data-uri', this.depends[id]);
                 
                 this.listen(node);
                 
