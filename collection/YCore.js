@@ -75,6 +75,9 @@
                 }
             }
         }
+        ,noop: function() {
+            return null;
+        }
         
         // util
         ,util: {
@@ -261,7 +264,7 @@
                 loader.log(resource + ' load from remote: ' + eventType);
                 
                 if(isCss) {
-                    return;
+                    Module.save(id, new Module(id, null, loader.noop));
                 }
                 
                 var m = Module.get(id);
@@ -281,11 +284,6 @@
             
             // 依赖还未加载或还未编译 模块就不能编译
             for(var i=0; i<len; i++) {
-                // css 不用编译 跳过
-                if(this.depends[i].indexOf('.css') > 0) {
-                    continue;
-                }
-                
                 if(!Module.exists(this.depends[i]) ||
                     !Module.get(this.depends[i]).compiled) {
                 
@@ -309,10 +307,7 @@
                 } else {
                     args = new Array(len);
                     for(var i=0; i<len; i++) {
-                        // css 没有模块缓存
-                        args[i] = Module.exists(this.depends[i])
-                            ? Module.get(this.depends[i]).result
-                            : null;
+                        args[i] = Module.get(this.depends[i]).result;
                     }
                     
                     ret = this.procedure.apply(null, args);
@@ -349,7 +344,6 @@
      */
     var Remote = function(depends, callback) {
         this.doc = document;
-        this.IS_CSS_REG = /\.css$/i;
         this.READY_STATE_REG = /loaded|complete|undefined/;
         
         this.head = this.doc.getElementsByTagName('head')[0];
@@ -396,7 +390,7 @@
             var node = null;
             
             for(var id in this.depends) {
-                isCss = this.IS_CSS_REG.test(id);
+                isCss = id.indexOf('.css') > 0;
                 node = this.doc.createElement(isCss ? 'link' : 'script');
                 node.setAttribute(this.dependIdAttribute, id);
                 
