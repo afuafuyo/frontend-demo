@@ -221,12 +221,7 @@
                 }
             }
         }
-        ,fetchModules: function() {
-            var _self = this;
-            // 需要从远程获取的资源 包括 js css
-            var ret = {length: 0};
-            
-            // 先从缓存中取
+        ,fetchModulesFromCache: function() {
             var x = 0;
             while(x < this.depends.length) {
                 if(Module.exists(this.depends[x])) {
@@ -238,6 +233,11 @@
                 }
                 x++;
             }
+        }
+        ,fetchModulesFromRemote: function() {
+            var _self = this;
+            // 需要从远程获取的资源 包括 js css
+            var ret = {length: 0};
             
             if(null === this.buildedDepends) {
                 this.rebuildDepends();
@@ -339,7 +339,8 @@
                 return;
             }
             
-            this.fetchModules();
+            this.fetchModulesFromCache();
+            this.fetchModulesFromRemote();
         }
     };
     
