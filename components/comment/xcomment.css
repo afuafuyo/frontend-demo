@@ -69,6 +69,10 @@
     color: #6d757a;
     text-decoration: none;
 }
+.xcomment-text {
+    line-height: 22px;
+    font-size: 14px;
+}
 .xcomment-operation {
     position: absolute;
     top: 3px;
@@ -207,10 +211,6 @@
     padding: 16px 0 14px 0;
     margin-right: 0;
     border-bottom: 1px solid #e5e9ef;
-}
-.xcomment-text {
-    line-height: 22px;
-    font-size: 14px;
 }
 .xcomment-btn {
     display: inline-block;
