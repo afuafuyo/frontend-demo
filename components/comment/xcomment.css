@@ -208,9 +208,8 @@
     margin-right: 0;
     border-bottom: 1px solid #e5e9ef;
 }
-.xcomment-item-text {
-    line-height: 20px;
-    padding: 2px 0;
+.xcomment-text {
+    line-height: 22px;
     font-size: 14px;
 }
 .xcomment-btn {
@@ -241,7 +240,6 @@
 }
 .xcomment-reply-item-text {
     margin-left: 10px;
-    font-size: 14px;
     font-weight: normal;
 }
 .xcomment-reply-item-widget {
