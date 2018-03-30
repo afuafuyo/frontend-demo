@@ -154,6 +154,10 @@
     outline: 0;
     border-radius: 4px;
 }
+.xcomment-textarea.error {
+    border-color: #e40c0c;
+    background-color: #fff;
+}
 .xcomment-textarea:hover {
     border-color: #00a1d6;
     background-color: #fff;
@@ -175,14 +179,34 @@
     background-position: -76px -344px;
 }
 
-/* commentlist */
-.xcomment-item:last-child .xcomment-item-content {
+/* header */
+.xcomment-header {
+    margin-bottom: 20px;
     border-bottom: 1px solid #e5e9ef;
 }
+.xcomment-header a {
+    display: inline-block;
+    margin-right: 16px;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 10px;
+    color: #222;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+.xcomment-header a.active,
+.xcomment-header a:hover {
+    color: #00a1d6;
+    border-bottom-color: #00a1d6;
+}
+
+/* commentlist */
 .xcomment-item-content {
     padding: 16px 0 14px 0;
     margin-right: 0;
-    border-top: 1px solid #e5e9ef;
+    border-bottom: 1px solid #e5e9ef;
 }
 .xcomment-item-text {
     line-height: 20px;
