@@ -1,0 +1,207 @@
+/**
+ * comment
+ */
+.xcomment-icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-image: url(./all.png);
+    background-repeat: no-repeat;
+}
+.xcomment-icon-emoji {
+    background-position: -12px -344px;
+    vertical-align: middle;
+}
+.xcomment-icon-dot {
+    background-position: -10px -280px;
+}
+.xcomment-icon-prize {
+    background-position: -10px -23px;
+    vertical-align: text-top;
+}
+
+/* structure */
+.xcomment-face {
+    position: relative;
+    float: left;
+    margin: 8px 0 0 10px;
+}
+.xcomment-content {
+    margin-left: 85px;
+}
+.xcomment-widget {
+    margin-left: 86px;
+    font-size: 12px;
+}
+
+/* detail */
+.xcomment-form {
+    position: relative;
+    margin: 10px 0;
+}
+.xcomment-form-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 72px;
+    height: 66px;
+    padding: 0 15px;
+    font-size: 14px;
+    color: #fff;
+    border: 1px solid #00a1d6;
+    background-color: #00a1d6;
+    outline: 0;
+    cursor: pointer;
+    vertical-align: top;
+    border-radius: 4px;
+}
+.xcomment-form-btn:hover {
+    background-color: #00b5e5;
+    border-color: #00b5e5;
+}
+.xcomment-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+.xcomment-form-content {
+    margin-right: 85px;
+}
+.xcomment-form-content textarea {
+    display: inline-block;
+    width: 100%;
+    height: 68px;
+    padding: 5px 10px;
+    overflow: auto;
+    box-sizing: border-box;
+    color: #555;
+    font-size: 12px;
+    border: 1px solid #e5e9ef;
+    background-color: #f4f5f7;
+    resize: none;
+    outline: 0;
+    border-radius: 4px;
+}
+.xcomment-form-content.info textarea,
+.xcomment-form-content textarea:hover {
+    border-color: #00a1d6;
+    background-color: #fff;
+}
+.xcomment-form-content.error textarea {
+    border-color: #e40c0c;
+    background-color: #fff;
+}
+.xcomment-widget-emoji {
+    width: 66px;
+    height: 24px;
+    line-height: 24px;
+    color: #99a2aa;
+    border: 1px solid #e5e9ef;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.xcomment-widget-emoji:hover {
+    color: #6d757a;
+}
+.xcomment-widget-emoji:hover .xcomment-icon-emoji {
+    background-position: -76px -344px;
+}
+
+/* commentlist */
+.xcomment-item:last-child .xcomment-item-content {
+    border-bottom: 1px solid #e5e9ef;
+}
+.xcomment-item-face {
+    margin: 22px;
+}
+.xcomment-item-content {
+    padding: 22px 0 14px 0;
+    border-top: 1px solid #e5e9ef;
+}
+.xcomment-item-user {
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 20px;
+}
+.xcomment-item-user a {
+    color: #6d757a;
+    text-decoration: none;
+}
+.xcomment-item-text {
+    line-height: 20px;
+    padding: 2px 0;
+    font-size: 14px;
+}
+.xcomment-item-widget {
+    position: relative;
+    color: #99a2aa;
+    line-height: 26px;
+    font-size: 12px;
+}
+.xcomment-item-widget a {
+    text-decoration: none;
+}
+.xcomment-item-widget-margin {
+    margin-right: 20px;
+}
+.xcomment-item-widget-margin a {
+    color: #99a2aa;
+}
+.xcomment-btn {
+    display: inline-block;
+    padding: 0 5px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.xcomment-btn:hover {
+    color: #00a1d6;
+    background-color: #e5e9ef;
+}
+.xcomment-item-widget-operation {
+    position: absolute;
+    top: 3px;
+    right: 0;
+    width: 18px;
+    height: 18px;
+}
+.xcomment-item-widget-operation:hover .xcomment-icon-dot {
+    cursor: pointer;
+    background-position: -75px -280px;
+}
+.xcomment-item-widget-operation:hover .xcomment-operation-drop {
+    display: block;
+}
+.xcomment-operation-drop {
+    position: absolute;
+    z-index: 10;
+    right: 0;
+    top: 16px;
+    width: 100px;
+    padding: 10px 0;
+    color: #222;
+    font-size: 14px;
+    background-color: #fff;
+    text-align: center;
+    box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+    border-radius: 4px;
+    display: none;
+}
+.xcomment-operation-drop-item {
+    display: block;
+    height: 36px;
+    line-height: 36px;
+    cursor: pointer;
+    color: #000;
+    transition: color, background-color .2s;
+}
+.xcomment-operation-drop-item:hover {
+    color: #00a1d6;
+    background-color: #e5e9ef;
+}
+.xcomment-item-widget-prize {
+    cursor: pointer;
+}
+.xcomment-item-widget-prize:hover .xcomment-icon-prize {
+    background-position: -10px -87px;
+}
