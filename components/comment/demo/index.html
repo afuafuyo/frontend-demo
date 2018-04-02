@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Comment</title>
+    <script src="../xcomment.js"></script>
+    <link rel="stylesheet" href="../xcomment.css">
+</head>
+<body>
+
+<div id="demo" style="width: 1000px; margin: 0 auto"></div>
+
+<script>
+var c = new XComment({
+    onSubmit: function(v) {
+        console.log(v);
+        
+        c.clear();
+    }
+});
+document.getElementById('demo').appendChild(c.getDom())
+</script>
+</body>
+</html>
