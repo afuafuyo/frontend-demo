@@ -154,9 +154,47 @@ XComment.prototype = {
     }
 };
 
-XComment.editing = {
-    // 记录光标位置
-    currentRange: null
+/**
+ * Util
+ */
+XComment.util = {
+    /**
+     * 添加事件处理器
+     *
+     * @param {Element} element
+     * @param {String} type
+     * @param {Function} handler
+     */
+    addEventListener: function(element, type, handler) {
+        if(element.addEventListener) {
+            element.addEventListener(type, handler, false);
+        
+        } else if(element.attachEvent) {
+            element.attachEvent('on' + type, handler);
+        
+        } else {
+            element['on' + type] = handler;
+        }
+    },
+    
+    /**
+     * 移除事件处理器
+     *
+     * @param {Element} element
+     * @param {String} type
+     * @param {Function} handler
+     */
+    removeEventListener: function(element, type, handler) {
+        if(element.removeEventListener) {
+            element.removeEventListener(type, handler, false);
+        
+        } else if(element.detachEvent) {
+            element.detachEvent('on' + type, handler);
+        
+        } else {
+            element['on' + type] = null;
+        }
+    }
 };
 
 /**
@@ -174,10 +212,118 @@ XComment.registerWidgetController = function(name, processer) {
  * emoji widget
  */
 function XCommentEmoji(button) {
-    this.button = button;
+    this.xComment = null;
+    this.button = button;    
+    this.pop = null;
+    this.closed = true;
+    
+    this.init = function() {
+        this.pop = document.createElement('div');
+        this.pop.className = 'xcomment-form-pop';
+        this.pop.innerHTML =
+'<div class="xcomment-form-pop-title">标题</div>' +
+'<div class="xcomment-form-pop-emoji">' +
+    '<a href="javascript:;" data-role="em" title="舒服" data-em="(￣▽￣)">(￣▽￣)</a>' +
+    '<a href="javascript:;" data-role="em" title="高兴" data-em="(^_^)">(^_^)</a>' +
+    '<a href="javascript:;" data-role="em" title="难过" data-em="(＞﹏＜)">(＞﹏＜)</a>' +
+    '<a href="javascript:;" data-role="em" title="哼" data-em="(￣ヘ￣)">(￣ヘ￣)</a>' +
+    '<a href="javascript:;" data-role="em" title="哭" data-em="(╥﹏╥)">(╥﹏╥)</a>' +
+    '<a href="javascript:;" data-role="em" title="害怕" data-em="o((⊙﹏⊙))o">o((⊙﹏⊙))o</a>' +
+    '<a href="javascript:;" data-role="em" title="赞" data-em="d===(￣▽￣*)b">d===(￣▽￣*)b</a>' +
+    '<a href="javascript:;" data-role="em" title="爱你" data-em="(づ￣3￣)づ╭❤">(づ￣3￣)づ╭❤</a>' +
+    '<a href="javascript:;" data-role="em" title="无奈" data-em="╮(╯＿╰)╭">╮(╯＿╰)╭</a>' +
+    '<a href="javascript:;" data-role="em" title="惊讶" data-em="(⊙ˍ⊙)">(⊙ˍ⊙)</a>' +
+    '<a href="javascript:;" data-role="em" title="汗" data-em="(-_-!)">(-_-!)</a>' +
+    '<a href="javascript:;" data-role="em" title="强壮" data-em="ᕦ(ò_óˇ)ᕤ">ᕦ(ò_óˇ)ᕤ</a>' +
+    '<a href="javascript:;" data-role="em" title="鄙视" data-em="→_→">→_→</a>' +
+    '<a href="javascript:;" data-role="em" title="鄙视" data-em="←_←">←_←</a>' +
+'</div>' +
+'<div class="xcomment-form-pop-footer">' +
+    '<a href="javascript:;" class="active">颜文字</a>' +
+'</div>';
+
+        var _self = this;
+        this.pop.onclick = function(e) {
+            _self.handlerPopClick(e);
+        };
+        
+        XComment.util.addEventListener(document, 'click', function(e){
+            _self.handlerPopClose(e);
+        });
+    };
+    
+    this.handlerPopClick = function(e) {
+        e = e || window.event;
+        
+        var target = e.target || e.srcElement;
+        var role = target.getAttribute('data-role');
+        
+        var start = this.xComment.textArea.selectionStart;
+        var end = this.xComment.textArea.selectionEnd;
+        var value = this.xComment.textArea.value;
+        
+        // emoji
+        if(null !== role && 'em' === role) {
+            if('' === value) {
+                this.xComment.textArea.value = target.getAttribute('data-em');
+                
+                return;
+            }
+            
+            this.xComment.textArea.value = value.substring(0, start)
+                + target.getAttribute('data-em')
+                + value.substring(end);
+        }
+    };
+    
+    this.handlerPopClose = function(e) {
+        e = e || window.event;
+        
+        if(this.closed) {
+            return;
+        }
+        
+        var target = e.target || e.srcElement;
+        var shouldClose = true;
+        
+        while(null !== target && 'BODY' !== target.nodeName.toUpperCase()) {
+            if('xcomment-form-widget' === target.className) {
+                shouldClose = false;
+                
+                break;
+            }
+            
+            target = target.parentNode;
+        }
+                    
+        if(shouldClose) {
+            this.destroy();
+        }
+    };
+    
+    this.destroy = function() {
+        if(null !== this.xComment.widgetsWrapper.querySelector('.xcomment-form-pop')) {
+            this.xComment.widgetsWrapper.removeChild(this.pop);
+        }
+        
+        this.closed = true;
+    };
+    
+    this.render = function() {
+        this.xComment.widgetsWrapper.appendChild(this.pop);
+        
+        this.closed = false;
+    };
     
     this.onClick = function(xComment) {
-        console.log(123)
+        this.xComment = xComment;
+        
+        if(null === this.pop) {
+            this.init();
+        }
+        
+        this.render();
+        this.xComment.textArea.focus();
     };
 }
 XComment.registerWidgetController('emoji', XCommentEmoji);
