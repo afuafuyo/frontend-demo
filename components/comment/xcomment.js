@@ -1,6 +1,8 @@
 /**
  * 评论组件
  */
+'use strict';
+
 function XComment(options) {
     this.doc = document;
     this.container = null;
@@ -43,13 +45,7 @@ XComment.prototype = {
         // container
         this.container = this.doc.createElement('div');
         this.container.className = 'xcomment-relative xcomment-form';
-        
-        // submit button
-        this.submitButton = this.doc.createElement('button');
-        this.submitButton.setAttribute('type', 'button');
-        this.submitButton.className = 'xcomment-form-btn';
-        this.submitButton.innerHTML = '发表评论';
-        
+                
         // face
         this.faceWrapper = this.doc.createElement('section');
         this.faceWrapper.className = 'xcomment-form-face';
@@ -65,7 +61,6 @@ XComment.prototype = {
         this.initEvent();
         
         // combine
-        this.container.appendChild(this.submitButton);
         this.container.appendChild(this.faceWrapper);
         this.container.appendChild(this.contentWrapper);
         this.container.appendChild(this.widgetsWrapper);
@@ -83,6 +78,13 @@ XComment.prototype = {
     initWidgetsStructure: function() {
         this.widgetsWrapper = this.doc.createElement('section');
         this.widgetsWrapper.className = 'xcomment-form-widget';
+        
+        // submit button
+        this.submitButton = this.doc.createElement('button');
+        this.submitButton.setAttribute('type', 'button');
+        this.submitButton.className = 'xcomment-form-btn';
+        this.submitButton.innerHTML = '发表评论';
+        this.widgetsWrapper.appendChild(this.submitButton);
         
         var item = null;
         for(var i=0, len=this.configs.widgets.length; i<len; i++) {
