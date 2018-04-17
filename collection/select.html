@@ -9,8 +9,8 @@
     position: relative;
     display: inline-block;
     background-color: #fff;
-    height: 26px;
-    line-height: 26px;
+    height: 30px;
+    line-height: 30px;
     padding: 0 12px;
     font-size: 14px;
     color: rgba(0, 0, 0, .6);
@@ -32,13 +32,13 @@
     position: absolute;
     z-index: 600;
     left: 0;
-    top: 28px;
+    top: 31px;
     width: 100%;
     max-height: 300px;
-    border: 1px solid #ccc;
-    border-top: 0;
+    padding: 10px 0;
     background-color: #fff;
     overflow-y: auto;
+    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, .2);
     display: none;
 }
 .yselect-list span {
@@ -95,7 +95,7 @@ YSelect.prototype = {
             } else {
                 ele['on' + type] = func;
             }
-        },	
+        },
         removeHandler: function(ele, type, func) {
             if(ele.removeEventListener) {
                 ele.removeEventListener(type, func, false);
