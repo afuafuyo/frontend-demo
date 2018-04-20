@@ -191,13 +191,15 @@ YScrollBar.prototype = {
             distance = this.wrapperHeight - this.barHeight - this.previousScrollTop;
         }
         
-        this.bar.style.top = this.previousScrollTop + distance + 'px';
         percent = (this.previousScrollTop + distance) / this.wrapperHeight;
-        this.content.style.top = -this.contentHeight * percent + 'px';
+        this.top = -this.contentHeight * percent;
+        
+        this.bar.style.top = this.previousScrollTop + distance + 'px';
+        this.content.style.top = this.top + 'px';
     },
     _mouseup : function(e) {
-		this.wrapper.onmousemove = null;
-	},
+        this.wrapper.onmousemove = null;
+    },
     getStyle: function(element) {
         if('function' === typeof this.win.getComputedStyle) {
             return this.win.getComputedStyle(element, null);
