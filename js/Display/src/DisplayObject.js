@@ -16,7 +16,7 @@ export default class DisplayObject extends HashObject {
         /**
          * 文档片段
          */
-        this.fragement = this.doc.createDocumentFragment();
+        this.fragement = this.doc.createDocumentFragment();;
 
         /**
          * 对象的 dom 对象形式
@@ -25,9 +25,9 @@ export default class DisplayObject extends HashObject {
     }
 
     /**
-     * 初始化事件
+     * 内部 dom 准备完毕
      */
-    bindEvent() {}
+    internalDomReady() {}
 
     /**
      * 获取 html 文档片段 这个文档片段只能有一个父级元素
@@ -46,7 +46,11 @@ export default class DisplayObject extends HashObject {
         tmp.innerHTML = html;
         this.fragement.appendChild(tmp);
 
-        return this.dom = this.fragement.firstChild.firstChild;
+        this.dom = this.fragement.firstChild.firstChild;
+
+        this.internalDomReady();
+
+        return this.dom;
     }
 
 }
