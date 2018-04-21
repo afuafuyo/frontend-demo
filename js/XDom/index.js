@@ -1,9 +1,15 @@
 'use strict';
 
+/**
+ * Html 转 Dom
+ *
+ * @author afu
+ */
 function XDom() {
     this.doc = document;
     this.wrapper = null;
-    this.stack = [];
+    this.stack = new XDom.Stack();
+    this.lookBack = new XDom.Stack();
     
     // <!--(xxx)-->
     // </(xxx)>
