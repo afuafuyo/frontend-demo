@@ -9,7 +9,6 @@ function XDom() {
     this.doc = document;
     this.wrapper = null;
     this.stack = new XDom.Stack();
-    this.lookBack = new XDom.Stack();
     
     // <(xxx)( data-name="lisi") xxx (/)>
     // </(xxx)>
@@ -35,20 +34,20 @@ XDom.prototype = {
         }
         
         var parts = null;
+        var currentLookbackTag = '';
         // the index at which to start the next match
         var lastIndex = 0;
         var tagName = '';
         
         // 全局模式可以循环查找字符串
-        while( null !== (parts = this.htmlPartsRegex.exec(html)) ) {
-            console.log(parts.index, this.htmlPartsRegex.lastIndex)
-            continue;
+        while( null !== (parts = this.htmlPartsRegex.exec(html)) ) {            
+            // 自闭合标签 文本 评论 入栈
+            // 开始标签记录 并 入栈
             
             // TextNode
             if(parts.index > lastIndex) {
                 var text = html.substring( lastIndex, parts.index );
-                
-                this.wrapper.appendChild(this.doc.createTextNode(text));
+                this.stack.push(text);
             }
             lastIndex = this.htmlPartsRegex.lastIndex;
             
