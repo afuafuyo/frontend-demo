@@ -11,23 +11,20 @@ function XDom() {
     this.stack = new XDom.Stack();
     this.lookBack = new XDom.Stack();
     
-    // <!--(xxx)-->
+    // <(xxx)( data-name="lisi") xxx (/)>
     // </(xxx)>
-    // <(xxx)( data-name="lisi")xxx(/)>
-    // 最外层括号用来区分或关系运算
+    // <!--(xxx)-->
     // 此正则有五个子模式
-    // 1. 代表注释内容
-    // 2. 代表闭合标签名称
-    // 3. 代表开始标签名称
-    // 4. 代表整个属性部分
-    // 5. 自闭合标签斜线
-    //                                                                            |------------------------ \sname=attribute value ----------------------|
-    //                                                                                             |---------------- =attribute value ---------------|
-    //                                                                                                        |---------- attribute value ----------|
-    this.htmlPartsRegex = /<(?:(?:!--([\S|\s]*?)-->)|(?:\/([^>]+)>)|(?:([^\/\s>]+)((?:\s+[\w\-:\.]+(?:\s*=\s*?(?:(?:"[^"]*")|(?:'[^']*')|[^\s"'\/>]+))?)*)[\S\s]*?(\/?)>))/g;
+    // 1. 代表开始标签名称
+    // 2. 代表整个属性部分
+    // 3. 自闭合标签斜线
+    // 4. 代表闭合标签名称
+    // 5. 代表注释内容
+    //                                 |------------------- attrName=attribute value ------------------|
+    this.htmlPartsRegex = /<(?:(?:(\w+)((?:\s+[\w\-:]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)[\S\s]*?(\/?)>)|(?:\/([^>]+)>)|(?:!--([\S|\s]*?)-->))/g;
     
-    // (title)=""
-    this.attributesRegex = /([\w\-:.]+)(?:(?:\s*=\s*(?:(?:"([^"]*)")|(?:'([^']*)')|([^\s>]+)))|(?=\s|$))/g;
+    // (title)="()"
+    this.attributesRegex = /([\w\-:]+)\s*=\s*(?:(?:"([^"]*)")|(?:'([^']*)')|([^>\s]+))/g;
 }
 XDom.prototype = {
     constructor: XDom,
@@ -44,6 +41,9 @@ XDom.prototype = {
         
         // 全局模式可以循环查找字符串
         while( null !== (parts = this.htmlPartsRegex.exec(html)) ) {
+            console.log(parts.index, this.htmlPartsRegex.lastIndex)
+            continue;
+            
             // TextNode
             if(parts.index > lastIndex) {
                 var text = html.substring( lastIndex, parts.index );
@@ -79,9 +79,11 @@ XDom.prototype = {
 XDom.selfClosingTags = {
     hr: 1,
     br: 1,
+    col: 1,
     img: 1,
     textarea: 1,
-    input: 1
+    input: 1,
+    embed: 1,
 };
 XDom.emptyAttributes = {
     checked: 1,
