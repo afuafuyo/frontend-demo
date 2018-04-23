@@ -9,7 +9,26 @@
 <script>
 var obj = new XDom();
 
-obj.parse('<p>11111111<img src="http://baidu.com"><br>1<span>2</span></p>');
+var html =
+`<p>
+    <!-- 11111111 -->
+    <br style="clear:both">
+    <h1>4444444</h1>
+    <div>
+        <div>张三</div>
+        <div>李四</div>
+        <div>20</div>
+    </div>
+</p>`;
+
+obj.parse(html);
+var dom = obj.getDom();
+
+dom.querySelector('h1').onclick = function() {
+    alert(1)
+}
+
+document.body.appendChild(dom)
 </script>
 </body>
 </html>

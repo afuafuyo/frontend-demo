@@ -8,7 +8,8 @@
 function XDom() {
     this.doc = document;
     this.wrapper = null;
-    this.stack = new XDom.Stack();
+    this.dom = null;
+    this.lookingBackTagstack = new XDom.Stack();
     
     // <(xxx)( data-name="lisi") xxx (/)>
     // </(xxx)>
@@ -17,9 +18,8 @@ function XDom() {
     // 1. 代表开始标签名称
     // 2. 代表整个属性部分
     // 3. 自闭合标签斜线
-    // 4. 代表闭合标签名称
+    // 4. 代表结束标签名称
     // 5. 代表注释内容
-    //                                 |------------------- attrName=attribute value ------------------|
     this.htmlPartsRegex = /<(?:(?:(\w+)((?:\s+[\w\-:]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)[\S\s]*?(\/?)>)|(?:\/([^>]+)>)|(?:!--([\S|\s]*?)-->))/g;
     
     // (title)="()"
@@ -27,53 +27,108 @@ function XDom() {
 }
 XDom.prototype = {
     constructor: XDom,
-    describe: function(nodeName, props, children) {},
+    onText: function(text) {
+        var node = this.doc.createTextNode(text);
+        
+        this.lookingBackTagstack.tail().appendChild(node);
+    },
+    onClose: function(tagName) {
+        tagName = tagName.toLowerCase();
+        
+        this.dom = this.lookingBackTagstack.pop()
+    },
+    onOpen: function(tagName, attributes) {
+        tagName = tagName.toLowerCase();
+        
+        var isSelfClosingTag = 1 === XDom.selfClosingTags[tagName];
+        var node = this.doc.createElement(tagName);
+        for(var k in attributes) {
+            node.setAttribute(k, attributes[k]);
+        }
+        
+        if(null !== this.lookingBackTagstack.tail()
+                && node !== this.lookingBackTagstack.tail()) {
+            this.lookingBackTagstack.tail().appendChild(node);
+        }
+        
+        if(!isSelfClosingTag) {
+            this.lookingBackTagstack.push(node);
+        }
+    },
+    onComment: function(content) {
+        var node = this.doc.createComment(content);
+        
+        this.lookingBackTagstack.tail().appendChild(node);
+    },
+    /**
+     * 解析 html
+     *
+     * @param {String} html
+     */
     parse: function(html) {
         if(0 !== html.indexOf('<')) {
             throw new Error('The html must startsWith normal tag');
         }
         
         var parts = null;
-        var currentLookbackTag = '';
         // the index at which to start the next match
         var lastIndex = 0;
         var tagName = '';
         
-        // 全局模式可以循环查找字符串
-        while( null !== (parts = this.htmlPartsRegex.exec(html)) ) {            
-            // 自闭合标签 文本 评论 入栈
-            // 开始标签记录 并 入栈
-            
+        while( null !== (parts = this.htmlPartsRegex.exec(html)) ) {
             // TextNode
             if(parts.index > lastIndex) {
                 var text = html.substring( lastIndex, parts.index );
-                this.stack.push(text);
+                
+                this.onText(text);
             }
             lastIndex = this.htmlPartsRegex.lastIndex;
+                        
+            // closing tag
+            if( (tagName = parts[4]) ) {
+                this.onClose(tagName);
+                
+                continue;
+            }
             
-            // 开始标签
-            if( (tagName = parts[3]) ) {
-                tagName = tagName.toLowerCase();
+            // opening tag & selfClosingTag
+            if( (tagName = parts[1]) ) {
                 
-                if(null === this.wrapper) {
-                    this.wrapper = this.doc.createElement(tagName);
-                    
-                } else {
-                    this.wrapper.appendChild(this.doc.createElement(tagName));
+                var attrParts = null;
+                var attrs = {};
+                
+                // attributes
+                if(parts[2]) {
+                    while ( null !== ( attrParts = this.attributesRegex.exec(parts[2]) ) ) {
+                        var attrName = attrParts[1];
+                        var attrValue = attrParts[2] || attrParts[3] || attrParts[4] || '';
+                        
+                        if(XDom.emptyAttributes[attrName]) {
+                            attrs[attrName] = attrName;
+                            
+                        } else {
+                            attrs[attrName] = attrValue;
+                        }
+                    }
                 }
                 
+                this.onOpen(tagName, attrs);
                 
-                var arrtMatch = null;
-                var attributeParts = parts[4];
-                
-                if(attributeParts) {
-                    
-                }
+                continue;
+            }
+            
+            // comment
+            if( (tagName = parts[5]) ) {
+                this.onComment(tagName);
             }
         }
-        
-        console.log(this.wrapper)
     },
+    /**
+     * 获取 dom
+     */
+    getDom: function() {
+        return this.dom;
+    }
 };
 XDom.selfClosingTags = {
     hr: 1,
@@ -82,7 +137,7 @@ XDom.selfClosingTags = {
     img: 1,
     textarea: 1,
     input: 1,
-    embed: 1,
+    embed: 1
 };
 XDom.emptyAttributes = {
     checked: 1,
@@ -143,10 +198,22 @@ XDom.Stack.prototype.pop = function(){
     
     return ret;
 };
+XDom.Stack.prototype.tail = function() {
+    return null === this.tailNode ? null : this.tailNode.data;
+};
 XDom.Stack.prototype.clear = function() {
     while(0 !== this.size) {
         this.pop();
     }
+};
+XDom.Stack.prototype.toString = function() {
+    var str = '[ ';
+
+    for(var current = this.headNode; null !== current; current = current.next) {
+        str += current.data + ' ';
+    }
+
+    return str + ' ]';
 };
 XDom.StackNode = function(data, prev, next) {
     this.data = data;
