@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from 'react-dom';
+import ReactDOM from 'react-dom';
 import { HashRouter, Switch, Route } from 'react-router-dom';
 
 import { Provider } from 'react-redux';
@@ -61,7 +61,7 @@ const store = createStore(
     //,,applyMiddleware(applyMiddlewareEnhancer)
 );
 
-render(
+ReactDOM.render(
 <Provider store={store}>
     <HashRouter>
         <Switch>
