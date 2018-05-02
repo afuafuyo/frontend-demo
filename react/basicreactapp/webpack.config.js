@@ -53,7 +53,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'src/index.html',
+            template: './src/index.html',
             // 自定义属性
             staticPath: '/public'
         }),
