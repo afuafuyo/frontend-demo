@@ -58,7 +58,7 @@ const store = createStore(
     // 如果存在 enhancer 那么 createStore 返回值是 enhancer 的结果
     // enhancer 必须保证原来 createStore 返回的值 ( 比如 dispatch 或 getState) 在 enhancer 中也返回
     ,enhancer
-    //,,applyMiddleware(applyMiddlewareEnhancer)
+    //,applyMiddleware(applyMiddlewareEnhancer)
 );
 
 ReactDOM.render(
