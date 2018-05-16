@@ -75,11 +75,11 @@
     attribute 变量赋值
         获取到地址后 可以向变量传输数据
 
-        gl.vertexAttrib3f(location, v0, v1, v2)
+        gl.vertexAttrib3f(location, v0, v1, v2): void
             location 变量地址
-            v0 x 坐标值
-            v1 y 坐标值
-            v2 z 坐标值
+            v0 第一个分量值
+            v1 第二个分量值
+            v2 第三个分量值
 
 7. uniform 变量
     一般用于传输和片元有关的数据
@@ -95,7 +95,12 @@
     uniform 变量赋值
         获取到地址后 可以向变量传输数据
 
-        gl.uniform4f(location, v0, v1, v2, v3)
+        gl.uniform4f(location, v0, v1, v2, v3): void
+            location 变量地址
+            v0 第一个分量值
+            v1 第二个分量值
+            v2 第三个分量值
+            v3 第四个分量值
 
 8. 缓冲区对象
     缓冲区是 WebGL 系统中的一块存储区
@@ -161,9 +166,25 @@
             location 变量地址
         gl.disableVertexAttribArray(location): void
 
+9. 坐标
 
+webgl 坐标原点在容器中心
 
+           (0, 1, 0)
+               |
+               |
+(-1, 0, 0)-----|----->(1, 0, 0)
+               |
+               |
+           (0, -1, 0)
 
+10. 视点与视线
+
+视点是观察者所在的位置
+
+视线是从视点出发沿着观察方向的射线
+
+webgl 中默认情况下视点在原点 (0, 0, 0) 视线为 Z 轴负半轴指向屏幕内部
 
 
 
