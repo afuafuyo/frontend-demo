@@ -74,6 +74,7 @@ XFetch.prototype = {
  * Promise
  */
 XFetch.Promise = function(executor) {
+    this.status = 'pending';
     this.thens = [];
     this.rejectFn = null;
     
@@ -92,15 +93,23 @@ XFetch.Promise = function(executor) {
     }
 };
 XFetch.Promise.prototype.resolve = function(data) {
-    var callback = null;
+    if('pending' === this.status) {
+        this.status = 'accepted';
     
-    for(var i=0,len=this.thens.length; i<len; i++) {
-        if('function' === typeof (callback = this.thens[i])) {
-            data = callback.call(this, data);
+        var callback = null;
+        
+        for(var i=0,len=this.thens.length; i<len; i++) {
+            if('function' === typeof (callback = this.thens[i])) {
+                data = callback.call(this, data);
+            }
         }
     }
 };
 XFetch.Promise.prototype.reject = function(err) {
+    if('pending' === this.status || 'accepted' === this.status) {
+        this.status = 'rejected';
+    }
+    
     if(null !== this.rejectFn) {
         this.rejectFn(err);
     }
