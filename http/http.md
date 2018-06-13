@@ -16,19 +16,17 @@
 
 ![image](./imgs/socket.jpg)
 
-### HTTP 1.1 的特点
+### HTTP/1.1
 
-![image](imgs/multilink.jpg)
+在 HTTP/0.9 和 1.0 中，连接在单个请求/响应对之后关闭。
 
-+ 正式引入了持久连接
+HTTP/1.1 引入了持久连接
     
     TCP 连接默认不关闭 该连接可以被下次 HTTP 请求复用 直到一段时间后自动关闭或者发送 ```Connection: close``` 手动关闭
     
     对于同一个域名 大多数浏览器允许同时建立 6 个左右持久连接
 
-+ 管道机制
-
-    在同一个 TCP 连接里 客户端可以同时发送多个请求 ( 并发 )
+![image](imgs/multilink.jpg)
 
 + 增加了更多的请求头和响应头
 
