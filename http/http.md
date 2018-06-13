@@ -6,21 +6,15 @@
 
 + HTTP 协议的版本 HTTP/1.0, HTTP/1.1, HTTP/2.0
 
-### HTTP 1.0 的会话方式
-
-+ 四个步骤
-
-![image](./imgs/socket.jpg)
+### HTTP 1.0
 
 + 浏览器与 WEB 服务器的连接过程是短暂的 对每一个资源的访问 浏览器与 WEB 服务器都要建立一次单独的 TCP 连接
 
 + 浏览器到 WEB 服务器之间的所有通讯都是完全独立分开的请求和响应对
 
-![image](./imgs/eachlink.jpg)
++ 会话四步骤
 
-### 浏览器访问多图网页的过程
-
-![image](./imgs/access.jpg)
+![image](./imgs/socket.jpg)
 
 ### HTTP 1.1 的特点
 
