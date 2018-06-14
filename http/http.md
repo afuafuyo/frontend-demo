@@ -4,7 +4,7 @@
 
 + HTTP 是 hypertext transfer protocol ( 超文本传输协议 ) 的简写 它是 TCP/IP  协议集中的一个应用层协议 用于定义 WEB 浏览器与 WEB 服务器之间交换数据的过程以及数据本身的格式
 
-+ HTTP 协议的版本 HTTP/1.0, HTTP/1.1, HTTP/2.0
++ HTTP 协议的版本 HTTP/1.0, HTTP/1.1, HTTP/2
 
 ### HTTP 1.0
 
@@ -22,7 +22,7 @@
 
 HTTP/1.1 引入了持久连接
     
-    TCP 连接默认不关闭 该连接可以被下次 HTTP 请求复用 直到一段时间后自动关闭或者发送 ```Connection: close``` 手动关闭
+    TCP 连接默认不关闭 该连接可以被下次 HTTP 请求复用 直到一段时间后自动关闭或者发送 Connection: close 手动关闭
     
     对于同一个域名 大多数浏览器允许同时建立 6 个左右持久连接
 
@@ -89,14 +89,6 @@ Cache-control: private                  <--
 data from server ...                    <-- 实体内容
 </pre>
 
-### HTTP 消息 补充细节
-
-+ 响应消息的实体内容就是网页文件的内容 也就是在浏览器中使用查看源文件的方式所看到的内容
-
-+ 一个使用 GET 方式的请求消息中不能包含实体内容 只有使用 POST PUT 和 DELETE 方式的请求消息中才可以包含实体内容
-
-+ 对于 HTTP 1.1 来说 如果 HTTP 请求或响应消息中包括实体内容 且没有采用 chunked 传输编码方式 那么消息头部分必须包含内容长度的字段 否则 客户和服务程序就无法知道实体内容何时结束
-
 ### HTTP 请求行与状态行
 
 + 请求行
@@ -137,9 +129,15 @@ data from server ...                    <-- 实体内容
 
 + 有些头字段可以出现多次 例如 响应消息中可以包含有多个 Warning 字段
 
-### 使用 telnet 模拟 get 请求
+### HTTP 消息 补充细节
 
-![image](./imgs/telnetget.jpg)
++ 响应消息的实体内容就是网页文件的内容 也就是在浏览器中使用查看源文件的方式所看到的内容
+
++ 一个使用 GET 方式的请求消息中不能包含实体内容 只有使用 POST PUT 和 DELETE 方式的请求消息中才可以包含实体内容
+
++ 对于 HTTP 1.1 来说 如果 HTTP 请求或响应消息中包括实体内容 且没有采用 chunked 传输编码方式 那么消息头部分必须包含内容长度的字段 否则 客户和服务程序就无法知道实体内容何时结束
+
+### 使用 telnet 模拟 get 请求
 
 ```javascript
 假设我们使用 node 在 8090 启动了一个服务端
@@ -172,6 +170,8 @@ Content-Length: 9
 
 hello afuq
 ```
+
+![image](./imgs/telnetget.jpg)
 
 ### 关于 URL 编码
 
