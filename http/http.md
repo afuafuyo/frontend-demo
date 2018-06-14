@@ -223,7 +223,7 @@ param1=xxx&param2=yyy
 + 300 - 399
 
     - 为完成请求 客户需进一步细化请求 例如 请求的资源已经移动一个新地址
-  
+
 + 400 - 499
 
     - 客户端的请求有错误
@@ -236,7 +236,7 @@ param1=xxx&param2=yyy
 
 + 通用消息头字段既能用于请求消息 也可用于响应消息 它包括一些与被传输的实体内容没有关系的常用消息头字段
 
-+ Cache-Control: [cache-directive]
++ Cache-Control: cache-directive
 
     - 用于控制 HTTP 缓存 ( 在 HTTP/1.0 中可能部分没实现 仅仅实现了 Pragma: no-cache )
     
@@ -252,7 +252,7 @@ param1=xxx&param2=yyy
         + no-store
             - 在任何条件下响应都不会被缓存 并且不会被写入到客户端的磁盘里
         
-+ Connection: close|Keep-Alive
++ Connection: close | Keep-Alive
 
     - 在 HTTP1.0 和 HTTP1.1 协议中都有对 KeepAlive 持久连接的支持 HTTP1.0 需要在请求消息中增加 Connection: keep-alive 头才能够支持 而 HTTP1.1 默认所有连接就是持久的
 
@@ -366,15 +366,11 @@ require('net').createServer(function(sock) {
 
     - 指定一个资源的字节位置
 
-    - 响应头 Accept-Ranges 标示服务器是否支持 Range 如果支持 则 Accept-Ranges: bytes 如果不支持 则 Accept-Ranges: none
-    
-    - 如果服务器支持 客户端发送请求时会携带该头字段 如果没有 那么 If-Range 会没忽略
-
     - Range: bytes=100-  表示从 100 个字节到结尾
-    
+
     - Range: bytes=-100  表示从开始到 100 个字节
 
-+ If-Range: [Etag|Http-Date]
++ If-Range: [Etag | Http-Date]
 
     - 其值可以是 Etag 响应头或者 Last-Modified 实体头返回的值
 
@@ -384,7 +380,7 @@ require('net').createServer(function(sock) {
 
 + 响应头字段用于服务器在响应消息中向客户端传递附加信息 包括服务程序名 被请求资源需要的认证方式 被请求资源已移动到的新地址等信息
     
-+ Accept-Range: [bytes|none]
++ Accept-Range: [bytes | none]
 
     - 标示服务器是否支持 Range
 
