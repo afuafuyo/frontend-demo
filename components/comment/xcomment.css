@@ -5,7 +5,7 @@
     display: inline-block;
     width: 18px;
     height: 18px;
-    background-image: url(./all.png);
+    background-image: url(./xcomment.png);
     background-repeat: no-repeat;
 }
 .xcomment-icon-dot {
@@ -104,7 +104,7 @@
     background-color: #e5e9ef;
 }
 .xcomment-form-widget-emoji {
-    background: url(./all.png) no-repeat -6px -340px;
+    background: url(./xcomment.png) no-repeat -6px -340px;
     padding-left: 26px;
 }
 .xcomment-form-pop {
@@ -126,7 +126,7 @@
     left: 25px;
     width: 12px;
     height: 10px;
-    background: url(./all.png) no-repeat -12px -456px;
+    background: url(./xcomment.png) no-repeat -12px -456px;
 }
 .xcomment-form-pop-title {
     font-size: 12px;
