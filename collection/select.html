@@ -77,9 +77,9 @@
 <script>
 function YSelect() {
     this.doc = document;
-    this.select = null;
-    this.value = null;
-    this.list = null;
+    this.selectWrapper = null;
+    this.valueWrapper = null;
+    this.listWrapper = null;
     this.onchange = null;
 }
 YSelect.prototype = {
@@ -109,7 +109,7 @@ YSelect.prototype = {
         }
     },
     closeList: function() {
-        this.list.style.display = 'none';
+        this.listWrapper.style.display = 'none';
     },
     eventHandler: function(e) {
         e = e || window.event;
@@ -119,23 +119,23 @@ YSelect.prototype = {
         
         var target = e.target || e.srcElement;
         
-        if('block' !== this.list.style.display) {
-            this.list.style.display = 'block';
+        if('block' !== this.listWrapper.style.display) {
+            this.listWrapper.style.display = 'block';
             
         } else {
-            this.list.style.display = 'none';
+            this.listWrapper.style.display = 'none';
         }
         
         if('item' === target.getAttribute('data-role')) {
-            this.value.setAttribute('data-value', target.getAttribute('data-value'));
-            this.value.innerHTML = target.innerHTML;
+            this.valueWrapper.setAttribute('data-value', target.getAttribute('data-value'));
+            this.valueWrapper.innerHTML = target.innerHTML;
             
             null !== this.onchange && this.onchange(target.getAttribute('data-value'));
         }
     },
     initStructure: function(items) {
-        this.value = this.doc.createElement('span');
-        this.value.className = 'yselect-value';
+        this.valueWrapper = this.doc.createElement('span');
+        this.valueWrapper.className = 'yselect-value';
         
         if(undefined !== items) {
             var ret = '';
@@ -143,33 +143,33 @@ YSelect.prototype = {
                 ret += '<span data-role="item" data-value="'+ items[i].value +'">'+ items[i].text +'</span>'
             }
             
-            this.list = this.doc.createElement('div');
-            this.list.className = 'yselect-list';
-            this.list.innerHTML = ret;
+            this.listWrapper = this.doc.createElement('div');
+            this.listWrapper.className = 'yselect-list';
+            this.listWrapper.innerHTML = ret;
             
-            this.value.setAttribute('data-value', items[0].value);
-            this.value.innerHTML = items[0].text;
+            this.valueWrapper.setAttribute('data-value', items[0].value);
+            this.valueWrapper.innerHTML = items[0].text;
                         
         } else {
-            this.list = this.select.querySelector('.yselect-list');
-            var first = this.list.querySelector('[data-role="item"]');
+            this.listWrapper = this.selectWrapper.querySelector('.yselect-list');
+            var first = this.listWrapper.querySelector('[data-role="item"]');
             
-            this.value.setAttribute('data-value', first.getAttribute('data-value'));
-            this.value.innerHTML = first.innerHTML;
+            this.valueWrapper.setAttribute('data-value', first.getAttribute('data-value'));
+            this.valueWrapper.innerHTML = first.innerHTML;
         }
         
-        this.select.appendChild(this.value);
-        this.select.appendChild(this.list);
+        this.selectWrapper.appendChild(this.valueWrapper);
+        this.selectWrapper.appendChild(this.listWrapper);
         
         // 默认值
         var value = null;
         var list = null;
-        if(null !== (value = this.select.getAttribute('data-value'))) {
-            list = this.list.querySelectorAll('[data-role="item"]');
+        if(null !== (value = this.selectWrapper.getAttribute('data-value'))) {
+            list = this.listWrapper.querySelectorAll('[data-role="item"]');
             for(var i=0,len=list.length; i<len; i++) {
                 if(value === list[i].getAttribute('data-value')) {
-                    this.value.setAttribute('data-value', list[i].getAttribute('data-value'));
-                    this.value.innerHTML = list[i].innerHTML;
+                    this.valueWrapper.setAttribute('data-value', list[i].getAttribute('data-value'));
+                    this.valueWrapper.innerHTML = list[i].innerHTML;
                     
                     break;
                 }
@@ -177,7 +177,7 @@ YSelect.prototype = {
         }
     },
     getValue: function() {
-        return this.value.getAttribute('data-value');
+        return this.valueWrapper.getAttribute('data-value');
     },
     /**
      * 渲染
@@ -188,7 +188,7 @@ YSelect.prototype = {
      */
     render: function(id, items) {
         var self = this;
-        var select = this.select = this.doc.getElementById(id);
+        var select = this.selectWrapper = this.doc.getElementById(id);
         
         this.initStructure(items);
         
