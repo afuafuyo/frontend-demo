@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div style="position:absolute; top:100px; left:300px; width:600px; height:400px;">
+    <canvas id="myCanvas" width="600" height="400" style='position:absolute; top:0; left:0;'></canvas>
+</div>
+
+<script>
+function ImageClip(id, options) {
+    this.doc = document;
+
+    this.canvas = this.doc.getElementById(id);
+    this.context = this.canvas.getContext('2d');
+    this.canvasWidth = this.canvas.width;
+    this.canvasHeight = this.canvas.height;
+    this.image = new Image();
+    
+    this.inClipPath = false;
+    this.canMove = false;
+    this.diffX = 0;
+    this.diffY = 0;
+    
+    this.configs = {
+        clipWidth: 400,
+        clipHeight: 200,
+        clipX: -1,
+        clipY: -1
+    };
+    this.init(options);
+}
+ImageClip.prototype = {
+    constructor: ImageClip,
+    init: function(options) {
+        if(undefined !== options) {
+            for(var k in options) {
+                this.configs[k] = options[k];
+            }
+        }
+        
+        if(-1 === this.configs.clipX) {
+            this.configs.clipX = (this.canvasWidth - this.configs.clipWidth) / 2;
+        }
+        if(-1 === this.configs.clipY) {
+            this.configs.clipY = (this.canvasHeight - this.configs.clipHeight) / 2;
+        }
+    },
+    render: function() {
+        this.context.save();
+    
+        // clear
+        this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+        
+        // background image
+        this.context.drawImage(this.image, 0, 0, this.canvasWidth, this.canvasHeight);
+    
+        // mask
+        this.context.fillStyle = 'rgba(0, 0, 0, .6)';
+        this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+        
+        // clip shape
+        this.context.beginPath();
+        this.context.strokeStyle = 'rgb(255, 255, 255)';
+        // this.context.setLineDash([2, 10]);
+        this.context.rect(
+            this.configs.clipX,
+            this.configs.clipY,
+            this.configs.clipWidth,
+            this.configs.clipHeight);
+        this.context.stroke();
+        // this.context.closePath();
+        
+        // clip
+        this.context.clip();
+        
+        // view
+        this.context.drawImage(this.image, 0, 0, this.canvasWidth, this.canvasHeight);
+        
+        this.context.restore();
+    },
+    checkPath: function(e) {
+        if(e.offsetX > this.configs.clipX && e.offsetX < this.configs.clipX + this.configs.clipWidth
+            && e.offsetY > this.configs.clipY && e.offsetY < this.configs.clipY + this.configs.clipHeight) {
+            
+            this.inClipPath = true;
+            
+            return;
+        }
+        
+        this.inClipPath = false;
+    },
+    changePointer: function(e) {
+        if(this.inClipPath/* this.context.isPointInPath(e.offsetX, e.offsetY) */) {
+            this.canvas.style.cursor = 'move';
+            
+        } else {
+            this.canvas.style.cursor = 'default';
+        }
+    },
+    moveClip: function(e) {
+        if(!this.canMove || !this.inClipPath) {
+            return;
+        }
+        
+        this.configs.clipX = e.offsetX - this.diffX;
+        this.configs.clipY = e.offsetY - this.diffY;
+        
+        if(this.configs.clipX <= 0) {
+            this.configs.clipX = 0;
+        }
+        if(this.configs.clipX >= this.canvasWidth - this.configs.clipWidth) {
+            this.configs.clipX = this.canvasWidth - this.configs.clipWidth;
+        }
+        if(this.configs.clipY <= 0) {
+            this.configs.clipY = 0;
+        }
+        if(this.configs.clipY >= this.canvasHeight - this.configs.clipHeight) {
+            this.configs.clipY = this.canvasHeight - this.configs.clipHeight;
+        }
+        
+        this.render();
+    },
+    clip: function(imageUrl) {
+        var _self = this;
+        
+        this.image.onload = function() {
+            _self.render();
+        };
+        this.image.src = imageUrl;
+        
+        this.canvas.onmousemove = function(e) {
+            _self.checkPath(e);
+            _self.changePointer(e);
+            _self.moveClip(e);
+        };
+        this.canvas.onmousedown = function(e) {
+            _self.canMove = true;
+            
+            _self.diffX = e.offsetX - _self.configs.clipX;
+            _self.diffY = e.offsetY - _self.configs.clipY;
+        };
+        this.canvas.onmouseup = function(e) {
+            _self.canMove = false;
+        };
+    }
+};
+
+
+var imgClip = new ImageClip('myCanvas');
+imgClip.clip('./foo.jpg');
+</script> 
+</body>
+</html>
