@@ -80,6 +80,7 @@ function YSelect() {
     this.selectWrapper = null;
     this.valueWrapper = null;
     this.listWrapper = null;
+    this.value = '';
     this.onchange = null;
 }
 YSelect.prototype = {
@@ -112,8 +113,6 @@ YSelect.prototype = {
         this.listWrapper.style.display = 'none';
     },
     eventHandler: function(e) {
-        e = e || window.event;
-        
         e.stopPropagation && e.stopPropagation();
         e.cancelBubble = true;
         
@@ -127,10 +126,10 @@ YSelect.prototype = {
         }
         
         if('item' === target.getAttribute('data-role')) {
-            this.valueWrapper.setAttribute('data-value', target.getAttribute('data-value'));
+            this.value = target.getAttribute('data-value');
             this.valueWrapper.innerHTML = target.innerHTML;
             
-            null !== this.onchange && this.onchange(target.getAttribute('data-value'));
+            null !== this.onchange && this.onchange(this.value);
         }
     },
     initStructure: function(items) {
@@ -147,14 +146,12 @@ YSelect.prototype = {
             this.listWrapper.className = 'yselect-list';
             this.listWrapper.innerHTML = ret;
             
-            this.valueWrapper.setAttribute('data-value', items[0].value);
             this.valueWrapper.innerHTML = items[0].text;
                         
         } else {
             this.listWrapper = this.selectWrapper.querySelector('.yselect-list');
             var first = this.listWrapper.querySelector('[data-role="item"]');
             
-            this.valueWrapper.setAttribute('data-value', first.getAttribute('data-value'));
             this.valueWrapper.innerHTML = first.innerHTML;
         }
         
@@ -165,10 +162,12 @@ YSelect.prototype = {
         var value = null;
         var list = null;
         if(null !== (value = this.selectWrapper.getAttribute('data-value'))) {
+            this.value = value;
+            
             list = this.listWrapper.querySelectorAll('[data-role="item"]');
             for(var i=0,len=list.length; i<len; i++) {
                 if(value === list[i].getAttribute('data-value')) {
-                    this.valueWrapper.setAttribute('data-value', list[i].getAttribute('data-value'));
+                    // 显示选定项
                     this.valueWrapper.innerHTML = list[i].innerHTML;
                     
                     break;
@@ -177,7 +176,7 @@ YSelect.prototype = {
         }
     },
     getValue: function() {
-        return this.valueWrapper.getAttribute('data-value');
+        return this.value;
     },
     /**
      * 渲染
