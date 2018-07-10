@@ -55,7 +55,7 @@
 </head>
 <body>
     
-    <div id="demo" class="yselect" data-value="9" style="width: 120px">
+    <div id="demo" data-value="9" style="width: 120px">
         <div class="yselect-list">
             <span data-role="item" data-value="1">选项1</span>
             <span data-role="item" data-value="2">选项2</span>
@@ -72,13 +72,13 @@
     
     <br/><br/><br/>
     
-    <div id="demo2" class="yselect" data-value="0" style="width: 80px"></div>
+    <div id="demo2" data-value="0" style="width: 80px"></div>
 
 <script>
 function YSelect() {
     this.doc = document;
-    this.selectWrapper = null;
-    this.valueWrapper = null;
+    this.wrapper = null;
+    this.tipWrapper = null;
     this.listWrapper = null;
     this.value = '';
     this.onchange = null;
@@ -127,14 +127,16 @@ YSelect.prototype = {
         
         if('item' === target.getAttribute('data-role')) {
             this.value = target.getAttribute('data-value');
-            this.valueWrapper.innerHTML = target.innerHTML;
+            this.tipWrapper.innerHTML = target.innerHTML;
             
             null !== this.onchange && this.onchange(this.value);
         }
     },
     initStructure: function(items) {
-        this.valueWrapper = this.doc.createElement('span');
-        this.valueWrapper.className = 'yselect-value';
+        this.wrapper.className = 'yselect';
+        
+        this.tipWrapper = this.doc.createElement('span');
+        this.tipWrapper.className = 'yselect-value';
         
         if(undefined !== items) {
             var ret = '';
@@ -146,29 +148,29 @@ YSelect.prototype = {
             this.listWrapper.className = 'yselect-list';
             this.listWrapper.innerHTML = ret;
             
-            this.valueWrapper.innerHTML = items[0].text;
+            this.tipWrapper.innerHTML = items[0].text;
                         
         } else {
-            this.listWrapper = this.selectWrapper.querySelector('.yselect-list');
+            this.listWrapper = this.wrapper.querySelector('.yselect-list');
             var first = this.listWrapper.querySelector('[data-role="item"]');
             
-            this.valueWrapper.innerHTML = first.innerHTML;
+            this.tipWrapper.innerHTML = first.innerHTML;
         }
         
-        this.selectWrapper.appendChild(this.valueWrapper);
-        this.selectWrapper.appendChild(this.listWrapper);
+        this.wrapper.appendChild(this.tipWrapper);
+        this.wrapper.appendChild(this.listWrapper);
         
         // 默认值
         var value = null;
         var list = null;
-        if(null !== (value = this.selectWrapper.getAttribute('data-value'))) {
+        if(null !== (value = this.wrapper.getAttribute('data-value'))) {
             this.value = value;
             
             list = this.listWrapper.querySelectorAll('[data-role="item"]');
             for(var i=0,len=list.length; i<len; i++) {
                 if(value === list[i].getAttribute('data-value')) {
                     // 显示选定项
-                    this.valueWrapper.innerHTML = list[i].innerHTML;
+                    this.tipWrapper.innerHTML = list[i].innerHTML;
                     
                     break;
                 }
@@ -187,7 +189,7 @@ YSelect.prototype = {
      */
     render: function(id, items) {
         var self = this;
-        var select = this.selectWrapper = this.doc.getElementById(id);
+        var select = this.wrapper = this.doc.getElementById(id);
         
         this.initStructure(items);
         
