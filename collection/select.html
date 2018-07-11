@@ -116,7 +116,7 @@ YSelect.prototype = {
         e.stopPropagation && e.stopPropagation();
         e.cancelBubble = true;
         
-        var target = e.target || e.srcElement;
+        var target = e.target;
         
         if('block' !== this.listWrapper.style.display) {
             this.listWrapper.style.display = 'block';
