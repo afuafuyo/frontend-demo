@@ -1,5 +1,10 @@
 /**
  * fetch
+ *
+ * eg.
+ *
+ * new XFetch().fetch(url, options).then(() => {}).then(...);
+ *
  */
 function XFetch() {
     this.xhr = null;
@@ -80,10 +85,10 @@ XFetch.Promise = function(executor) {
     
     this.execute = function() {
         var _self = this;
-        executor(function(data){
+        executor(/* resolve */function(data){
             _self.resolve.call(_self, data);
             
-        }, function(err){
+        }, /* reject */function(err){
             _self.reject.call(_self, err);
         });
     };
@@ -93,22 +98,28 @@ XFetch.Promise = function(executor) {
     }
 };
 XFetch.Promise.prototype.resolve = function(data) {
-    if('pending' === this.status) {
-        this.status = 'accepted';
+    if('pending' !== this.status) {
+        return;
+    }
     
-        var callback = null;
-        
+    this.status = 'accepted';
+
+    var callback = null;
+    var tmp = data;
+
+    try {
         for(var i=0,len=this.thens.length; i<len; i++) {
             if('function' === typeof (callback = this.thens[i])) {
-                data = callback.call(this, data);
+                tmp = callback.call(this, tmp);
             }
         }
+        
+    } catch(e) {
+        this.reject(e);
     }
 };
 XFetch.Promise.prototype.reject = function(err) {
-    if('pending' === this.status || 'accepted' === this.status) {
-        this.status = 'rejected';
-    }
+    this.status = 'rejected';
     
     if(null !== this.rejectFn) {
         this.rejectFn(err);
@@ -142,7 +153,7 @@ XFetch.Request.prototype.init = function(options) {
  * Response
  */
 XFetch.Response = function(options) {
-    this.status = undefined === options.status ? -1 : options.status;
+    this.status = undefined === options.status ? 200 : options.status;
     this.statusText = undefined === options.statusText ? '' : options.statusText;
     this.body = undefined === options.body ? null : options.body;
 };
