@@ -38,8 +38,11 @@ XFetch.prototype = {
     },
     fetch: function(url, options) {
         var _self = this;
-        
         var InternalPromise = window.Promise || XFetch.Promise;
+        
+        if(undefined === options) {
+            options = {};
+        }
         
         return new InternalPromise(function(resolve, reject){
             var req = new XFetch.Request(url, options);
@@ -138,15 +141,10 @@ XFetch.Promise.prototype.catch = function(fn) {
 XFetch.Request = function(url, options) {
     this.url = url;
     
-    this.init(options);
-};
-XFetch.Request.prototype.init = function(options) {
-    var opt = undefined === options ? {} : options;
-    
-    this.method = undefined === opt.method ? 'GET' : opt.method.toUpperCase();
-    this.body = undefined === opt.body ? null : opt.body;
-    this.headers = undefined === opt.headers ? null : opt.headers;
-    this.withCredentials = undefined === opt.withCredentials ? false : true;
+    this.method = undefined === options.method ? 'GET' : options.method.toUpperCase();
+    this.body = undefined === options.body ? null : options.body;
+    this.headers = undefined === options.headers ? null : options.headers;
+    this.withCredentials = undefined === options.withCredentials ? false : true;
 };
 
 /**
