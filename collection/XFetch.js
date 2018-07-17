@@ -76,7 +76,7 @@ XFetch.prototype = {
             // headers
             if(null !== req.headers) {
                 for(var k in req.headers) {
-                    this.xhr.setRequestHeader(k, req.headers[k]);
+                    _self.xhr.setRequestHeader(k, req.headers[k]);
                 }
             }
             
