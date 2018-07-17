@@ -5,6 +5,13 @@
  *
  * new XFetch().fetch(url, options).then(() => {}).then(...);
  *
+ * options:
+ *
+ * method: String  请求方法
+ * body: String  请求实体
+ * headers: String  头字段
+ * withCredentials: Boolean
+ *
  */
 function XFetch() {
     this.xhr = null;
