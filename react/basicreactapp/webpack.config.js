@@ -21,7 +21,7 @@ module.exports = {
                 use: {
                     loader: 'babel-loader'
                     
-                    // 这个 option 等同于 .babelrc 文件的作用 告诉 babel 如何转换代码
+                    // 这个 options 等同于 .babelrc 文件的作用 告诉 babel 如何转换代码
                     /*
                     ,options: {
                         // 用到了两个 babel 预设
@@ -53,7 +53,7 @@ module.exports = {
                     }
                 ]
             }
-        ],
+        ]
     },
     plugins: [
         new HtmlWebpackPlugin({
