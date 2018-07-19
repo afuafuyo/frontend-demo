@@ -19,14 +19,18 @@ module.exports = {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'babel-loader',
-                    options: {
+                    loader: 'babel-loader'
+                    
+                    // 这个 option 等同于 .babelrc 文件的作用 告诉 babel 如何转换代码
+                    /*
+                    ,options: {
                         // 用到了两个 babel 预设
                         // 一个用来转译 es6 代码
                         // 一个用来转译 react 代码
                         // 这两个预设需手动安装
                         presets: ['es2015', 'react']
                     }
+                    */
                 }
             },
             {
