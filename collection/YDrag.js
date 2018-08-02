@@ -1,7 +1,7 @@
 /**
  * js拖动类 
  * 一个对象只能够使一个容器得到拖动
- * @author yulipu
+ * @author afu
  *
  * 用法1 普通div
  *	<div id="outer">

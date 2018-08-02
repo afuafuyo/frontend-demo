@@ -1,7 +1,7 @@
 /**
  * waterfall
  *
- * @author yu
+ * @author afu
  */
 function WaterFall() {
     this.doc = document;

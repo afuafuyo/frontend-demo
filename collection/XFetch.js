@@ -1,6 +1,8 @@
 /**
  * fetch
  *
+ * @author afu
+ *
  * eg.
  *
  * new XFetch().fetch(url, options).then(() => {}).then(...);

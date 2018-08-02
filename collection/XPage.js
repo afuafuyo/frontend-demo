@@ -4,7 +4,7 @@
  * @param {Number} totalRecords 记录总数
  * @param {Number} pageSize 分页大小
  *
- * var page = new YPage(12, 10);
+ * var page = new XPage(12, 10);
  *
  * page.setConfig('showTotal', true);
  *
@@ -47,7 +47,7 @@
 }
  *
  */
-function YPage(totalRecords, pageSize) {
+function XPage(totalRecords, pageSize) {
     this.totalRecords = totalRecords;
     this.pageSize = pageSize;
     this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
@@ -66,8 +66,8 @@ function YPage(totalRecords, pageSize) {
         showLast: true
     };
 }
-YPage.prototype = {
-    constructor: YPage,
+XPage.prototype = {
+    constructor: XPage,
     setConfig: function(key, value) {
         this.config[key] = value;
     },

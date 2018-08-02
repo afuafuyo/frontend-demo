@@ -1,7 +1,7 @@
 /**
  * 倒计时
  */
-function Timer() {
+function XTimer() {
     this.days = 0;
     this.hours = 0;
     this.minutes = 0;
@@ -9,11 +9,18 @@ function Timer() {
 
     this.staticTime = 0;
 }
-Timer.prototype = {
-    constructor : Timer
+XTimer.prototype = {
+    constructor : XTimer
+    
+    /**
+     * 设置毫秒时间戳
+     *
+     * @param {Number} timestamp
+     */
     ,setStaticTime: function(timestamp) {
         this.staticTime = timestamp;
     }
+    
     ,diff : function() {
         var t = new Date().getTime();
         var x = this.staticTime - t;
