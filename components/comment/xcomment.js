@@ -117,9 +117,13 @@ XComment.prototype = {
             _self.configs.onSubmit(_self.getValue());
         }
     },
+    deleteEvent: function() {
+        this.widgetsWrapper.onmousedown = null;
+        this.widgetsWrapper.onclick = null;
+        this.submitButton.onclick = null;
+    },
     handlerWidgetClickEvent: function(e) {
-        e = e || window.event;
-        var target = e.target || e.srcElement;
+        var target = e.target;
         
         var role = target.getAttribute('data-role');
         
@@ -152,31 +156,110 @@ XComment.prototype = {
         return this.textArea.value;
     },
     destroy: function() {
+        this.deleteEvent();
         
+        this.widgetsWrapper = null;
+        this.contentWrapper = null;
+        this.faceWrapper = null;
+        this.container = null;
+        
+        for(var widget in this.widgetControllerInstances) {
+            if(undefined !== widget.destroy) {
+                widget.destroy();
+            }
+        }
     }
 };
 
 /**
- * Util
+ * Event
  */
-XComment.util = {
+XComment.event = (function() {
+
+var XEvent = function() {
     /**
-     * 添加事件处理器
+     * {
+     *    'click': [
+     *      {
+     *        target: 'xxx',
+     *        type: 'click',
+     *        handler: 'xxx',
+     *        thisObject: 'xxx'
+     *      },
+     *      ...
+     *    ]
+     * }
+     */
+    this.$eventBinMap = {};
+};
+XEvent.prototype = {
+    constructor: XEvent,
+    
+    /**
+     * 保存 event
+     *
+     * @param {Element} target
+     * @param {String} type
+     * @param {Function} handler
+     * @param {Object} thisObject
+     */
+    $insertEventBin: function(target, type, handler, thisObject) {
+        var map = this.$eventBinMap;
+        
+        if(undefined === map[type]) {
+            map[type] = [];
+        }
+        
+        var eventBin = {
+            target: target,
+            type: type,
+            handler: handler,
+            thisObject: thisObject
+        };
+        
+        map[type].push(eventBin);
+    },
+    
+    /**
+     * 事件代理
+     *
+     * @param {Event} e
+     */
+    $eventProxy: function(e) {
+        var target = e.target;
+        var type = e.type;
+        var map = this.$eventBinMap;
+        
+        if(undefined === map[type]) {
+            return;
+        }
+        
+        for(var i=0, len=map[type].length; i<len; i++) {
+            if(target === map[type][i].target) {
+                map[type][i].handler.call(map[type][i].thisObject, e);
+                
+                break;
+            }
+        }
+    },
+    
+    /**
+     * 添加事件监听
      *
      * @param {Element} element
      * @param {String} type
      * @param {Function} handler
+     * @param {Object} thisObject
      */
-    addEventListener: function(element, type, handler) {
-        if(element.addEventListener) {
-            element.addEventListener(type, handler, false);
+    addEventListener: function(element, type, handler, thisObject) {
+        var _self = this;
         
-        } else if(element.attachEvent) {
-            element.attachEvent('on' + type, handler);
+        this.$insertEventBin(element, type, handler, thisObject);
         
-        } else {
-            element['on' + type] = handler;
-        }
+        // Listen the specified event
+        element.addEventListener(type, function(e) {
+            _self.$eventProxy(e);
+        }, false);
     },
     
     /**
@@ -187,17 +270,25 @@ XComment.util = {
      * @param {Function} handler
      */
     removeEventListener: function(element, type, handler) {
-        if(element.removeEventListener) {
-            element.removeEventListener(type, handler, false);
+        var map = this.$eventBinMap;
         
-        } else if(element.detachEvent) {
-            element.detachEvent('on' + type, handler);
+        if(undefined === map[type]) {
+            return;
+        }
         
-        } else {
-            element['on' + type] = null;
+        for(var i=0, len=map[type].length; i<len; i++) {
+            if(element === map[type][i].target && handler === map[type][i].handler) {
+                map[type].splice(i, 1);
+                
+                break;
+            }
         }
     }
 };
+
+return new XEvent();
+
+})();
 
 /**
  * 部件容器
@@ -249,15 +340,13 @@ function XCommentEmoji(button) {
             _self.handlerPopClick(e);
         };
         
-        XComment.util.addEventListener(document, 'click', function(e){
+        XComment.event.addEventListener(document.body, 'click', function(e){
             _self.handlerPopClose(e);
         });
     };
     
     this.handlerPopClick = function(e) {
-        e = e || window.event;
-        
-        var target = e.target || e.srcElement;
+        var target = e.target;
         var role = target.getAttribute('data-role');
         
         var start = this.xComment.textArea.selectionStart;
@@ -278,14 +367,12 @@ function XCommentEmoji(button) {
         }
     };
     
-    this.handlerPopClose = function(e) {
-        e = e || window.event;
-        
+    this.handlerPopClose = function(e) {        
         if(this.closed) {
             return;
         }
         
-        var target = e.target || e.srcElement;
+        var target = e.target;
         var shouldClose = true;
         
         while(null !== target && 'BODY' !== target.nodeName.toUpperCase()) {
