@@ -164,8 +164,8 @@ XComment.prototype = {
         this.container = null;
         
         for(var widget in this.widgetControllerInstances) {
-            if(undefined !== widget.destroy) {
-                widget.destroy();
+            if(undefined !== this.widgetControllerInstances[widget].destroy) {
+                this.widgetControllerInstances[widget].destroy();
             }
         }
     }
