@@ -7,7 +7,7 @@ function XComment(options) {
     this.doc = document;
     this.container = null;
     this.submitButton = null;
-    this.faceWrapper = null;
+    this.avatarWrapper = null;
     this.contentWrapper = null;
     this.textArea = null;
     this.widgetsWrapper = null;
@@ -47,9 +47,9 @@ XComment.prototype = {
         this.container.className = 'xcomment-relative xcomment-form';
                 
         // face
-        this.faceWrapper = this.doc.createElement('section');
-        this.faceWrapper.className = 'xcomment-form-face';
-        this.faceWrapper.innerHTML = '<img class="xcomment-form-avatar" src="'+ this.configs.avatar +'">';
+        this.avatarWrapper = this.doc.createElement('section');
+        this.avatarWrapper.className = 'xcomment-form-face';
+        this.avatarWrapper.innerHTML = '<img class="xcomment-form-avatar" src="'+ this.configs.avatar +'">';
         
         // content
         this.initContentStructure();
@@ -61,7 +61,7 @@ XComment.prototype = {
         this.initEvent();
         
         // combine
-        this.container.appendChild(this.faceWrapper);
+        this.container.appendChild(this.avatarWrapper);
         this.container.appendChild(this.contentWrapper);
         this.container.appendChild(this.widgetsWrapper);
     },
@@ -160,7 +160,7 @@ XComment.prototype = {
         
         this.widgetsWrapper = null;
         this.contentWrapper = null;
-        this.faceWrapper = null;
+        this.avatarWrapper = null;
         this.container = null;
         
         for(var widget in this.widgetControllerInstances) {
