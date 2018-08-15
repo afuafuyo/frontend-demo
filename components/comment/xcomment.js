@@ -386,11 +386,11 @@ function XCommentEmoji(button) {
         }
                     
         if(shouldClose) {
-            this.destroy();
+            this.close();
         }
     };
     
-    this.destroy = function() {
+    this.close = function() {
         if(null !== this.xComment.widgetsWrapper.querySelector('.xcomment-form-pop')) {
             this.xComment.widgetsWrapper.removeChild(this.pop);
         }
@@ -414,5 +414,7 @@ function XCommentEmoji(button) {
         this.render();
         this.xComment.textArea.focus();
     };
+    
+    this.destroy = function() {};
 }
 XComment.registerWidgetController('emoji', XCommentEmoji);
