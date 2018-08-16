@@ -31,7 +31,8 @@ config.entry.app.unshift(
 var server = new WebpackDevServer(webpack(config), {
     hot: true,
     disableHostCheck: true,
-    publicPath: config.output.publicPath
+    publicPath: config.output.publicPath,
+    // proxy: {}
 });
 server.listen(8080, "localhost", () => {
     console.log('listen on 8080')
