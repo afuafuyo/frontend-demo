@@ -143,6 +143,7 @@ XCommentMobile.prototype = {
     },
     deleteEvent: function() {
         this.submitButton.onclick = null;
+        this.widgetsPop.onclick = null;
     },
     
     /**
