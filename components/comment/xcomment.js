@@ -181,10 +181,10 @@ var XEvent = function() {
      * {
      *    'click': [
      *      {
-     *        target: 'xxx',
+     *        target: 'Element',
      *        type: 'click',
-     *        handler: 'xxx',
-     *        thisObject: 'xxx'
+     *        handler: 'fun',
+     *        thisObject: 'obj'
      *      },
      *      ...
      *    ]
@@ -254,12 +254,18 @@ XEvent.prototype = {
     addEventListener: function(element, type, handler, thisObject) {
         var _self = this;
         
-        this.$insertEventBin(element, type, handler, thisObject);
+        if(undefined === thisObject) {
+            thisObject = null;
+        }
         
-        // Listen the specified event
-        element.addEventListener(type, function(e) {
-            _self.$eventProxy(e);
-        }, false);
+        if(undefined === this.$eventBinMap[type]) {
+            // Listen the specified event
+            document.body.addEventListener(type, function(e) {
+                _self.$eventProxy(e);
+            }, false);
+        }
+        
+        this.$insertEventBin(element, type, handler, thisObject);
     },
     
     /**
