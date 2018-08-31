@@ -6,7 +6,7 @@
  * eg.
  *
  * var c = new XCookie();
- * c.setCookie('key', 'value', 'expiresHours');  // 设置 cookie
+ * c.setCookie('key', 'value', expiresHours);  // 设置 cookie
  * var val = c.getCookie('key');  // 得到 cookie 值
  * c.deleteCookie('key');  // 删除 cookie
  *
@@ -50,18 +50,18 @@ XCookie.prototype = {
      * 获取 cookie
      *
      * @param {String} name
-     * @return String | null
+     * @return String
      */
     ,getCookie: function(name) {
         var cookies = this.doc.cookie;
         
         if('' === cookies) {
-            return null;
+            return '';
         }
         
         // cookie 'xxx=xxx; xxx=xxx'
-        var arr = cookies.split('; ');
         var ret = '',
+        var arr = cookies.split('; ');
         var tmp = null;
             
         for(var i=0; i<arr.length; i++) {
