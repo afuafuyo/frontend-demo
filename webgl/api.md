@@ -58,7 +58,7 @@
     count 绘制需要用到多少个顶点
 
 6. attribute 变量
-    一般用于传输和顶点有关的数据
+    一般用于传输和顶点有关的数据 从外部往顶点着色器传递数据
 
     格式
         attribute vec4 a_Position;
