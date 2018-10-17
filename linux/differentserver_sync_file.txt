@@ -3,44 +3,33 @@
 #echo $PATH
 
 # 变量
-USER_REMOTE='evtadmin'
-IP_REMOTE='123.125.211.39'
-# 远程目录
-DIR_REMOTE='/home/builder/htpush'
-# 本地目录
-SRC_LOCAL="/home/builder/sp_dist"
+REMOTE="root@172.16.1.166:/usr/local/src/"
+SRC="/usr/local/src/"
 
 #OS=`uname -s`
 
 # 同步函数
 sync_sproot() {
-	SRC=$1
-	REMOTEINFO=" ${USER_REMOTE}@${IP_REMOTE}:$DIR_REMOTE/"
-	EXCLUDES=$2
-	
-	echo "sync ..."
-
-	rsync -vrptE -e "ssh -p10086" ${EXCLUDES} \
-	${SRC} ${REMOTEINFO}
+    EXCLUDES=""
+    rsync -vr -e "ssh -p 22" ${EXCLUDES} ${SRC} ${REMOTE}
 }
 
 
 # 检查参数
 if [ -z "$1" ]; then
-	echo "Usage: $0 [ht]"
-	exit 1;
+    echo "Usage: $0 [ht]"
+    exit 1;
 fi
 
 # 开始执行
 for i in $*
 do
-	case "$i" in
-	'ht')
-		SRC_FOLDERS="${SRC_LOCAL}/ht"
-		SRC_EXCLUDES=""
-		sync_sproot "${SRC_FOLDERS}" "${SRC_EXCLUDES}"
-		;;
-	*)
-	echo "no such node"
-	esac
+    case "$i" in
+    'ht')
+        SRC_EXCLUDES=""
+        sync_sproot "${SRC}" "${SRC_EXCLUDES}"
+        ;;
+    *)
+    echo "no such node"
+    esac
 done
