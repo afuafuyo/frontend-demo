@@ -2,6 +2,22 @@
  * waterfall
  *
  * @author afu
+ *
+ * structure
+ *
+ * -----------------
+ * ||----|   |----||
+ * ||    |   |    ||
+ * ||    |   |    ||
+ * ||    |   |    ||
+ * ||item|   |item||
+ * ||    |   |    ||
+ * ||    |   |    ||
+ * ||    |   |    ||
+ * ||----|   |----||
+ *       |gap|
+ * -----------------
+ *
  */
 function WaterFall() {
     this.doc = document;
@@ -30,9 +46,10 @@ WaterFall.prototype = {
     },
     // 生成一个全是零的数组
     fillZero: function(num) {
-        var ret = new Array(num);
+        var ret = []/* new Array(num) */;
         for(var i=0; i<num; i++) {
-            ret[i] = 0;
+            // ret[i] = 0;
+            ret.push(0);
         }
         
         return ret;
