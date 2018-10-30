@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+    .item {
+        position: absolute;
+        width: 200px;
+    }
+    .item img {
+        max-width: 100%;
+    }
+    </style>
+</head>
+<body>
+<div style="position: relative; border: 1px solid red; width: 900px; margin: 0 auto">
+    <div class="item"><img src="https://img.douyucdn.cn/data/yuba/weibo/2018/10/30/201810300541327327268638606.png.webp?i=3720a4d2d5445205f3e18ec41fba012804" alt=""></div>
+    <div class="item"><img src="https://img.douyucdn.cn/data/yuba/weibo/2018/10/30/201810300541327327268638606.png.webp?i=3720a4d2d5445205f3e18ec41fba012804" alt=""></div>
+    <div class="item"><img src="https://img.douyucdn.cn/data/yuba/weibo/2018/10/30/201810300541327327268638606.png.webp?i=3720a4d2d5445205f3e18ec41fba012804" alt=""></div>
+    <div class="item"><img src="https://img.douyucdn.cn/data/yuba/weibo/2018/10/30/201810300541327327268638606.png.webp?i=3720a4d2d5445205f3e18ec41fba012804" alt=""></div>
+    <div class="item"><img src="https://img.douyucdn.cn/data/yuba/weibo/2018/10/30/201810300541327327268638606.png.webp?i=3720a4d2d5445205f3e18ec41fba012804" alt=""></div>
+</div>
+
+<script src="./WaterFall.js"></script>
+<script>
+var w = new WaterFall({
+    itemClassName: 'item',
+    wrapperWidth: 900,
+    itemWidth: 200
+});
+w.fall('img', function() {
+    console.log(1);
+});
+</script>
+</body>
+</html>

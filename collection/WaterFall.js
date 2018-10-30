@@ -19,22 +19,52 @@
  * -----------------
  *
  */
-function WaterFall() {
+function WaterFall(options) {
     this.doc = document;
     
-    this.colElementClass = 'x-wf-col';
-    this.wrapperWidth = 1200;
-    this.colWidth = 224;
-    this.colGapVertical = 30;
+    this.configs = {
+        itemClassName: '',
+        wrapperWidth: 0,
+        itemWidth: 1,
+        verticalGap: 30
+    };
     
-    this.batchFalls = 0;
+    /**
+     * 回调函数
+     */
     this.callback = null;
-    this.colLength = Math.floor(this.wrapperWidth / this.colWidth);
-    this.colGapHorizontal = Math.floor(this.wrapperWidth % this.colWidth / (this.colLength - 1));
-    this.heightArr = this.fillZero(this.colLength);
+    
+    /**
+     * 总共元素数量
+     */
+    this.batchFalls = 0;
+    
+    this.config(options);
+    this.init();
 }
 WaterFall.prototype = {
     constructor: WaterFall,
+    config: function(options) {
+        for(var k in options) {
+            this.configs[k] = options[k];
+        }
+    },
+    init: function() {
+        /**
+         * 列数
+         */
+        this.columnNumber = Math.floor(this.configs.wrapperWidth / this.configs.itemWidth);
+        
+        /**
+         * 列的左右间距
+         */
+        this.columnGap = Math.floor(this.configs.wrapperWidth % this.configs.itemWidth / (this.columnNumber - 1));
+        
+        /**
+         * 每一列的高度数组
+         */
+        this.heightArr = this.fillZero(this.columnNumber);
+    },
     // 查找类名为指定值的父元素
     findParent: function(obj, className) {
         var ret = obj.parentNode;
@@ -69,19 +99,19 @@ WaterFall.prototype = {
         return idx;
     },
     // 布局
-    imgLoaded: function(element, isColElement) {
-        var colElement = isColElement
+    imgLoaded: function(element, isItemElement) {
+        var item = isItemElement
             ? element
-            : this.findParent(element, this.colElementClass);
+            : this.findParent(element, this.configs.itemClassName);
         var minIndex = this.minIndex();
         
         // 放到一行中最低的地方
-        colElement.style.cssText = 'top:'+ this.heightArr[minIndex] +
-            'px; left:'+ (this.colWidth*minIndex + this.colGapHorizontal*minIndex) +'px;';
+        item.style.cssText = 'position: absolute; top:'+ this.heightArr[minIndex]
+            + 'px; left:'+ (this.configs.itemWidth * minIndex + this.columnGap * minIndex) +'px;';
         
         // 当前元素的高度存入数组
-        this.heightArr[minIndex] = this.heightArr[minIndex] +
-            colElement.offsetHeight + this.colGapVertical;
+        this.heightArr[minIndex] = this.heightArr[minIndex]
+            + item.offsetHeight + this.configs.verticalGap;
         
         this.batchFalls--;
         if(this.batchFalls <= 0) {
@@ -92,22 +122,22 @@ WaterFall.prototype = {
     /**
      * 布局方法
      *
-     * @param String colElementClass 需要布局的元素
+     * @param String itemImageSelector 每一项中的图片选择器
      * @param Function callback 回调
      */
-    fall: function(colElementClass, colImageSelector, callback) {
+    fall: function(itemImageSelector, callback) {
         var _self = this;
-        var colElements = this.doc.querySelectorAll('.' + colElementClass);
         
-        this.colElementClass = colElementClass;
-        this.batchFalls = colElements.length;
+        var allItems = this.doc.querySelectorAll('.' + this.configs.itemClassName);
+        
+        this.batchFalls = allItems.length;
         this.callback = callback;
         
         var img = null;
         for(var i=0; i<this.batchFalls; i++) {
-            if(null !== (img = colElements[i].querySelector(colImageSelector))) {
+            if(null !== (img = allItems[i].querySelector(itemImageSelector))) {
                 if(img.complete) {
-                    this.imgLoaded(img, false);
+                    this.imgLoaded(allItems[i], true);
                     
                 } else {
                     img.onload = function(e){
@@ -118,7 +148,7 @@ WaterFall.prototype = {
                 continue;
             }
             
-            this.imgLoaded(colElements[i], true);
+            this.imgLoaded(allItems[i], true);
         }
         img = null;
     }
