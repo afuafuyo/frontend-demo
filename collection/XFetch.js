@@ -5,7 +5,9 @@
  *
  * eg.
  *
- * new XFetch().fetch(url, options).then(() => {}).then(...);
+ * new XFetch().fetch(url, options)
+ *      .then(() => {})
+ *      .catch((e) => {});
  *
  * options:
  *
@@ -47,7 +49,7 @@ XFetch.prototype = {
     },
     fetch: function(url, options) {
         var _self = this;
-        var InternalPromise = window.Promise || XFetch.Promise;
+        var InternalPromise = /* window.Promise || */ XFetch.Promise;
         
         if(undefined === options) {
             options = {};
