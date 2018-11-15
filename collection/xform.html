@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XForm</title>
+    <script src="./XForm.js"></script>
+    <style type="text/css" rel="stylesheet">
+    form {
+        width: 600px;
+        margin: 0 auto;
+    }
+    form div {
+        margin-top: 40px;
+    }
+    form div input[type="text"] {
+        display: block;
+        width: 100%;
+        height: 32px;
+        line-height: 32px;
+    }
+    .xform-style-normal-field {}
+    .xform-style-normal-tip {color: blue;}
+    .xform-style-success-field {}
+    .xform-style-success-tip {color: green;}
+    .xform-style-error-field {}
+    .xform-style-error-tip {color: red;}
+    </style>
+</head>
+<body>
+<form action="">
+    <div><input type="text" id="name"><span id="nametip"></span></div>
+    <div><input type="text" id="email"><span id="emailtip"></span></div>
+    <div><input type="text" id="phone"><span id="phonetip"></span></div>
+    <div><button type="button" onclick="f.validate()">验证</button></div>
+</form>
+<script>
+var f = new XForm();
+
+f.checkAccount('name', {callback:function(){
+    console.log(123);
+}});
+f.checkEmail('email');
+f.checkMobile('phone');
+</script>
+</body>
+</html>
