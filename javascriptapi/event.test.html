@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="./XEvent.js"></script>
+</head>
+<body>
+<button id="btn">点击</button>
+
+<script>
+var e = new XEvent();
+var btn = document.getElementById('btn');
+
+function Demo() {
+    this.init();
+    
+    this.unbind = function() {
+        console.log('unbind event.');
+        
+        e.removeEventListener(btn, 'click', this.say)
+    }
+}
+Demo.prototype.init = function() {
+    console.log('init bind event.');
+    
+    e.addEventListener(btn, 'click', this.say, this);
+}
+Demo.prototype.say = function(e) {
+    this.unbind()
+};
+
+
+
+new Demo();
+
+</script>
+</body>
+</html>
