@@ -31,6 +31,7 @@
     <div><input type="text" id="name"><span id="nametip"></span></div>
     <div><input type="text" id="email"><span id="emailtip"></span></div>
     <div><input type="text" id="phone"><span id="phonetip"></span></div>
+    <div><input type="text" id="other"><span id="othertip"></span></div>
     <div><button type="button" onclick="f.validate()">验证</button></div>
 </form>
 <script>
@@ -41,6 +42,11 @@ f.checkAccount('name', {callback:function(){
 }});
 f.checkEmail('email');
 f.checkMobile('phone');
+f.checkOther('other', {
+    minLength: 1,
+    infoText : '至少一个字符',
+    errorText : '内容不能为空'
+});
 </script>
 </body>
 </html>

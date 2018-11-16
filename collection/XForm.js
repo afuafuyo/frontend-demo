@@ -23,7 +23,7 @@
  *  f.checkVerifyCode(inputId);
  *  f.checkOther(inputId, {
  *      regular : [],  // 可以定义正则表达式
- *      minlength : 4,  // 可以定义输入最短
+ *      minLength : 4,  // 可以定义输入最短
  *      infoText : '最少4位',  // focus 提示
  *      errorText : '输入错误了',  // 错误提示
  *      successText : '输入正确',  // 正确提示
@@ -58,7 +58,7 @@ function XForm() {
     this.rulesConfig = {
         standard : {
             regular : [],
-            minlength : 0,
+            minLength : 0,
             infoText : '',
             errorText : '',
             successText : '',
@@ -66,7 +66,7 @@ function XForm() {
         }
         ,account : {
             regular : [/^[\u4e00-\u9fa5|_a-zA-Z0-9]{4,15}$/, /[\u4e00-\u9fa5a-zA-Z_]+/],
-            minlength : 4,
+            minLength : 4,
             infoText : '4-15 位字母、数字或汉字组成',
             errorText : '您输入的账号有错误',
             successText : '',
@@ -74,7 +74,7 @@ function XForm() {
         }
         ,email : {
             regular : [/^[a-zA-Z0-9_\.\-]+\@([a-zA-Z0-9\-]+\.)+[a-zA-Z0-9]{2,4}$/],
-            minlength : 0,
+            minLength : 0,
             infoText : '邮箱可用于登录和找回密码',
             errorText : '您输入的邮箱有错误',
             successText : '',
@@ -82,14 +82,14 @@ function XForm() {
         }
         ,verifyCode : {
             regular : [/^[A-Za-z0-9]{4}$/],
-            minlength : 0,
+            minLength : 0,
             infoText : '请输入验证码，不区分大小写',
             errorText : '您输入的验证码有误',
             successText : ''
         }
         ,mobile : {
             regular : [/^1[34578]\d{9}$|^0\d{2,3}\d{7,8}?$/],
-            minlength : 0,
+            minLength : 0,
             infoText : '手机号用于找回密码，接收短信',
             errorText : '您输入的手机有错误',
             successText : '',
@@ -155,7 +155,7 @@ XForm.prototype = {
     ,blurField: function(id, config) {
         var hasError = false;
         var regLength = config.regular.length;
-        var minLength = config.minlength;
+        var minLength = config.minLength;
         
         var field = this.doc.getElementById(id);
         var tip = this.getTipElement(id);
