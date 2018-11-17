@@ -65,7 +65,7 @@ function XForm() {
             callback : null
         }
         ,account : {
-            regular : [/^[\u4e00-\u9fa5|_a-zA-Z0-9]{4,15}$/, /[\u4e00-\u9fa5a-zA-Z_]+/],
+            regular : [/^[_A-Za-z0-9\-\u4e00-\u9fa5]{4,15}$/],
             minLength : 4,
             infoText : '4-15 位字母、数字或汉字组成',
             errorText : '您输入的账号有错误',
