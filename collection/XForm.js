@@ -22,7 +22,7 @@
  *  f.checkMobile(inputId);
  *  f.checkVerifyCode(inputId);
  *  f.checkOther(inputId, {
- *      regular : [],  // 可以定义正则表达式
+ *      regular : null,  // 可以定义正则表达式
  *      minLength : 4,  // 可以定义输入最短
  *      infoText : '最少4位',  // focus 提示
  *      errorText : '输入错误了',  // 错误提示
@@ -57,7 +57,7 @@ function XForm() {
     // 规则配置
     this.rulesConfig = {
         standard : {
-            regular : [],
+            regular : null,
             minLength : 0,
             infoText : '',
             errorText : '',
@@ -65,7 +65,7 @@ function XForm() {
             callback : null
         }
         ,account : {
-            regular : [/^[_A-Za-z0-9\-\u4e00-\u9fa5]{4,15}$/],
+            regular : /^[_A-Za-z0-9\-\u4e00-\u9fa5]{4,15}$/,
             minLength : 4,
             infoText : '4-15 位字母、数字或汉字组成',
             errorText : '您输入的账号有错误',
@@ -73,7 +73,7 @@ function XForm() {
             callback : null
         }
         ,email : {
-            regular : [/^[a-zA-Z0-9_\.\-]+\@([a-zA-Z0-9\-]+\.)+[a-zA-Z0-9]{2,4}$/],
+            regular : /^[a-zA-Z0-9_\.\-]+\@([a-zA-Z0-9\-]+\.)+[a-zA-Z0-9]{2,4}$/,
             minLength : 0,
             infoText : '邮箱可用于登录和找回密码',
             errorText : '您输入的邮箱有错误',
@@ -81,14 +81,14 @@ function XForm() {
             callback : null
         }
         ,verifyCode : {
-            regular : [/^[A-Za-z0-9]{4}$/],
+            regular : /^[A-Za-z0-9]{4}$/,
             minLength : 0,
             infoText : '请输入验证码，不区分大小写',
             errorText : '您输入的验证码有误',
             successText : ''
         }
         ,mobile : {
-            regular : [/^1[34578]\d{9}$|^0\d{2,3}\d{7,8}?$/],
+            regular : /^1[34578]\d{9}$|^0\d{2,3}\d{7,8}?$/,
             minLength : 0,
             infoText : '手机号用于找回密码，接收短信',
             errorText : '您输入的手机有错误',
@@ -154,7 +154,6 @@ XForm.prototype = {
      */
     ,blurField: function(id, config) {
         var hasError = false;
-        var regLength = config.regular.length;
         var minLength = config.minLength;
         
         var field = this.doc.getElementById(id);
@@ -167,13 +166,9 @@ XForm.prototype = {
         }
         
         // 如果已经错误 就没必要再验证其他条件了
-        if(!hasError && regLength > 0) {
-            for(var i=0; i<regLength; i++) {
-                if(!config.regular[i].test(value)) {
-                    hasError = true;
-                    
-                    break;
-                }
+        if(!hasError && null !== config.regular) {
+            if( !config.regular.test(value) ) {
+                hasError = true;
             }
         }
         
