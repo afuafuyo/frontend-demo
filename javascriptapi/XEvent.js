@@ -53,8 +53,6 @@ XEvent.prototype = {
      * @param {Object} thisObject
      */
     on: function(eventName, handler, thisObject) {
-        var _self = this;
-        
         if(undefined === thisObject) {
             thisObject = null;
         }
@@ -74,6 +72,10 @@ XEvent.prototype = {
         
         if(undefined === map[eventName]) {
             return;
+        }
+        
+        if(undefined === thisObject) {
+            thisObject = null;
         }
         
         for(var i=0, len=map[eventName].length, bin=null; i<len; i++) {
