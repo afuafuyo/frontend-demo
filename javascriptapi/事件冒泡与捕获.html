@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body style="height: 400px; border: 1px solid red;">
+
+<div id="inner" style="width: 200px; height: 200px; border: 1px solid green;"></div>
+
+<script>
+// true 表示在捕获阶段触发事件     点击 inner, body 优先捕获事件 所以结果为 1 2
+// false 表示在冒泡阶段触发事件    点击 inner, body 最后接到冒泡 所以结果为 2 1
+document.getElementsByTagName('body')[0].addEventListener('click', function(e) {
+    alert(1);
+}, false);
+
+document.getElementById('inner').addEventListener('click', function(e) {
+    alert(2);
+}, false);
+</script>
+</body>
+</html>

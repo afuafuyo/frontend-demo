@@ -1,9 +1,12 @@
+/**
+ * Event 自定义事件
+ */
 var XEvent = function() {
     /**
      * {
-     *    'click': [
+     *    'eventName': [
      *      {
-     *        target: 'Element',
+     *        target: this,
      *        type: 'click',
      *        handler: 'fun',
      *        thisObject: 'obj'
@@ -21,97 +24,86 @@ XEvent.prototype = {
     /**
      * 保存 event
      *
-     * @param {Element} target
-     * @param {String} type
+     * @param {String} eventName
      * @param {Function} handler
      * @param {Object} thisObject
      */
-    $insertEventBin: function(target, type, handler, thisObject) {
+    $insertEventBin: function(eventName, handler, thisObject) {
         var map = this.$eventBinMap;
         
-        if(undefined === map[type]) {
-            map[type] = [];
+        if(undefined === map[eventName]) {
+            map[eventName] = [];
         }
         
         var eventBin = {
-            target: target,
-            type: type,
+            target: this,
+            type: eventName,
             handler: handler,
             thisObject: thisObject
         };
         
-        map[type].push(eventBin);
-    },
-    
-    /**
-     * 事件代理
-     *
-     * @param {Event} e
-     */
-    $eventProxy: function(e) {
-        var target = e.target;
-        var type = e.type;
-        var map = this.$eventBinMap;
-        
-        if(undefined === map[type]) {
-            return;
-        }
-        
-        for(var i=0, len=map[type].length; i<len; i++) {
-            if(target === map[type][i].target) {
-                map[type][i].handler.call(map[type][i].thisObject, e);
-                
-                break;
-            }
-        }
+        map[eventName].push(eventBin);
     },
     
     /**
      * 添加事件监听
      *
-     * @param {Element} element
-     * @param {String} type
+     * @param {String} eventName
      * @param {Function} handler
      * @param {Object} thisObject
      */
-    addEventListener: function(element, type, handler, thisObject) {
+    on: function(eventName, handler, thisObject) {
         var _self = this;
         
         if(undefined === thisObject) {
             thisObject = null;
         }
         
-        // 避免重复绑定事件
-        if(undefined === this.$eventBinMap[type]) {
-            // Listen the specified event
-            document.body.addEventListener(type, function(e) {
-                _self.$eventProxy(e);
-            }, false);
-        }
-        
-        this.$insertEventBin(element, type, handler, thisObject);
+        this.$insertEventBin(eventName, handler, thisObject);
     },
     
     /**
      * 移除事件处理器
      *
-     * @param {Element} element
-     * @param {String} type
+     * @param {String} eventName
      * @param {Function} handler
+     * @param {Object} thisObject
      */
-    removeEventListener: function(element, type, handler) {
+    off: function(eventName, handler, thisObject) {
         var map = this.$eventBinMap;
         
-        if(undefined === map[type]) {
+        if(undefined === map[eventName]) {
             return;
         }
         
-        for(var i=0, len=map[type].length; i<len; i++) {
-            if(element === map[type][i].target && handler === map[type][i].handler) {
-                map[type].splice(i, 1);
+        for(var i=0, len=map[eventName].length, bin=null; i<len; i++) {
+            bin = map[eventName][i];
+            
+            if(thisObject === bin.thisObject && handler === bin.handler) {
+                map[eventName].splice(i, 1);
                 
                 break;
             }
+        }
+    },
+    
+    /**
+     * 派发事件
+     *
+     * @param {String} eventName
+     * @param {any} data
+     */
+    fire: function(eventName, data) {
+        var map = this.$eventBinMap;
+        
+        if(undefined === map[eventName]) {
+            return;
+        }
+        
+        for(var i=0, len=map[eventName].length, bin=null; i<len; i++) {
+            bin = map[eventName][i];
+            
+            bin.handler.call(bin.thisObject, data);
         }
     }
 };

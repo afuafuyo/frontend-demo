@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="./XEvent.js"></script>
+</head>
+<body>
+
+<script>
+var e = new XEvent();
+
+e.on('myevent', function(data){
+    console.log('1', data);
+});
+e.on('myevent', function(data){
+    console.log('2', data);
+});
+
+e.fire('myevent', 'this is data param');
+</script>
+</body>
+</html>
