@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell 使用 find 和 xargs - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">Shell 使用 find 和 xargs</h1>
+            <p>find 是一个非常有效的工具，它可以遍历当前目录甚至于整个文件系统来查找某些文件或目录</p>
+            <pre>find path [options] [-print|-exec|-ok]</pre>
+            <p>path</p>
+            <ul>
+                <li>find 命令所查找的目录路径</li>
+            </ul>
+            <p>普通选项 options</p>
+            <ul>
+                <li><code>-name</code>按照文件名查找文件</li>
+                <li><code>-exec</code>按照文件权限来查找文件</li>
+                <li><code>-user</code>按照文件属主来查找文件</li>
+                <li><code>-type</code>查找某一类型的文件</li>
+                <li><code>-prune</code>使 find 命令不在当前指定的目录中查找 如果同时使用了 -depth 选项，那么 -prune 选项将被 find 命令忽略</li>
+                <li><code>-depth</code>在查找文件时，首先查找当前目录中的文件，然后再在其子目录中查找</li>
+                <li><code>-mtime -n|+n</code>按照文件的更改时间来查找文件  -n 表示文件更改时间距现在 n 天以内 +n 表示文件更改时间距现在 n 天以前</li>
+            </ul>
+            <p>表达式</p>
+            <ul>
+                <li><code>-print</code>find 命令将匹配的文件输出到标准输出</li>
+                <li><code>-exec</code>find 命令对匹配的文件执行该参数所给出的 shell 命令。相应命令的形式为<code>command {} \;</code>注意<code>{}</code>和<code>\;</code>之间的空格</li>
+                <li><code>-ok</code>-ok 和 - exec 的作用相同，只不过在执行每一个命令之前，都会给出提示，让用户来确定是否执行</li>
+            </ul>
+        
+            <h1 class="page-header">使用 exec 或 ok 来执行 shell 命令</h1>
+            <p>当匹配到一些文件以后，可能希望对其进行某些操作，这时就可以使用 -exec 选项</p>
+            <blockquote>
+                <code>exec</code>选项后面跟随着所要执行的命令，然后是一对儿<code>{}</code>一个<code>空格</code>和一个<code>\</code>最后是一个分号
+            </blockquote>
+            
+            <h1 class="page-header">举例</h1>
+<pre>
+查找当前目录中的文件并列出其详细信息
+find . -type f  -exec ls -l {} \;
+</pre>
+
+            <h1 class="page-header">xargs</h1>
+            <p>
+            在使用 find 命令的 -exec 选项处理匹配到的文件时，find 命令将所有匹配到的文件一起传递给 exec 执行
+            不幸的是，有些系统对能够传递给 exec 的命令长度有限制。
+            执行会出现溢出错误。错误信息通常是 “参数列太长” 或 “参数列溢出
+            </p>
+            <p>
+            find 命令把匹配到的文件传递给 xargs 命令，而 xargs 命令每次只获取一部分文件而不是全部
+            这样它可以先处理最先获取的一部分文件，然后是下一批，并如此继续下去
+            </p>
+            
+            
+<pre>
+查找当前目录中的文件并列出其详细信息
+find . -type f | xargs ls -l
+</pre>
+        </div>
+    </div>
+</div>
+</body>
+</html>

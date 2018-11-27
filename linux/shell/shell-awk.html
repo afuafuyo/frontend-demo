@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell awk - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">截取工具 awk</h1>
+            <p>如果要格式化报文或从一个大的文本文件中抽取数据，那么 awk 可以完成这些任务</p>
+            <pre>awk [选项]... '条件1{动作1}条件2{动作2}...' 文件名</pre>
+            <ul>
+                <li>条件成立时才执行动作</li>
+                <li>不写条件就是没有限制条件 始终执行动作</li>
+                <li>awk 一次读取一行数据 并把每列赋值给 $1 - $n, $0 表示一行数据</li>
+            </ul>
+            <p>选项</p>
+            <ul>
+                <li><code>-F</code>：指定分隔符</li>
+            </ul>
+            <p>条件</p>
+            <ul>
+                <li>
+                    <p>内置条件</p>
+                    <ul>
+                        <li>
+                            <p>BEGIN 条件</p>
+                            <ul>
+                                <li><code>awk 'BEGIN{动作}' file</code>在其他动作之前首先执行 BEGIN 条件的动作</li>
+                                <li><code>awk 'BEGIN{FS=":"}' file</code>在其他动作之前首先设置分隔符为冒号</li>
+                            </ul>
+                            <p>END 条件</p>
+                            <ul>
+                                <li><code>awk 'END{print "done"}' file</code>在其他动作之后执行 END 条件的动作</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+<pre>
+# 判断数字大小
+[afu@localhost shells]$ echo 10 | awk '$1 > 100{print "larger"}$1 < 100{print "smaller"}'
+smaller
+</pre>
+            
+            <h2 class="page-header">分割字符串为数组</h2>
+<pre>
+# 加入有如下文件
+# 将第 2 3 4 5 列放入数组 _ARR
+develop:22:root:192.168.1.1:/usr/local/src/afu/
+
+_ARR=(`cat conf | awk -F ':' '{print $2,$3,$4,$5}'`)
+</pre>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell 文本流编辑器 sed - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">文本流编辑器 sed</h1>
+            <p>sed 是一个非交互性文本流编辑器</p>
+
+            <h1 class="page-header">sed 怎样读取数据</h1>
+            <p>
+            sed 从文件的一个文本行或从标准输入的几种格式中读取数据，将之拷贝到一个编辑缓冲区
+            然后读命令行或脚本的第一条命令，并使用这些命令查找模式或定位行号编辑它，重复此过程直到命令结束
+            </p>
+            
+            <h1 class="page-header">使用 sed</h1>
+            <pre>sed [选项] '[动作]' 文件名</pre>
+            <p>选项</p>
+            <ul>
+                <li><code>-n</code>：sed 会把所有数据都输出到屏幕 此选项会只把经过 sed 处理的行输出到屏幕</li>
+                <li><code>-e</code>：允许对输入数据应用多条 sed 命令 多个 sed 用 ; 分隔</li>
+                <li><code>-i</code>：sed 的修改结果影响文件的数据</li>
+            </ul>
+            <p>动作</p>
+            <ul>
+                <li><code>xa</code>：x 行后追加一行或多行</li>
+                <li><code>xc</code>：把 x 行的数据替换成 c 后的数据</li>
+                <li><code>xi</code>：在 x 行前插入一行或多行</li>
+                <li><code>x,yd</code>：删除 x 到 y 行</li>
+                <li><code>xp</code>：输出第 x 行</li>
+                <li><code>s</code>：字符串替换 格式 '[行号]s/旧数据/新数据/g'</li>
+            </ul>
+            
+            <h1 class="page-header">举例</h1>
+            <p>打印文件第二行</p>
+            <pre>sed -n '2p' data.txt</pre>
+            <p>第二行后追加一行 hello</p>
+            <pre>sed '2a hello' data.txt</pre>
+            <p>在第二行前插入一行 hello</p>
+            <pre>sed '2i hello' data.txt</pre>
+            <p>替换第二行内容为 hello</p>
+            <pre>sed '2c hello' student.txt</pre>
+            
+        </div>
+    </div>
+</div>
+</body>
+</html>

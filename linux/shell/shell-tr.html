@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell tr - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">关于 tr</h1>
+            <p>tr 用来从标准输入中通过替换或删除操作进行字符转换，主要用于删除文件中控制字符或进行字符转换</p>
+            <p>使用 tr 时要转换两个字符串：字符串 1 用于查询，字符串 2 用于处理各种转换</p>
+            <pre>tr [选项]... 字符串1 [字符串2]</pre>
+            <blockquote>
+            tr 允许字符串不加引号，因此命令中看到单引号而不是双引号时也不要感到奇怪
+            </blockquote>
+            <p>选项</p>
+            <ul>
+                <li><code>-c</code>：查找字符串 1 以外的字符替换为字符串 2</li>
+                <li><code>-d</code>：删除字符串 1 中所有输入字符</li>
+                <li><code>-s</code>：删除所有重复出现字符序列，只保留第一个</li>
+            </ul>
+            
+            <h1 class="page-header">字符范围</h1>
+            <p>tr 可以指定字符范围，可以指定几种模式来表示字符串，有点类似于正则表达式</p>
+            <ul>
+                <li><code>[a-z]</code>：a-z 的小写字符</li>
+                <li><code>[A-Z]</code>：A-Z 的大写字符</li>
+                <li><code>[0-9]</code>：0-9 的数字</li>
+                <li><code>[字符*n]</code>：表示字符重复出现 n 次 [a*2] 匹配 aa 字符串</li>
+            </ul>
+            <p>大部分 tr 变种支持字符类和速记控制字符</p>
+            <ul>
+                <li><code>[:alnum:]</code>：所有的字母和数字</li>
+                <li><code>[:alpha:]</code>：所有的字母</li>
+                <li><code>[:digit:]</code>：所有的数字</li>
+                <li><code>[:blank:]</code>：所有呈水平排列的空白字符</li>
+                <li><code>[:cntrl:]</code>：所有的控制字符</li>
+                <li><code>[:graph:]</code>：所有的可打印字符，不包括空格</li>
+                <li><code>[:lower:]</code>：所有的小写字母 相当于 [a-z]</li>
+                <li><code>[:upper:]</code>：所有的大写字母 相当于 [A-Z]</li>
+                <li><code>[:punct:]</code>：所有的标点字符</li>
+                <li><code>[:space:]</code>：所有呈水平或垂直排列的空白字符</li>
+                <li><code>[:xdigit:]</code>：所有的十六进制数</li>
+                <li><code>[=字符=]</code>：所有和指定字符相等的字符</li>
+            </ul>
+            <p>tr 中的几种常见的控制字符的表达方式</p>
+<pre>
+速记符      八进制方式      含义
+\a          \007             Ctrl-G 铃声
+\b          \010             Ctrl-H 退格符
+\f          \014             Ctrl-L 走行换页
+\n          \012             Ctrl-J 新行
+\r          \015             Ctrl-M 回车
+\t          \011             Ctrl-I tab键
+\v          \030             Ctrl-X
+</pre>
+            
+            <h1 class="page-header">替换字符串</h1>
+<pre>
+[afu@localhost shells]$ echo "aaabcddd" | tr 'a' 'f'
+fffbcddd
+</pre>
+            
+            <h1 class="page-header">去除重复出现的字符</h1>
+<pre>
+# 从 a-z 中查询字符并删除重复出现的字符
+[afu@localhost shells]$ echo "aaabcddd" | tr -s '[a-z]'
+abcd
+</pre>
+            
+            <h1 class="page-header">删除空行</h1>
+<pre>
+tr -s '[\012]' < data.txt
+或
+tr -s '["\n"]' < data.txt
+</pre>
+
+            <h1 class="page-header">大小写转换</h1>
+<pre>
+[afu@localhost shells]$ echo "aaa" | tr [a-z] [A-Z]
+AAA
+</pre>
+
+            <h1 class="page-header">删除指定字符</h1>
+<pre>
+[afu@localhost shells]$ echo "aaabbb" | tr -d 'a'
+bbb
+</pre>
+
+            <h1 class="page-header">替换除某个字符外的其他字符</h1>
+<pre>
+[afu@localhost shells]$ echo "aaabbb" | tr -c 'a' 'f'
+aaaffff
+</pre>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

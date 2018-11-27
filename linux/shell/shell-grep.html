@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell grep - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">grep</h1>
+            <p>grep 允许对文本文件进行模式查找。如果找到匹配模式，grep 打印包含模式的所有行</p>
+            <p>可以看到 grep 是一个行匹配工具</p>
+            <pre>grep [options]... PATTERN [file]...</pre>
+            <ul>
+                <li><code>-c</code>：只输出匹配行的计数</li>
+                <li><code>-i</code>：不区分大小写</li>
+                <li><code>-h</code>：查询多文件时不显示文件名</li>
+                <li><code>-n</code>：显示匹配行及行号</li>
+                <li><code>-v</code>：显示不包含匹配文本的所有行</li>
+                <li><code>--color=auto</code>：搜索出的关键字用颜色显示</li>
+            </ul>
+            
+            <h1 class="page-header">开始前假设我们有如下文件</h1>
+<pre>
+# data.txt 每列用 tab 隔开
+name		age		city
+zhangsan	20		beijing
+liming		16		shanghai
+lisi		22		shenzhen
+lisiji		26		guangzhou
+</pre>
+            
+            <h1 class="page-header">关于双引号</h1>
+            <p>在 grep 命令中输入字符串参数时，最好将其用双引号括起来</p>
+            <p>这样做有两个原因，一是以防被误解为 shell 命令，二是可以用来查找多个单词组成的字符串</p>
+            <p>在调用变量时，也应该使用双引号，如：<code>grep "$MYVAR" file</code></p>
+            <pre>grep "my search" *.txt</pre>
+            
+            <h1 class="page-header">精确匹配</h1>
+            <p>默认情况下 grep 会匹配包含搜索关键字的行并打印</p>
+            <p>如果想精确匹配一种有效的方式是在关键词字符串后加<code>\></code></p>
+<pre>
+# 非精确匹配
+[afu@localhost shells]$ grep "lisi" data.txt
+lisi		22		shenzhen
+lisiji		26		guangzhou
+</pre>
+<pre>
+# 精确匹配
+[afu@localhost shells]$ grep "lisi\>" data.txt
+lisi		22		shenzhen
+</pre>
+            
+            <h1 class="page-header">grep 和正则表达式</h1>
+            <p>在 grep 中使用正则表达式时最好用单引号括起来，这样可以防止 grep 中使用的专有模式与一些 shell 命令的特殊方式相混淆</p>
+<pre>
+[afu@localhost shells]$ grep '2[12]' data.txt
+lisi		22		shenzhen
+
+# 查找当前目录中的子目录
+[afu@localhost shells]$ ls -l | grep '^d'
+drwxr-xr-x 2 root   root   4096 2月   7 16:09 demo
+</pre>
+
+            <h1 class="page-header">类名</h1>
+            <p>grep 允许使用国际字符模式匹配或匹配模式的类名形式</p>
+<pre>
+类名及其等价的正则表达式
+-----------------------------------
+class        |   regular expression
+-----------------------------------
+[[:upper:]]  |   [A-Z]
+-----------------------------------
+[[:lower:]]  |   [a-z]
+-----------------------------------
+[[:digit:]]  |   [0-9]
+-----------------------------------
+[[:alnum:]]  |   [0-9A-Za-z]
+-----------------------------------
+[[:space:]]  |   空格或 tab
+-----------------------------------
+[[:alpha:]]  |   [A-Za-z]
+-----------------------------------
+</pre>
+            
+        </div>
+    </div>
+</div>
+</body>
+</html>

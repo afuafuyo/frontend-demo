@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell variable - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">shell 变量</h1>
+            <p>有几种变量：本地变量、环境变量、位置参数变量、预定义变量</p>
+            
+            <h1 class="page-header">本地变量</h1>
+            <p>本地变量在用户现在的 shell 生命期的脚本中使用</p>
+            <p>变量定义</p>
+            <code>variableName=value 或 ${variableName=value}</code>
+            <p>变量测试</p>
+            <p>有时要测试是否已设置或初始化变量。如果未设置或初始化，就可以使用另一值</p>
+<pre>
+赋值                      str 不存在      str 为空      str 已存在非空
+----------------------------------------------------------------------------
+var=${str-value}          var=value        var=str       var=str
+----------------------------------------------------------------------------
+var=${str:-value}         var=value        var=value     var=str
+----------------------------------------------------------------------------
+var=${str+value}          var=str          var=value     var=value
+----------------------------------------------------------------------------
+var=${str:+value}         var=str          var=str       var=value
+----------------------------------------------------------------------------
+var=${str=value}          str=value
+                          var=$str         var=$str      var=$str
+----------------------------------------------------------------------------
+var=${str:=value}         str=value        str=value
+                          var=$str         var=$str      var=$str
+----------------------------------------------------------------------------
+var=${str?value}          show error       var=$str      var=$str
+----------------------------------------------------------------------------
+var=${str:?value}         show error       show error    var=$str
+----------------------------------------------------------------------------
+</pre>
+            <p>清除变量</p>
+            <pre>unset variableName</pre>
+            <p>显示所有本地变量</p>
+            <pre>set</pre>
+            <p>变量连接</p>
+            <pre>echo ${var1}${var2}</pre>
+            <p>只读变量</p>
+            <p>如果设置变量时，不想再改变其值，可以将之设置为只读方式</p>
+<pre>
+var=value
+readonly var
+</pre>
+
+            <h1 class="page-header">环境变量</h1>
+            <p>环境变量用于所有用户进程 ( 经常称为子进程 )，登录进程称为父进程</p>
+            <p>不像本地变量 ( 只用于现在的 shell ) 环境变量可用于所有子进程</p>
+            <p>传统上，所有环境变量均为大写</p>
+            <p>声明环境变量</p>
+<pre>
+VAR=value
+export VAR
+</pre>
+            <p>将变量导出到子进程</p>
+            <p>shell 新用户碰到的问题之一是定义的变量如何导出到子进程，使用 export 将变量导出，这样子进程就可以读到这个变量了</p>
+            <p>显示环境变量</p>
+            <pre>evn</pre>
+            <p>清除环境变量</p>
+            <pre>unset VAR</pre>
+            
+            <h1 class="page-header">位置参数变量</h1>
+            <ul>
+                <li><code>$n</code>：n 是数字 $0 代表命令本身 $1-$9 代表第一到第九个参数</li>
+                <li><code>$*</code>：代表命令行中所有参数 $* 把所有参数看做一个整体</li>
+                <li><code>$@</code>：代表命令行中所有参数 $@ 把每个参数区别对待</li>
+                <li><code>$#</code>：代表命令行中所有参数的个数</li>
+            </ul>
+            
+            <h1 class="page-header">预定义变量</h1>
+            <ul>
+                <li><code>$?</code>：最后一次执行命令的返回状态 结果为 0 表示命令执行成功</li>
+                <li><code>$$</code>：当前进程号</li>
+                <li><code>$!</code>：后台运行的最后一个进程的进程号</li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</body>
+</html>

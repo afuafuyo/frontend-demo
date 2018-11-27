@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell 在后台执行命令 - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">在后台执行命令</h1>
+            <p>当你在终端或控制台工作时，可能不希望由于运行一个作业而占住了屏幕，因为可能还有更重要的事情要做</p>
+            <p>有时候我们希望让一个进程可以在后台运行，或者是在某个时间点运行。让程序不在终端屏幕上运行，有几种选择方法可供使用</p>
+            <ul>
+                <li>设置<code>crontab</code>文件，并用它来提交作业</li>
+                <li>使用<code>at</code>命令来提交作业</li>
+                <li>使用<code>nohup</code>命令提交作业</li>
+                <li>使用<code>&amp;</code>在后台运行一个占用时间不长的进程</li>
+            </ul>
+            
+            <h1 class="page-header">定时任务</h1>
+            <p>linux 下的任务调度分为两类 系统任务调度 和 用户任务调度</p>
+            <ul>
+                <li><code>系统任务调度</code>系统周期性所要执行的工作<code>/etc/crontab</code>文件就是系统任务调度的配置文件</li>
+                <li><code>用户任务调度</code>用户定期要执行的工作 所有用户定义的<code>crontab</code>文件都被保存在<code>/var/spool/cron</code>目录中 文件名与用户名一致</li>
+            </ul>
+
+            <h1 class="page-header">cron ( 系统任务调度 ) 和 crontab ( 用户任务调度 )</h1>
+            <p><code>cron</code>是系统主要的调度进程，可以在无需人工干预的情况下运行作业</p>
+            <p>有一个叫做<code>crontab</code>的命令允许用户提交、编辑或删除用户任务</p>
+            <p>每一个用户都可以有一个任务调度文件来保存调度信息。这个文件一般通过<code>crontab</code>命令编辑</p>
+            <p>系统管理员是通过<code>/etc/cron.deny</code>和<code>/etc/cron.allow</code>这两个文件来禁止或允许用户拥有自己的<code>crontab</code>文件</p>
+        
+            <h1 class="page-header">crontab 命令</h1>
+            <pre>crontab [-u user] -e -l -r</pre>
+            <pre>crontab [-u user] file</pre>
+            <ul>
+                <li><code>-u</code>：用户名</li>
+                <li><code>-e</code>：编辑 crontab 定时任务，这个命令会在<code>/var/spool/cron</code>目录生成一个名为当前登录用户名的任务文件</li>
+                <li><code>-l</code>：查询当前定时任务</li>
+                <li><code>-r</code>：删除当前定时任务</li>
+            </ul>
+            <blockquote>如果使用自己的名字登录，就不用使用 -u 选项</blockquote>
+            <p>
+            可以看到<code>crontab</code>命令还可以提交一个文件，
+            这使得你可以在自己的家目录新建一个文件，在里面编辑定时任务，
+            然后使用<code>crontab</code>命令提交这个文件。
+            这样文件的一个副本已经被放在<code>/var/spool/cron</code>目录中了。
+            副本文件的名字会自动变为你的登录用户名
+            </p>
+        
+            <h1 class="page-header">定时任务格式</h1>
+            <pre>分 时 日 月 星期 需要执行的命令</pre>
+            <p>星号含义</p>
+            <ul>
+                <li><code>分</code>：一小时中第几分钟 0 - 59</li>
+                <li><code>时</code>：一天中第几个小时 0 - 23</li>
+                <li><code>日</code>：一个月中第几天 1 - 31</li>
+                <li><code>月</code>：一年中第几个月 1 - 12</li>
+                <li><code>星期</code>：一周中的星期几 0 - 7 ( 0 7 都表示星期天 )</li>
+            </ul>
+            <p>特殊符号含义</p>
+            <ul>
+                <li><code>*</code>：代表任何时间</li>
+                <li><code>,</code>：代表不连续的时间</li>
+                <li><code>-</code>：代表连续时间</li>
+                <li><code>*/n</code>：代表每隔多久执行一次</li>
+            </ul>
+            
+            <h1 class="page-header">定时任务举例</h1>
+<pre>
+10 20 * * * 命令  -- 在 20 点 10 分执行
+0 17 * * 1 命令  -- 每周 1 的 17 点的 0 分执行
+0 5 1,15 * * 命令  -- 每月 1 号和 15号 5 点 0 分执行
+40 4 * * 1-5 命令  -- 周一到周五 4 点 40 分执行
+*/10 4 * * * 命令  -- 每天 4 点 每个 10 分钟执行一次
+</pre>
+        
+            <h1 class="page-header">编辑定时任务文件</h1>
+            <p>使用<code>crontab</code>命令来编辑定时任务文件</p>
+            <p>不妨创建一个名为 afu_cron 的文件，内容如下</p>
+<pre>
+# 每隔 15 分钟向 time.txt 文件写一次当前时间
+0,15,30,45 * * * * /bin/echo `date` > /home/afu/time.txt
+</pre>
+            <p>为了提交你刚刚创建的定时任务文件，执行如下命令</p>
+            <pre>crontab afu_cron</pre>
+            <p>这样一个定时任务文件的副本就会被放置到系统定时任务目录，文件名自动变为当前用户名，即 afu</p>
+        
+            <h1 class="page-header">at 命令</h1>
+            <p><code>at</code>命令允许用户向 crond 守护进程提交作业，使其在稍后的时间运行</p>
+            <p>和 crontab 一样，管理员可以通过<code>/etc/at.allow</code>和<code>/etc/at.deny</code>文件来控制哪些用户可以使用 at 命令</p>
+            <p>at 命令的基本形式为</p>
+            <pre>at [-f file] [-mlr] time</pre>
+            <ul>
+                <li><code>-f file</code>：是所要提交的脚本或命令</li>
+                <li><code>-m</code>：作业完成后给用户发邮件</li>
+                <li><code>-l</code>：列出当前所有等待运行的作业</li>
+                <li><code>-r</code>：清除作业</li>
+                <li><code>time</code>：时间 可以是<code>H、HH:MM 或 H:M</code>等</li>
+            </ul>
+            
+            <h1 class="page-header">at 提交一个作业</h1>
+            <p>编辑作业文件 at_afu.sh</p>
+            <pre>find /home/afu/shells/ -name "*.jpg" -exec echo > /home/afu/shells/rs.txt {} \;</pre>
+            <p>提交作业 </p>
+<pre>
+[afu@localhost shells]$ at -f at_afu.sh 11:52
+job 3 at 2018-02-08 11:52
+</pre>
+            
+            <h1 class="page-header">列出所提交的作业</h1>
+<pre>
+[afu@localhost shells]$ at -l
+3  2018-02-08 11:52 a afu
+</pre>
+
+            <h1 class="page-header">清除一个作业</h1>
+            <pre>atrm [job no] 或 at -r [job no]</pre>
+            <p>要清除某个作业，首先要执行 at -l 命令，以获取相应的作业标识</p>
+
+            <h1 class="page-header">&amp;命令</h1>
+            <p>可以使用<code>&amp;</code>命令把作业放到后台执行</p>
+            <pre>命令 &amp;</pre>
+            <blockquote>
+            不过，作业在后台运行一样会将结果输出到屏幕上，干扰你的工作。
+            如果放在后台运行的作业会产生大量的输出，最好把输出重定向到某个文件中
+            </blockquote>
+            <p>把所有的标准输出和错误输出都重定向到一个叫做 out.file 的文件中</p>
+            <pre>command > out.file 2>&amp;1 &amp;</pre>
+            
+            <h1 class="page-header">nohup 命令</h1>
+            <p>如果你正在运行一个进程，而且你觉得在退出帐户时该进程还不会结束，可以使用 nohup 命令</p>
+            <pre>nohup command &</pre>
+            
+            <h1 class="page-header">用 ps 命令查看进程</h1>
+            <p>当一个命令在后台执行的时候，可以用提交命令时所得到的进程号来监控它的运行</p>
+            <p>BSD 操作系统格式</p>
+            <pre>ps aux</pre>
+            <p>标准 Linux 格式</p>
+            <pre>ps -le</pre>
+            <blockquote>在用 ps 命令列出进程时，它无法确定该进程是运行在前台还是后台</blockquote>
+            <p>输出结果 ( 不加 grep 过滤时会看到如下标题 )</p>
+            <ul>
+                <li><code>USER</code>：进程由哪个用户产生</li>
+                <li><code>PID</code>：进程号</li>
+                <li><code>CPU</code></li>
+                <li><code>MEM</code></li>
+                <li><code>VSZ</code>：进程占用虚拟内存大小</li>
+                <li><code>RSS</code>：进程占用实际内存大小</li>
+                <li><code>TTY</code>：进程是在哪个终端中运行的</li>
+                <li><code>STAT</code>：进程状态</li>
+                <li><code>START</code>：进程启动时间</li>
+                <li><code>TIME</code>：该进程占用 CPU 的时间</li>
+                <li><code>COMMAND</code>：产生进程的命令名</li>
+            </ul>
+            
+            <h1 class="page-header">终止进程</h1>
+            <p>如果想杀死后台进程可以使用 kill 命令</p>
+            <pre>kill [-signalNo|signaName] processID</pre>
+            <blockquote>使用 kill 命令时不带任何信号或名字意味着使用缺省的信号 15</blockquote>
+            
+            <p>查看可用的进程信号</p>
+            <ul>
+                <li><code>kill -l</code>这里是字母 l</li>
+            </ul>
+            <p>强制杀死进程</p>
+            <ul>
+                <li><code>kill -9 processID</code></li>
+            </ul>
+            <p>重启进程</p>
+            <ul>
+                <li><code>kill -1 processID</code>这里是数字 1</li>
+            </ul>
+            <p>杀死进程</p>
+            <ul>
+                <li><code>killall [选项][信号] 进程名</code></li>
+                <li><code>pkill [选项][信号] 进程名</code></li>
+            </ul>
+            <p>信号说明</p>
+<pre>
+信号      信号名      含义
+1         SIGHUP      挂起或父进程被杀死
+2         SIGINT      来自键盘的中断信号 通常是 <CTRL-C>
+3         SIGQUIT     从键盘退出
+9         SIGKILL     无条件终止
+11        SIGSEGV     段 ( 内存 ) 冲突
+15        SIGTERM     软件终止（缺省杀进程信号）
+</pre>
+            
+        </div>
+    </div>
+</div>
+</body>
+</html>

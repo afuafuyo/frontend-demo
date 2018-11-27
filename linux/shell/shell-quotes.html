@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell 引号 - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">shell 引号</h1>
+            <h1 class="page-header">引号必要性</h1>
+            <p>由于 shell 脚本的特殊性，一些字符串如果包含有空格，shell 在执行时可能会误认为这是命令的一部分而执行造成错误，为了防止 shell 这样做，可以使用引号</p>
+            
+            <h1 class="page-header">双引号</h1>
+            <p>普通用法</p>
+            <pre>name="zhangsan"</pre>
+            <p>双引号里面的特殊字符和引用值会被解释执行。包括</p>
+            <ul>
+                <li><code>$</code></li>
+                <li><code>`</code></li>
+                <li><code>\</code></li>
+            </ul>
+<pre>
+[afu@localhost shells]$ name="zhangsan"
+[afu@localhost shells]$ echo "$name"
+zhangsan
+</pre>
+
+            <h1 class="page-header">单引号</h1>
+            <p>单引号与双引号类似，不同的是 shell 会忽略任何引用值</p>
+<pre>
+[afu@localhost shells]$ echo '$name'
+$name
+</pre>
+            
+            <h1 class="page-header">反引号</h1>
+            <p>反引号用于设置系统命令的输出到变量</p>
+            <p>反引号中必须是一个系统支持的命令</p>
+<pre>
+[afu@localhost shells]$ echo `date`
+2018年 02月 10日 星期六 16:34:57 CST
+
+[afu@localhost shells]$ echo `lisi`
+-bash: lisi: command not found
+</pre>
+
+            <h1 class="page-header">反斜线</h1>
+            <p>用于转义特殊字符，屏蔽其特殊含义</p>
+            <p>比如<code>& * + ^ 1 ` " | ?</code></p>
+<pre>
+# * 在 shell 中有特殊含义 想输出 * 字符必须转义
+[afu@localhost shells]$ echo *
+data.txt student.txt test.sh
+
+[afu@localhost shells]$ echo \*
+*
+</pre>
+        </div>
+    </div>
+</div>
+</body>
+</html>

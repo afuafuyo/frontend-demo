@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell 字符串匹配 - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">字符串匹配</h1>
+            <p>当你在使用命令行时，有很多时间都用来查找你所需要的文件</p>
+            <p>shell 提供了一套完整的字符串模式匹配规则，或者称之为元字符，与正则很类似</p>
+        
+            <h1 class="page-header">* 匹配</h1>
+            <p>使用星号 * 可以匹配任何字符串</p>
+<pre>
+[afu@localhost shells]$ ls *.txt
+rs.txt  time.txt
+</pre>
+
+            <h1 class="page-header">? 匹配</h1>
+            <p>使用 ? 可以匹配任何单个字符</p>
+<pre>
+[afu@localhost shells]$ ls ??.txt
+rs.txt
+</pre>
+
+            <h1 class="page-header">使用 [] 和 [!]</h1>
+            <p>使用 [] 可以用来匹配方括号 [] 中的任何一个字符</p>
+<pre>
+[afu@localhost shells]$ ls [0-9]*.log
+2018.log
+</pre>
+
+            <h1 class="page-header">正则表达式</h1>
+            <h1 class="page-header">使用句点匹配单字符</h1>
+            <p>句点 '.' 可以匹配任意单字符</p>
+<pre>
+[afu@localhost shells]$ ls | grep .em.
+demo
+</pre>
+            
+            <h1 class="page-header">匹配开头</h1>
+            <p>^ 只允许在一行的开始匹配字符或单词</p>
+<pre>
+[afu@localhost shells]$ ls | grep ^de
+demo
+</pre>
+            
+            <h1 class="page-header">匹配结尾</h1>
+            <p>$ 在行尾匹配字符串或字符</p>
+<pre>
+[afu@localhost shells]$ ls | grep mo$
+demo
+</pre>
+            
+            <h1 class="page-header">模式出现几率</h1>
+<pre>
+# d 字符是否出现 2 次或以上
+[afu@localhost shells]$ echo "abcdddef" | grep 'd\{2,\}'
+abcdddef
+</pre>
+            
+        </div>
+    </div>
+</div>
+</body>
+</html>

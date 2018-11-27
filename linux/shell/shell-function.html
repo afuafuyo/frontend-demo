@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell 函数 - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">shell 函数</h1>
+            <p>shell 允许将一组命令集或语句形成一个可用块，这些块称为 shell 函数</p>
+            
+            <h1 class="page-header">定义函数</h1>
+<pre>
+functionName()
+{
+    命令 1
+    . . .
+}
+
+# 或者
+functionName() {
+    命令 1
+    . . .
+}
+
+# 也可以加上 function 关键字
+function functionName() {
+    命令 1
+    . . .
+}
+</pre>
+        
+            <h1 class="page-header">使用函数</h1>
+<pre>
+# 定义
+hello() {
+    echo "The time is: `date`";
+}
+
+# 执行函数
+hello;
+</pre>
+
+            <h1 class="page-header">向函数传递参数</h1>
+            <p>在变量一章，介绍过位置参数变量，可以使用位置参数变量向函数传递变量</p>
+<pre>
+# 定义
+testParam() {
+    echo "The param is: $1";
+}
+
+# 执行函数
+testParam 'zhangsan';
+</pre>
+
+            <h1 class="page-header">从调用函数中返回</h1>
+            <p>当函数完成处理或希望函数基于某一测试语句返回时，可做两种处理</p>
+            <ul>
+                <li>让函数正常执行到函数末尾，然后返回脚本中调用函数的控制部分</li>
+                <li>使用 return 返回，可以带返回值，0 为无错误，1 为有错误</li>
+            </ul>
+
+            <h1 class="page-header">函数举例</h1>
+<pre>
+# 字符串转大写
+strToUpper() {
+    _STR=$1
+    
+    if [ $# -ne 1 ]; then
+        echo "Need one param"
+        return 1
+    fi
+    
+    echo $@ | tr '[a-z]' '[A-Z]'
+}
+
+# 递归创建目录
+makedirs() {
+    if [ -z $1 -o $1 == '/' -o $1 == '.' ] ; then
+        return
+    fi
+
+    parent_dir=`dirname $1`
+
+    makedirs $parent_dir
+
+    if [ ! -d $1 ] ; then
+        mkdir $1
+    fi
+}
+</pre>
+
+            
+        </div>
+    </div>
+</div>
+</body>
+</html>

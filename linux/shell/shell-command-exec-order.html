@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell 命令执行顺序 - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">多命令顺序执行</h1>
+            <ul>
+                <li><code>命令1; 命令2</code>：多个命令顺序执行 命令间没有任何逻辑挂链</li>
+                <li><code>命令1 && 命令2</code>：逻辑与 命令 1 正确执行后命令 2 才执行</li>
+                <li><code>命令1 || 命令2</code>：逻辑或 命令 1 执行不正确 命令 2 才执行</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

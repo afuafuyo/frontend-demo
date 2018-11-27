@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell 输入与输出 - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">echo</h1>
+            <pre>echo [options] [输出内容]</pre>
+            <ul>
+                <li><code>-e</code>：识别反转义字符</li>
+            </ul>
+            <p>如果输出后面跟的是一个命令 例如 date 那么这个命令需要使用<code>``</code>括起来</p>
+            <pre>echo `date`</pre>
+            
+            <h1 class="page-header">read</h1>
+            <pre>read [options] [变量名]</pre>
+            <ul>
+                <li><code>-p "提示信息"</code>：显示输入提示</li>
+                <li><code>-t 秒数</code>：输入等待时间</li>
+                <li><code>-n 字符数</code>：输入多少字符后执行</li>
+                <li><code>-s</code>：隐藏输入的数据</li>
+            </ul>
+            
+            <h1 class="page-header">输入输出重定向</h1>
+            <p>shell 是从左至右分析相应的命令的</p>
+            <p>标准输入输出</p>
+            <p>文件描述符</p>
+            <ul>
+                <li><code>0</code>：标准输入</li>
+                <li><code>1</code>：标准输出</li>
+                <li><code>2</code>：标准错误输出</li>
+            </ul>
+            
+            <h1 class="page-header">标准输出重定向</h1>
+            <p>以覆盖方式 把命令的输出输出到指定的文件或设备中</p>
+            <pre>command > file 或者 command 1> file</pre>
+            <p>以追加方式 把命令的输出输出到指定的文件或设备当中</p>
+            <pre>command >> file 或者 command 1>> file</pre>
+            
+            <h1 class="page-header">标准错误输出重定向</h1>
+            <p>覆盖方式</p>
+            <pre>command 2> file</pre>
+            <p>追加方式</p>
+            <pre>command 2>> file</pre>
+            
+            <h1 class="page-header">正确输出和错误输出同时保存</h1>
+            <p>覆盖方式</p>
+            <pre>command > file 2>&amp;1 或 command &amp;> file</pre>
+            <p>追加方式</p>
+            <pre>command >> file 2>&amp;1 或 command &amp;>> file</pre>
+            <p>错误和正确结果分别输出不同文件</p>
+            <pre>command >> file1 2>> file2</pre>
+            <p>运行结果输出到垃圾箱</p>
+            <pre>command &amp;> /dev/null</pre>
+            
+            <h1 class="page-header">cat 命令</h1>
+            <p>cat 是一个简单而通用的命令，可以用它来显示文件内容</p>
+            <pre>cat [options] [file]</pre>
+            <ul>
+                <li><code>-n</code>：显示行号</li>
+            </ul>
+            
+            <h1 class="page-header">more 命令</h1>
+            <p>分页显示文件内容 处理大文件</p>
+            <pre>more file</pre>
+            <ul>
+                <li>空格 或 f 翻页</li>
+                <li>Enter 换行</li>
+                <li>q 退出</li>
+            </ul>
+            
+            <h1 class="page-header">less 命令</h1>
+            <p>分页显示文件内容 处理大文件 可以向上翻页</p>
+            <pre>less file</pre>
+            
+            <h1 class="page-header">head 命令</h1>
+            <p>显示前几行数据</p>
+            <pre>head [options] file</pre>
+            <ul>
+                <li><code>-n</code>：显示前 n 行</li>
+            </ul>
+            
+            <h1 class="page-header">tail 命令</h1>
+            <p>显示最后几行数据</p>
+            <pre>tail [options] file</pre>
+            <ul>
+                <li><code>-n</code>：显示最后 n 行</li>
+            </ul>
+            
+            <h1 class="page-header">管道</h1>
+            <p>可以通过管道把一个命令的输出传递给另一个命令作为输入。管道用竖杠<code>|</code>表示</p>
+            <pre>command1 | command2</pre>
+            <p>查找 txt 文件</p>
+<pre>
+[afu@localhost shells]$ ls | grep .txt
+rs.txt
+time.txt
+</pre>
+            
+            <h1 class="page-header">tee 命令</h1>
+            <p>tee 命令作用可以用字母 T 来形象地表示</p>
+            <p>它把输出的一个副本输送到标准输出 另一个副本拷贝到相应的文件中</p>
+            <p>当执行某些命令或脚本时，如果希望把输出保存下来，tee 命令非常方便</p>
+            <pre>tee [options] file</pre>
+            <ul>
+                <li><code>-a</code>：表示追加到文件末尾</li>
+            </ul>
+            <p>把 who 命令的结果保存到文件</p>
+            <pre>who | tee out.txt</pre>
+            
+            <h1 class="page-header">exec 命令</h1>
+            <p>exec 执行命令时，不启用新的 shell 进程, 它用被执行的命令行替换掉当前的 shell 进程，现有环境会被清除</p>
+            <p>它践踏了你当前的 shell</p>
+            <p>假设有如下脚本 在输出 1 后 执行了 exec 列出目录 之后输出 2</p>
+<pre>
+# test.sh
+echo 1
+exec ls
+echo 2
+</pre>
+<pre>
+[afu@localhost shells]$ ./test.sh
+1
+demo  initapp.sh  myfile  test.sh  time.txt
+</pre>
+        <p>从结果可以看到 2 没有输出，exec 执行完后 shell 就退出了</p>
+        
+        </div>
+    </div>
+</div>
+</body>
+</html>

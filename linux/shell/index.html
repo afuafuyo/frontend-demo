@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<style rel="stylesheet" type="text/css">
+body {
+    margin: 0;
+    padding: 0;
+}
+.left {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 260px;
+    border-right: 1px solid #ccc;
+    overflow: auto;
+}
+.nav {
+    margin: 0;
+    padding: 0;
+}
+.nav li {
+    display: block;
+    height: 50px;
+    line-height: 50px;
+}
+.nav li a {
+    display: block;
+    color: #666;
+    text-align: left;
+    padding-left: 40px;
+    text-decoration: none;
+}
+.nav li a:hover {
+    background-color: #ddd;
+}
+
+.right {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 280px;
+    overflow: auto;
+}
+</style>
+</head>
+<body>
+
+<div class="left">
+    <ul class="nav">
+        <li><a target="main" href="shell_file.html">文件系统</a></li>
+        <li><a target="main" href="shell-find-xargs.html">find 与 xargs</a></li>
+        <li><a target="main" href="shell-backgroundjob.html">在后台执行程序</a></li>
+        <li><a target="main" href="shell-regexp.html">字符串匹配</a></li>
+        <li><a target="main" href="shell-readwrite.html">输入输出</a></li>
+        <li><a target="main" href="shell-command-exec-order.html">命令的执行顺序</a></li>
+        <li><a target="main" href="shell-grep.html">grep</a></li>
+        <li><a target="main" href="shell-awk.html">截取命令 awk</a></li>
+        <li><a target="main" href="shell-sed.html">文本流编辑器 sed</a></li>
+        <li><a target="main" href="shell-sort-uniq-join-cut-split.html">文件的合并分割排序</a></li>
+        <li><a target="main" href="shell-tr.html">字符串转换 tr</a></li>
+        <li><a target="main" href="shell-variable.html">shell 变量</a></li>
+        <li><a target="main" href="shell-quotes.html">shell 引号</a></li>
+        <li><a target="main" href="shell-condition.html">shell 条件判断</a></li>
+        <li><a target="main" href="shell-flowcontrol.html">shell 流程控制</a></li>
+        <li><a target="main" href="shell-function.html">shell 函数</a></li>
+        <li><a target="main" href="javascript:;">待续</a></li>
+    </ul>
+</div>
+
+<div class="right">
+    <iframe name="main" id="main" src="shell_file.html" width="100%" height="98%" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+</div>
+
+</body>
+</html>

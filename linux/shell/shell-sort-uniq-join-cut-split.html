@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell sort uniq join cut split - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">排序命令 sort</h1>
+            <p>sort 将文件/文本的每一行作为一个单位，相互比较，比较原则是从首字符向后，依次按 ASCII 码值进行比较，最后将他们按升序输出</p>
+            <pre>sort [选项] 文件名</pre>
+            <ul>
+                <li><code>-f</code>：忽略大小写</li>
+                <li><code>-n</code>：以数值型进行排序</li>
+                <li><code>-r</code>：反向排序</li>
+                <li><code>-t</code>：制定分隔符 默认是 制表符 通常和 -k 一同使用</li>
+                <li><code>-k n[,m]</code>：按照指定字段范围排序<code>可以使用多次，如 -k 1 -k 2 先按第一个字段排序，第一个字段相同时在按第二个字段排序</code></li>
+            </ul>
+            <p>假设有如下 data.txt 文件，每一列用制表符分割</p>
+<pre>
+[afu@localhost shells]$ cat data.txt
+aaa	    50
+bbb	    40
+ccc	    10
+ddd	    22
+eee	    11
+ccc	    10
+</pre>
+            
+            <h2 class="page-header">基本 sort</h2>
+            <p>最基本的 sort 方式为 sort filename 按第一个字段进行排序</p>
+<pre>
+# sort -k 1 结果和下面命令一样
+[afu@localhost shells]$ sort data.txt
+aaa	    50
+bbb	    40
+ccc	    10
+ccc	    10
+ddd	    22
+eee	    11
+</pre>
+            
+            <h2 class="page-header">按照其他字段排序</h2>
+            <p>使用 -k 选项可以指定排序字段</p>
+<pre>
+[afu@localhost shells]$ sort -k2 data.txt
+ccc	    10
+ccc	    10
+eee	    11
+ddd	    22
+bbb	    40
+aaa	    50
+</pre>
+            
+            <h1 class="page-header">去除或禁止重复行 uniq</h1>
+            <p>uniq 用来从一个文本文件中去除或禁止重复行。一般 uniq 假定文件已分类，并且结果正确</p>
+            <blockquote>
+            一个没有排序的文件使用 uniq 命令不保证能够去掉重复行
+            </blockquote>
+            <pre>uniq [选项]... [文件]</pre>
+            <p>重复行是什么？在 uniq 里意味着持续不断重复出现的行，中间不夹杂任何其他文本</p>
+<pre>
+# 这里第二行和第三行构成重复行，而第五行不构成重复，所以 uniq 并不会去除第五行
+aaa
+bbb
+bbb
+ccc
+bbb
+</pre>
+            
+            <h1 class="page-header">连接操作 join</h1>
+            <p>join 用来将来自两个分类文本文件的行连在一起，类似于 SQL</p>
+            <pre>join [选项]... 文件1 文件2</pre>
+            <ul>
+                <li><code>-t</code>：指定字段分隔符</li>
+                <li><code>-an</code>：n 为数字，指定文件编号<code>-a1</code>显示第一个文件的不匹配行，<code>-a2</code>显示第二个文件的不匹配行</li>
+                <li><code>-jn</code>：n 为数字，使用指定字段来做连接 默认使用第一个字段做连接</li>
+            </ul>
+            <p>假设有如下两个文件 student.txt 和 score.txt 记录了学生信息和分数</p>
+<pre>
+# student.txt
+1:xiaoming
+2:xiaohong
+3:xiaobai
+100:haha
+
+# score.txt
+1:90
+2:96
+3:10
+200:hehe
+</pre>
+
+            <p>使用连接显示出某学生的了多少分</p>
+<pre>
+# join -t: -j1 student.txt score.txt 可以得出同样结果
+[afu@localhost shells]$ join -t: student.txt score.txt
+1:xiaoming:90
+2:xiaohong:96
+3:xiaobai:10
+</pre>
+
+            <p>显示 student.txt 中没有匹配到的行</p>
+<pre>
+[afu@localhost shells]$ join -t: -a1 student.txt score.txt
+1:xiaoming:90
+2:xiaohong:96
+3:xiaoba:10
+100:haha
+</pre>
+            
+            <p>显示 score.txt 中没有匹配到的行</p>
+<pre>
+[afu@localhost shells]$ join -t: -a2 student.txt score.txt
+1:xiaoming:90
+2:xiaohong:96
+3:xiaoba:10
+200:hehe
+</pre>
+            <h1 class="page-header">截取列命令 cut</h1>
+            <p>cut 用来从标准输入或文本文件中剪切列</p>
+            <pre>cut [选项] 文件名</pre>
+            <ul>
+                <li><code>-f</code>：指定要提取的列，要剪切多个列需用逗号分割</li>
+                <li><code>-d</code>：指定列分隔符 默认分隔符是 制表符</li>
+            </ul>
+            <p>截取 student.txt 中的姓名列 ( 第二列 )</p>
+<pre>
+[afu@localhost shells]$ cut -d: -f2 student.txt
+xiaoming
+xiaohong
+xiaoba
+hahai
+</pre>
+
+            <p>只显示学生姓名和分数</p>
+<pre>
+[afu@localhost shells]$ join -t: student.txt score.txt | cut -d: -f2,3
+xiaoming:90
+xiaohong:96
+xiaoba:10
+</pre>
+            
+            <h1 class="page-header">内容分割 split</h1>
+            <p>split 将内容拆分为固定大小的分片并输出到文件名为 "前缀aa"、"前缀ab"、"前缀ac",... 等格式的文件，默认前缀为 "x"</p>
+            <pre>split [选项]... [输入 [前缀]]</pre>
+            <ul>
+                <li><code>-a</code>：指定后缀长度为 N ( 默认为 2 )</li>
+                <li><code>-b</code>：指定每个输出文件的字节大小</li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</body>
+</html>

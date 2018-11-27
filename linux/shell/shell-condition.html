@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shell 条件判断 - Shell 编程入门</title>
+    <link rel="stylesheet" href="bs.css">
+    <link rel="stylesheet" href="reset.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">条件判断</h1>
+            <p>写脚本时，有时要判断字符串是否相等，可能还要检查文件状态或是数字测试，这章就介绍这类判断</p>
+            
+            <h1 class="page-header">两种范式</h1>
+            <ul>
+                <li><code>test condition</code>：test -f ./data.txt</li>
+                <li><code>[ condition ]</code>：[ -f ./data.txt ]</li>
+            </ul>
+
+            <h1 class="page-header">文件类型判断</h1>
+            <ul>
+                <li><code>-b 文件</code>：是否是块设备文件</li>
+                <li><code>-c 文件</code>：是否是字符设备文件</li>
+                <li><code>-d 文件</code>：是否是目录</li>
+                <li><code>-e 文件</code>：文件是否存在</li>
+                <li><code>-f 文件</code>：是否是普通文件</li>
+                <li><code>-L 文件</code>：是否是符号链接文件</li>
+                <li><code>-p 文件</code>：是否是管道文件</li>
+                <li><code>-s 文件</code>：是否为空</li>
+                <li><code>-S 文件</code>：是否为套接字文件</li>
+            </ul>
+
+            <h1 class="page-header">文件权限判断</h1>
+            <ul>
+                <li><code>-r 文件</code>：文件是否可读</li>
+                <li><code>-w 文件</code>：文件是否可写</li>
+                <li><code>-x 文件</code>：文件是否可执行</li>
+            </ul>
+            
+            <h1 class="page-header">数值比较</h1>
+            <ul>
+                <li><code>n1 -eq n2</code>：是否相等</li>
+                <li><code>n1 -ne n2</code>：是否不相等</li>
+                <li><code>n1 -gt n2</code>：n1 是否大于 n2</li>
+                <li><code>n1 -lt n2</code>：n1 是否小于 n2</li>
+                <li><code>n1 -ge n2</code>：n1 是否大于等于 n2</li>
+                <li><code>n1 -le n2</code>：n1 是否小于等于 n2</li>
+            </ul>
+            
+            <h1 class="page-header">字符串判断</h1>
+            <ul>
+                <li><code>-z 字符串</code>：字符串是否为空 返回 true or false</li>
+                <li><code>-n 字符串</code>：是否非空</li>
+                <li><code>s1 == s2</code>：是否相等</li>
+                <li><code>s1 != s2</code>：是否不相等</li>
+            </ul>
+
+            <h1 class="page-header">多重判断</h1>
+            <ul>
+                <li><code>condition1 -a condition2</code>：并且</li>
+                <li><code>condition1 -o condition2</code>：或者</li>
+            </ul>
+            <p>判断 a.txt 和 b.txt 是否都是文件</p>
+            <pre>[ -f a.txt -a -f b.txt ]</pre>
+            
+        </div>
+    </div>
+</div>
+</body>
+</html>
