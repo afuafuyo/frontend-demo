@@ -50,10 +50,10 @@ smaller
             
             <h2 class="page-header">分割字符串为数组</h2>
 <pre>
-# 加入有如下文件
-# 将第 2 3 4 5 列放入数组 _ARR
+# 假如有如下 conf 文件
 develop:22:root:192.168.1.1:/usr/local/src/afu/
 
+# 将第 2 3 4 5 列放入数组 _ARR
 _ARR=(`cat conf | awk -F ':' '{print $2,$3,$4,$5}'`)
 </pre>
         </div>
