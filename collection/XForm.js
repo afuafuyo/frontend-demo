@@ -81,8 +81,8 @@ function XForm() {
             callback : null
         }
         ,verifyCode : {
-            regular : /^[A-Za-z0-9]{4}$/,
-            minLength : 0,
+            regular : null,
+            minLength : 1,
             infoText : '请输入验证码，不区分大小写',
             errorText : '您输入的验证码有误',
             successText : ''
