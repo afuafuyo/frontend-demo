@@ -17,7 +17,13 @@
  *  var f = new XForm();
  *  f.focusBlurFeedback = false;  // 启用焦点反馈
  *
- *  f.checkAccount(inputId, {callback:function(){...}});  // 这里通过 option 参数修改了默认的 conf 配置
+ *  f.checkAccount(inputId, {callback: function(){
+ *      // todo
+ *      // ...
+ *
+ *      // return false 表示有错误 只支持同步返回
+ *      return false;
+ }  });
  *  f.checkEmail(inputId);
  *  f.checkMobile(inputId);
  *  f.checkVerifyCode(inputId);
@@ -187,6 +193,7 @@ XForm.prototype = {
         
         // 回调
         if('function' === typeof config.callback) {
+            // 回调返回 false 表示有错误
             if(false === config.callback()) {
                 hasError = true;
             }
