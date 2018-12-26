@@ -344,15 +344,35 @@ XForm.prototype = {
     }
     
     /**
+     * 销毁
+     */
+    ,destroy: function() {
+        var component = null;
+        
+        for(var i=0,len=this.validateFields.length; i<len; i++) {
+            component = this.doc.getElementById(this.validateFields[i][0]);
+            
+            component.onfocus = null;
+            component.onblur = null;
+        }
+        
+        this.validateFields = [];
+    }
+    
+    /**
      * 手动设置提示信息
      *
      * @param {String} id
      * @param {String} msg
      */
     ,setTipMessage: function(id, msg) {
+        var field = this.doc.getElementById(id);
         var tip = this.getTipElement(id);
         
+        this.saveOldStyle(field, field.className);
         this.saveOldStyle(tip, tip.className);
+        
+        field.className = this.getOldStyle(field) + ' ' + this.stylesConfig.error.field;
         tip.className = this.getOldStyle(tip) + ' ' + this.stylesConfig.error.tip;
         
         tip.innerHTML = msg;
