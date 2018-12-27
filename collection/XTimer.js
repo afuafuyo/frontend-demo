@@ -7,7 +7,10 @@ function XTimer() {
     this.minutes = 0;
     this.seconds = 0;
 
-    this.staticTime = 0;
+    // 结束时间
+    this.endTimestamp = 0;
+    // 当前服务器时间和客户端时间差
+    this.serverClientTimeDiff = 0;
 }
 XTimer.prototype = {
     constructor : XTimer
@@ -15,15 +18,20 @@ XTimer.prototype = {
     /**
      * 设置毫秒时间戳
      *
-     * @param {Number} timestamp
+     * @param {Number} endTimestamp
+     * @param {Number} nowServerTimestamp
      */
-    ,setStaticTime: function(timestamp) {
-        this.staticTime = timestamp;
+    ,setStaticTime: function(endTimestamp, nowServerTimestamp) {
+        this.endTimestamp = endTimestamp;
+        
+        if(undefined !== nowServerTimestamp) {
+            this.serverClientTimeDiff = new Date().getTime() - nowServerTimestamp;
+        }
     }
     
     ,diff : function() {
         var t = new Date().getTime();
-        var x = this.staticTime - t;
+        var x = this.endTimestamp - t + this.serverClientTimeDiff;
          
         //计算出相差天数
         this.days = Math.floor( x / (1000 * 3600 * 24));
