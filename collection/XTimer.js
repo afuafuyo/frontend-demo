@@ -1,5 +1,17 @@
 /**
  * 倒计时
+ *
+ * var timer = new XTimer();
+ * timer.setStaticTime(endTimestamp, nowServerTimestamp);
+ * timer.onTick = function() {
+ *      
+ * };
+ * timer.onEnd = function() {
+ *      
+ * };
+ *
+ * timer.tick();
+ *
  */
 function XTimer() {
     this.days = 0;
@@ -7,6 +19,8 @@ function XTimer() {
     this.minutes = 0;
     this.seconds = 0;
 
+    this.onTick = null;
+    this.onEnd = null;
     // 结束时间
     this.endTimestamp = 0;
     // 当前服务器时间和客户端时间差
@@ -18,8 +32,8 @@ XTimer.prototype = {
     /**
      * 设置毫秒时间戳
      *
-     * @param {Number} endTimestamp
-     * @param {Number} nowServerTimestamp
+     * @param {Number} endTimestamp 结束时间
+     * @param {Number} nowServerTimestamp 当前服务器时间 可选
      */
     ,setStaticTime: function(endTimestamp, nowServerTimestamp) {
         this.endTimestamp = endTimestamp;
@@ -47,5 +61,33 @@ XTimer.prototype = {
         // 计算秒
         x = x % (1000 * 60);
         this.seconds = Math.round( x / 1000);
+    }
+    
+    ,tick: function() {
+        var _self = this;
+        
+        this.diff();
+        
+        // fix
+        this.days < 0 && (this.days = 0);
+        this.hours < 0 && (this.hours = 0);
+        this.minutes < 0 && (this.minutes = 0);
+        this.seconds < 0 && (this.seconds = 0);
+        
+        this.onTick && this.onTick();
+        
+        if(this.days <= 0
+            && this.hours <= 0
+            && this.minutes <= 0
+            && this.seconds <= 0) {
+                        
+            this.onEnd();
+            
+            return;
+        }
+        
+        window.setTimeout(function(){
+            _self.tick();
+        }, 1000);
     }
 };

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="./XTimer.js"></script>
+</head>
+<body>
+<div id="t"></div>
+
+<script>
+var timer = new XTimer();
+timer.setStaticTime(1545964850000 /*, 服务器当前时间 可选*/);
+timer.onTick = function() {
+    var m = timer.minutes < 10 ? '0' + timer.minutes : timer.minutes;
+    var s = timer.seconds < 10 ? '0' + timer.seconds : timer.seconds;
+    
+    document.getElementById('t').innerHTML = m + ':' + s;
+    console.log(timer.minutes + ':' + timer.seconds);
+};
+timer.onEnd = function() {
+    console.log('end')
+};
+timer.tick();
+</script>
+</body>
+</html>
