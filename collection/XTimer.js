@@ -61,7 +61,7 @@ XTimer.prototype = {
 
         // 计算秒
         x = x % (1000 * 60);
-        this.seconds = Math.round( x / 1000);
+        this.seconds = Math.floor( x / 1000);
     }
     
     ,tick: function() {
