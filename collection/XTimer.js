@@ -19,6 +19,7 @@ function XTimer() {
     this.minutes = 0;
     this.seconds = 0;
 
+    this.timerHandler = 0;
     this.onTick = null;
     this.onEnd = null;
     // 结束时间
@@ -60,7 +61,7 @@ XTimer.prototype = {
 
         // 计算秒
         x = x % (1000 * 60);
-        this.seconds = Math.round( x / 1000);
+        this.seconds = Math.floor( x / 1000);
     }
     
     ,tick: function() {
@@ -86,8 +87,12 @@ XTimer.prototype = {
             return;
         }
         
-        window.setTimeout(function(){
+        this.timerHandler = window.setTimeout(function(){
             _self.tick();
         }, 1000);
+    }
+    
+    ,stop: function() {
+        window.clearTimeout(this.timerHandler);
     }
 };

@@ -87,7 +87,7 @@ XDOMEvent.prototype = {
         // 避免重复绑定事件
         if(undefined === this.$eventBinMap[type]) {
             // Listen the specified event
-            document.body.addEventListener(type, function(e) {
+            document.addEventListener(type, function(e) {
                 _self.$eventProxy(e);
             }, false);
         }
