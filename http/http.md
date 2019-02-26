@@ -6,9 +6,11 @@
 
 + HTTP 协议的版本 HTTP/1.0, HTTP/1.1, HTTP/2
 
+
 ### HTTP 0.9
 
 服务器只能响应 html 格式字符串
+
 
 ### HTTP 1.0
 
@@ -16,19 +18,28 @@
 
 + 浏览器到 WEB 服务器之间的所有通讯都是完全独立分开的请求和响应对
 
-+ 会话四步骤
++ 支持长连接 需要手动设置 Connection: keep-alive 否则会使用短暂链接
+
++ 默认短暂链接的请求回应步骤
 
 ![image](./imgs/socket.jpg)
+
 
 ### HTTP/1.1
 
 在 HTTP/0.9 和 1.0 中 连接在单个请求/响应对之后关闭
 
-HTTP/1.1 引入了持久连接
++ HTTP/1.1 引入了持久连接
     
-    TCP 连接默认不关闭 ( 默认 Connection: keep-alive ) 该连接可以被下次 HTTP 请求复用 直到一段时间后自动关闭或者发送 Connection: close 手动关闭
-    
+    TCP 连接默认不关闭 ( 默认 Connection: keep-alive ) 直到一段时间后自动关闭或者发送 Connection: close 手动关闭
+
     对于同一个域名 大多数浏览器允许同时建立 6 个左右持久连接
+
++ 请求流水线 (Pipelining)
+
+    HTTP Pipelining 其实是把多个 HTTP 请求放到一个 TCP 连接中一一发送 而且在发送过程中不需要等待前一个请求的响应就可以发出下一次请求
+    
+    只不过 HTTP1.1 中服务器还是要按照发送请求的次序来处理请求 客户端也还是要按照发送请求的顺序来接收响应 这就造成了线头阻塞 ( Head-of-line blocking )
 
 ![image](imgs/multilink.jpg)
 
@@ -36,10 +47,38 @@ HTTP/1.1 引入了持久连接
 
 + 缺点
 
-    虽然 HTTP1.1 允许复用 TCP 连接 但是同一个 TCP 连接里面 所有的数据通信仍是按次序进行的 服务器只有处理完一个请求 才会处理下一个 要是前面的处理特别慢 后面就会有许多请求排队等着 这称为 线头阻塞 ( Head-of-line blocking )
+    线头阻塞问题
 
-    为了避免这个问题只有两种方法 一是减少请求数 二是同时多开几个持久连接
+
+### HTTP 2.0
+
+http1.x 主要问题就是延迟
+
++ 二进制分帧
+
+    * 帧 所有HTTP 2. 0 通信都在一个TCP连接上完成
+        
+        HTTP 2.0 通信的基本单位
+        
+        每个帧有一个头部信息 其中包含帧的长度和类型、一些布尔标志、一个保留位和一个流标识符
+        
+    * 消息
+        
+        消息是一组帧 表示 HTTP 请求或响应
+        
+        特定消息的帧在同一个流上发送
     
+    * 流
+    
+        流是连接中的一个虚拟信道 可以承载双向消息传输
+
++ 多路复用 (Multiplexing)
+
++ 请求优先级
+
++ 服务端推送
+
+
 ### HTTP 消息概述
 
 <pre>
@@ -51,6 +90,7 @@ HTTP Message --|
                |--> 响应消息 --|--> 消息头
                                |--> 实体内容
 </pre>
+
 
 ### HTTP 请求消息
 
@@ -73,6 +113,7 @@ Accept-Encoding: gzip, deflate      <--
 < empty line >                      <-- 一个空行
 </pre>
 
+
 ### HTTP 响应消息
 
 + 响应消息的结构
@@ -93,6 +134,7 @@ Cache-control: private                  <--
 data from server ...                    <-- 实体内容
 </pre>
 
+
 ### HTTP 请求行与状态行
 
 + 请求行
@@ -108,6 +150,7 @@ data from server ...                    <-- 实体内容
     - 格式： HTTP版本号 状态码 原因叙述< CRLF >
   
     - eg. HTTP/1.1 200 OK
+
 
 ### HTTP 消息头
 
@@ -133,6 +176,7 @@ data from server ...                    <-- 实体内容
 
 + 有些头字段可以出现多次 例如 响应消息中可以包含有多个 Warning 字段
 
+
 ### HTTP 消息 补充细节
 
 + 响应消息的实体内容就是网页文件的内容 也就是在浏览器中使用查看源文件的方式所看到的内容
@@ -140,6 +184,7 @@ data from server ...                    <-- 实体内容
 + 一个使用 GET 方式的请求消息中不能包含实体内容 只有使用 POST PUT 和 DELETE 方式的请求消息中才可以包含实体内容
 
 + 对于 HTTP 1.1 来说 如果 HTTP 请求或响应消息中包括实体内容 且没有采用 chunked 传输编码方式 那么消息头部分必须包含内容长度的字段 否则 客户和服务程序就无法知道实体内容何时结束
+
 
 ### 使用 telnet 模拟 get 请求
 
@@ -177,6 +222,7 @@ hello afuq
 
 ![image](./imgs/telnetget.jpg)
 
+
 ### 关于 URL 编码
 
 + 请求行和 HTTP 消息头中不能出现中文字符 中文字符需要按照 URL 编码方式转换成英文字符
@@ -190,6 +236,7 @@ hello afuq
     - 对于所有其他的字符 用这个字符的当前字符集编码在内存中的十六进制格式表示 并在每个字节前加上一个百分号 '%' 如字符 '+' 用 %2B 表示 每个中文字符在内存中占两个字节 字符 '中' 用 %D6%D0 表示
   
     - 对于空格也可以直接使用其十六进制编码方式 即用 %20 表示
+
 
 ### 使用 GET 和 POST 方式传递参数
 
@@ -211,6 +258,7 @@ param1=xxx&param2=yyy
 </pre>
 
 **注意上面我们实际传的参数长度是 21 但是 Content-Length 是 22 这时服务器会等待我们继续输入剩下的一个字节 若 Content-Length 为 20 的话 这时服务器会把多余的一个截掉**
+
 
 ### 响应状态码
 
@@ -235,6 +283,7 @@ param1=xxx&param2=yyy
 + 500 - 599
 
     - 服务器端出现错误
+
 
 ### 通用消息头
 
@@ -305,6 +354,7 @@ require('net').createServer(function(sock) {
 + Warning: any text
 
     - 关于实体内容的警告信息
+
 
 ### 请求头
 
@@ -380,6 +430,7 @@ require('net').createServer(function(sock) {
 
     - 与 Range Content-Range 配合使用实现断点下载
 
+
 ### 响应头
 
 + 响应头字段用于服务器在响应消息中向客户端传递附加信息 包括服务程序名 被请求资源需要的认证方式 被请求资源已移动到的新地址等信息
@@ -391,6 +442,7 @@ require('net').createServer(function(sock) {
 + Etag: [与资源关联的一个值]
 
     - 服务器返回的与资源有关的一个值
+
 
 ### 实体头
 
@@ -427,6 +479,7 @@ require('net').createServer(function(sock) {
 + Expires: [UTCTIMEString]
     
     - 响应过期的日期和时间
+
 
 ### 扩展头
 
