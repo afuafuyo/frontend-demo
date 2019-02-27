@@ -91,9 +91,11 @@ XFetch.prototype = {
 
 /**
  * Promise
+ *
+ * Implements Promises/A+
  */
 XFetch.Promise = function(executor) {
-    this.status = 'pending';
+    this.state = 'pending';
     this.thens = [];
     this.rejectFn = null;
     
@@ -112,11 +114,11 @@ XFetch.Promise = function(executor) {
     }
 };
 XFetch.Promise.prototype.resolve = function(data) {
-    if('pending' !== this.status) {
+    if('pending' !== this.state) {
         return;
     }
     
-    this.status = 'accepted';
+    this.state = 'fulfilled';
 
     var callback = null;
     var tmp = data;
@@ -133,14 +135,22 @@ XFetch.Promise.prototype.resolve = function(data) {
     }
 };
 XFetch.Promise.prototype.reject = function(err) {
-    this.status = 'rejected';
+    this.state = 'rejected';
     
     if(null !== this.rejectFn) {
         this.rejectFn(err);
     }
 };
-XFetch.Promise.prototype.then = function(fn) {
-    return this.thens.push(fn), this;
+XFetch.Promise.prototype.then = function(onFulfilled, onRejected) {
+    if('function' === typeof onFulfilled) {
+        this.thens.push(onFulfilled);
+    }
+    
+    if('function' === typeof onRejected) {
+        this.rejectFn = onRejected;
+    }
+    
+    return this;
 };
 XFetch.Promise.prototype.catch = function(fn) {    
     return this.rejectFn = fn, this;
