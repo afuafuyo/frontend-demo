@@ -152,7 +152,7 @@ XFetch.Promise.prototype.then = function(onFulfilled, onRejected) {
     
     return this;
 };
-XFetch.Promise.prototype.catch = function(fn) {    
+XFetch.Promise.prototype.catch = function(fn) {
     return this.rejectFn = fn, this;
 };
 
