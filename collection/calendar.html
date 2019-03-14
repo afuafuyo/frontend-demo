@@ -7,8 +7,7 @@
 .ycalendar {
     position: absolute;
     z-index: 600;
-    width: 260px;
-    font-size: 14px;
+    width: 210px;
     font-family: 'PingFang SC', 'Helvetica', 'Microsoft YaHei', 'Arial', 'sans-serif';
     background-color: #fff;
     border: 1px solid #ddd;
@@ -31,21 +30,11 @@
     cursor: pointer;
     background-color: #ccc;
 }
-.ycalendar-btn {
-    display: inline-block;
-    padding: 0 10px;
-    margin-left: 5px;
-    color: #fff;
-    font-size: 12px;
-    background-color: #09a;
-}
-.ycalendar-btn:hover {
-    cursor: pointer;
-}
 
 /* title */
-.ycalendar-title {
+.ycalendar-header {
     line-height: 36px;
+    font-size: 14px;
     background-color: #f5f5f5;
     border-bottom: 1px solid #ddd;
 }
@@ -58,25 +47,23 @@
 /* content -> week */
 .ycalendar-week {
     line-height: 32px;
+    font-size: 12px;
     background-color: #f5f5f5;
     border-bottom: 1px solid #ddd;
 }
 
 /* content -> days */
-.ycalendar-day {}
-.ycalendar-day:after {
-    content: '';
-    display: block;
-    clear: left;
+.ycalendar-day {
+    font-size: 12px;
 }
 .ycalendar-day span {
-    display: block;
-    float: left;
+    display: inline-block;
     width: 14.28%;
-    height: 32px;
-    line-height: 32px;
+    height: 28px;
+    line-height: 28px;
     color: #222;
     text-align: center;
+    border-radius: 4px;
 }
 .ycalendar-day span[data-invalid],
 .ycalendar-day span[data-disabled] {
@@ -88,15 +75,7 @@
 }
 .ycalendar-day span.active {
     color: #fff;
-    background-color: #09a;
-}
-
-/* content -> widget */
-.ycalendar-widget {
-    line-height: 28px;
-    padding: 0 3px;
-    text-align: right;
-    background-color: #f5f5f5;
+    background-color: #216ba5;
 }
 
 /* content -> poplay */
@@ -106,7 +85,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #ddd;
+    font-size: 12px;
+    background-color: #fff;
     display: none;
 }
 .ycalendar-poplay-item-number {
@@ -118,36 +98,29 @@
 }
 .ycalendar-poplay-item-number:hover,
 .ycalendar-poplay-item-number.active {
-    background-color: #ddd;
+    background-color: #aeaeae;
 }
-.ycalendar-poplay-switch-left {
+.ycalendar-time {
     position: absolute;
-    top: 35%;
-    left: 0;
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    color: #fff;
+    left: 211px;
+    top: -1px;
+    width: 70px;
+    height: 100%;
+    background-color: #fff;
+    overflow: auto;
+    border: 1px solid #ddd;
+    border-left: 0;
+    border-radius: 4px;
+}
+.ycalendar-time div {
+    line-height: 36px;
+    font-size: 12px;
     text-align: center;
     cursor: pointer;
-    background-color: rgba(0, 0, 0, .4);
-    border-radius: 20px;
 }
-.ycalendar-poplay-switch-right {
-    position: absolute;
-    top: 35%;
-    right: 0;
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    color: #fff;
-    text-align: center;
-    cursor: pointer;
-    background-color: rgba(0, 0, 0, .4);
-    border-radius: 20px;
+.ycalendar-time div:hover {
+    background-color: #f0f0f0;
 }
-
-
 
 </style>
 </head>
@@ -161,11 +134,12 @@ function YCalendar() {
     
     this.wrapper = null;
     this.options = {
-        target: '',
+        targetId: '',
         zIndex: 600,
-        showTime: true,
         format: 'y-m-d h:i:s',
-        onPickDate: null
+        onPickDate: null,
+        showTime: true,
+        timeIntervals: 15
     };
     
     this.dateRegExp = new RegExp([
@@ -208,7 +182,7 @@ YCalendar.getInstance = function() {
 YCalendar.prototype = {
     constructor: YCalendar,
     initDate: function(date) {
-        var d = undefined === date ? new Date() : new Date(date);
+        var d = undefined === date ? new Date() : new Date( date.replace(/-/g, '/') );
         
         this.year = d.getFullYear();
         this.month = d.getMonth() + 1;
@@ -222,9 +196,9 @@ YCalendar.prototype = {
             this.options[k] = options[k];
         }
         
-        if(undefined !== options.target) {
-            if('' !== this.doc.getElementById(options.target).value) {
-                this.initDate(this.doc.getElementById(options.target).value);
+        if(undefined !== options.targetId) {
+            if('' !== this.doc.getElementById(options.targetId).value) {
+                this.initDate(this.doc.getElementById(options.targetId).value);
             }
         }
     },
@@ -260,10 +234,6 @@ YCalendar.prototype = {
         }
         
         switch(target.getAttribute('data-action')) {
-            case 'unmount':
-                this.unMountWrapper();
-                
-                break;
             case 'lastYear':
                 this.year--;
                 this.render();
@@ -303,20 +273,6 @@ YCalendar.prototype = {
                 this.togglePoplay();
                 
                 break;
-            case 'lastPageYear':
-                var startYear = target.getAttribute('data-value');
-                startYear = parseInt(startYear, 10) - 12;
-                
-                this.popYear(startYear);
-                
-                break;
-            case 'nextPageYear':
-                var startYear = target.getAttribute('data-value');
-                startYear = parseInt(startYear, 10);
-                
-                this.popYear(startYear);
-                
-                break;
             case 'pickYear':
                 if('1' === target.getAttribute('data-disabled')) {
                     return;
@@ -353,6 +309,16 @@ YCalendar.prototype = {
                 this.render();
                 
                 break;
+            case 'pickTime':
+                var str = target.getAttribute('data-value');
+                var arr = str.split(':');
+                
+                this.hours = parseInt(arr[1], 10);
+                this.minutes = parseInt(arr[2], 10);
+                this.render();
+                
+                break;
+            // 选择日期 ====
             case 'submit':
                 if(null === this.options.onPickDate) {
                     return;
@@ -452,9 +418,9 @@ YCalendar.prototype = {
         
         return 31;
     },
-    renderTitle: function() {
+    renderHeader: function() {
         var title =
-        ['<div class="ycalendar-title">',
+        ['<section class="ycalendar-header">',
             '<table class="ycalendar-table">',
                 '<tr>',
                     '<td><label data-action="lastYear">◄</label></td>',
@@ -465,13 +431,13 @@ YCalendar.prototype = {
                     '<td><label data-action="nextMonth">►</label></td>',
                 '</tr>',
             '</table>',
-        '</div>'].join('');
+        '</section>'].join('');
         
         this.appendHtml(title, true);
     },
     renderContent: function() {
         // start
-        var content = '<div class="ycalendar-content">';
+        var content = '<section class="ycalendar-content">';
         
         // week
         content += this.getWeekString();
@@ -479,16 +445,59 @@ YCalendar.prototype = {
         // day
         content += this.getDayString();
         
-        // widget
-        content += this.getWidgetString();
-        
         // poplay
         content += '<div class="ycalendar-poplay"></div>';
         
         // end
-        content += '</div>';
+        content += '</section>';
         
         this.appendHtml(content);
+    },
+    renderTime: function() {
+        var html = '<section class="ycalendar-time">';
+        
+        // 从选定的时间 或者 当前时间开始循环
+        var interval = this.options.timeIntervals;
+        var startHour = new Date().getHours();
+        var startMinute = 0;
+        if(undefined !== this.minutes && 0 === this.minutes % interval) {
+            startHour = this.hours;
+            startMinute = this.minutes;
+        }
+        
+        var tmp = '';
+        var minuteNumber = 60 / interval;
+        // 后面的时间
+        for(var h=startHour; h<24; h++) {
+            for(var m=startMinute; m<minuteNumber; m++) {
+                tmp += '<div data-action="pickTime" data-value="'+ h + ':' + startMinute +'">'
+                    + h + ':' + this.lPad(String(startMinute), '0', 2)
+                    + '</div>';
+                startMinute += interval;
+                
+                if(startMinute >= 60) {
+                    startMinute = 0;
+                }
+            }
+        }
+        // 前面的时间
+        for(var h=0; h<startHour; h++) {
+            for(var m=startMinute; m<minuteNumber; m++) {
+                tmp += '<div data-action="pickTime" data-value="'+ h + ':' + startMinute +'">'
+                    + h + ':' + this.lPad(String(startMinute), '0', 2)
+                    + '</div>';
+                startMinute += interval;
+                
+                if(startMinute >= 60) {
+                    startMinute = 0;
+                }
+            }
+        }
+        
+        html += tmp;
+        html += '</section>'
+        
+        this.appendHtml(html)
     },
     getWeekString: function() {
         var week =
@@ -509,7 +518,7 @@ YCalendar.prototype = {
         return week;
     },
     getDayString: function() {
-        var html = '<div class="ycalendar-day">';
+        var html = '<div class="ycalendar-day"><div data-role="line">';
         
         var days = this.getDaysOfMonth(this.year, this.month);
         var startWeek = new Date(this.year, this.month - 1, 1).getDay();
@@ -521,13 +530,19 @@ YCalendar.prototype = {
         // 向上个月补齐
         for(var i=startWeek; i>0; i--) {
             html += '<span data-action="pickDay" data-invalid="1" data-value="'+ this.year + '-' + (this.month - 1) + '-' + (lastMonthDays - i + 1) +'">'
-                + (lastMonthDays - i + 1) +'</span>';
+                + (lastMonthDays - i + 1)
+                +'</span>';
                 
             totalDays--;
+            
+            // 换行
+            if(0 === totalDays % 7) {
+                html += '</div><div data-role="line">';
+            }
         }
         
         // 本月
-        for(var j=1; j<=days; j++) {            
+        for(var j=1; j<=days; j++) {
             if(j === this.date) {
                 html += '<span class="active" data-action="pickDay" data-value="'+ this.year + '-' + this.month + '-' + j +'">'
                     + j +'</span>';
@@ -538,6 +553,11 @@ YCalendar.prototype = {
             }
             
             totalDays--;
+            
+            // 换行
+            if(0 === totalDays % 7) {
+                html += '</div><div data-role="line">';
+            }
         }
         
         // 向下个月补齐
@@ -550,25 +570,25 @@ YCalendar.prototype = {
             if(totalDays <= 0) {
                 break;
             }
+            
+            // 换行
+            if(0 === totalDays % 7) {
+                html += '</div><div data-role="line">';
+            }
         }
         
-        html += '</div>';
+        html += '</div></div>';
         
         return html;
     },
-    getWidgetString: function() {
-        var widget =
-        ['<div class="ycalendar-widget">',
-            '<span data-action="unmount" class="ycalendar-btn">取消</span>',
-            '<span data-action="submit" class="ycalendar-btn">确定</span>',
-        '</div>'].join('');
-        
-        return widget;
-    },
     render: function() {
-        this.renderTitle();
+        this.renderHeader();
         
         this.renderContent();
+        
+        if(this.options.showTime) {
+            this.renderTime();
+        }
     },
     getPopLay: function() {
         return this.wrapper.querySelector('.ycalendar-poplay');
@@ -593,10 +613,6 @@ YCalendar.prototype = {
             ret += '<span class="ycalendar-poplay-item-number '+ tmp +'" data-action="pickYear" data-value="'+ (startYear + i) +'">'+ (startYear + i) +'</span>';
         }
         
-        // 切换按钮
-        ret += '<span class="ycalendar-poplay-switch-left" data-action="lastPageYear" data-value="'+ startYear +'">&lt;</span>'
-            + '<span class="ycalendar-poplay-switch-right" data-action="nextPageYear" data-value="'+ (startYear + 12) +'">&gt;</span>'
-        
         popLay.innerHTML = ret;
     },
     popMonth: function() {
@@ -620,7 +636,8 @@ YCalendar.prototype = {
 
 // ==========
 new YCalendar().mount('demo', {
-    showTime: false,
+    showTime: true,
+    timeIntervals: 30,
     format: 'y-m-d h:i',
     onPickDate: function(v) {
         document.getElementById('time').value = v
