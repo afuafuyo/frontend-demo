@@ -121,6 +121,10 @@
 .ycalendar-time div:hover {
     background-color: #f0f0f0;
 }
+.ycalendar-time div.active {
+    color: #fff;
+    background-color: #216ba5;
+}
 
 </style>
 </head>
@@ -397,36 +401,28 @@ YCalendar.prototype = {
         }
         
         var tmp = '';
-        var minuteNumber = 60 / interval;
         // 后面的时间
         for(var h=startHour; h<24; h++) {
-            for(var m=startMinute; m<minuteNumber; m++) {
-                tmp += '<div data-action="pickTime" data-value="'+ h + ':' + startMinute +'">'
-                    + h + ':' + this.lPad(String(startMinute), '0', 2)
+            for(var m=startMinute; m<60; m = m + interval) {
+                tmp += '<div class="'+ (this.hours === h && this.minutes === m ? 'active' : '') +'" data-action="pickTime" data-value="'+ h + ':' + m +'">'
+                    + h + ':' + this.lPad(String(m), '0', 2)
                     + '</div>';
-                startMinute += interval;
-                
-                if(startMinute >= 60) {
-                    startMinute = 0;
-                }
             }
+            
+            // 下一个小时的分钟正常从 0 开始
+            startMinute = 0;
         }
         // 前面的时间
         for(var h=0; h<startHour; h++) {
-            for(var m=startMinute; m<minuteNumber; m++) {
-                tmp += '<div data-action="pickTime" data-value="'+ h + ':' + startMinute +'">'
-                    + h + ':' + this.lPad(String(startMinute), '0', 2)
+            for(var m=startMinute; m<60; m = m + interval) {
+                tmp += '<div data-action="pickTime" data-value="'+ h + ':' + m +'">'
+                    + h + ':' + this.lPad(String(m), '0', 2)
                     + '</div>';
-                startMinute += interval;
-                
-                if(startMinute >= 60) {
-                    startMinute = 0;
-                }
             }
         }
         
         html += tmp;
-        html += '</section>'
+        html += '</section>';
         
         this.appendHtml(html)
     },
@@ -623,7 +619,7 @@ YCalendar.prototype = {
 new YCalendar({
     targetId: 'time',
     showTime: true,
-    timeIntervals: 30,
+    //timeIntervals: 30,
     format: 'y-m-d h:i',
     onPickDate: function(v) {
         console.log(v)
