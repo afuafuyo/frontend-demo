@@ -125,11 +125,10 @@
 </style>
 </head>
 <body>
-<input type="text" id="time" value="">
-<div id="demo"></div>    
+<input type="text" id="time" value="">   
 
 <script>
-function YCalendar() {
+function YCalendar(options) {
     this.doc = document;
     
     this.wrapper = null;
@@ -142,47 +141,17 @@ function YCalendar() {
         timeIntervals: 15
     };
     
-    this.dateRegExp = new RegExp([
-        // (year)
-        '(\\d+)?',
-        // (month)
-        '(?:\\-(\\d+))?',
-        // (date)
-        '(?:\\-(\\d+))?',
-        // \s
-        '\\s?',
-        // (hours)
-        '(\\d+)?',
-        // (minutes)
-        '(?::(\\d+))?',
-        // (seconds)
-        '(?::(\\d+))?'
-    ].join(''));
-        
-    this.dateRegExpKeys = [
-        'source',
-        'year',
-        'month',
-        'date',
-        'hours',
-        'minutes',
-        'seconds'
-    ];
+    this.hasMount = false;
     
-    this.initDate();
+    this.initOptions(options);
+    this.initDom();
+    this.initEvent();
 }
-YCalendar.instance = null;
-YCalendar.getInstance = function() {
-    if(null === YCalendar.instance) {
-        YCalendar.instance = new YCalendar();
-    }
-    
-    return YCalendar.instance;
-};
 YCalendar.prototype = {
     constructor: YCalendar,
     initDate: function(date) {
-        var d = undefined === date ? new Date() : new Date( date.replace(/-/g, '/') );
+        var d = ('' === date || undefined === date)
+            ? new Date() : new Date( date.replace(/-/g, '/') );
         
         this.year = d.getFullYear();
         this.month = d.getMonth() + 1;
@@ -191,29 +160,42 @@ YCalendar.prototype = {
         this.minutes = d.getMinutes();
         this.seconds = d.getSeconds();
     },
-    setOptions: function(options) {
+    initOptions: function(options) {
+        if(undefined === options) {
+            return;
+        }
+        
         for(var k in options) {
             this.options[k] = options[k];
         }
-        
-        if(undefined !== options.targetId) {
-            if('' !== this.doc.getElementById(options.targetId).value) {
-                this.initDate(this.doc.getElementById(options.targetId).value);
-            }
-        }
     },
-    parseDate: function(date) {
-        var ret = {};
+    initDom: function() {
+        this.wrapper = this.doc.createElement('div');
+        this.wrapper.className = 'ycalendar';
+        this.wrapper.style.zIndex = this.options.zIndex;
+    },
+    initEvent: function() {
+        var _self = this;
         
-        var matches = date.match(this.dateRegExp);
+        this.wrapper.onclick = function(e) {
+            e.stopPropagation && e.stopPropagation();
+            
+            _self.handlerEvent(e);
+        };
         
-        if(null !== matches) {
-            for(var i=0,len=this.dateRegExpKeys.length; i<len; i++) {
-                ret[this.dateRegExpKeys[i]] = matches[i];
+        var targetObject = this.doc.getElementById(this.options.targetId);
+        targetObject.onclick = function(e) {
+            _self.mount();
+        };
+        targetObject = null;
+        
+        this.doc.body.addEventListener('click', function(e) {
+            if(e.target.getAttribute('id') === _self.options.targetId) {
+                return;
             }
-        }
-        
-        return ret;
+            
+            _self.unMount();
+        });
     },
     lPad: function(str, pad, length) {
         while(str.length < length) {
@@ -303,87 +285,36 @@ YCalendar.prototype = {
             
                 var str = target.getAttribute('data-value');
                 var arr = str.split('-');
+                
                 //this.year = parseInt(arr[0], 10);
                 this.month = parseInt(arr[1], 10);
                 this.date = parseInt(arr[2], 10);
-                this.render();
+                
+                // 如果没有时间 那么直接填充时间到页面
+                // 否则 需要选择时间后再填充页面
+                if(this.options.showTime) {
+                    this.render();
+                    
+                } else {
+                    this.fillDate();
+                    this.unMount();
+                }
                 
                 break;
             case 'pickTime':
                 var str = target.getAttribute('data-value');
                 var arr = str.split(':');
                 
-                this.hours = parseInt(arr[1], 10);
-                this.minutes = parseInt(arr[2], 10);
-                this.render();
+                this.hours = parseInt(arr[0], 10);
+                this.minutes = parseInt(arr[1], 10);
                 
-                break;
-            // 选择日期 ====
-            case 'submit':
-                if(null === this.options.onPickDate) {
-                    return;
-                }
-            
-                var self = this;
-                var funs = {
-                    y: function() {
-                        return self.year;
-                    }
-                    ,m: function() {
-                        return self.lPad(String(self.month), '0', 2);
-                    }
-                    ,d: function() {
-                        return self.lPad(String(self.date), '0', 2);
-                    }
-                    ,h: function() {
-                        return self.lPad(String(self.hours), '0', 2);
-                    }
-                    ,i: function() {
-                        return self.lPad(String(self.minutes), '0', 2);
-                    }
-                    ,s: function() {
-                        return self.lPad(String(self.seconds), '0', 2);
-                    }
-                };
-                
-                var ret = this.options.format.replace(/(.?)/ig, function(match, p/* , offset, string */) {
-                    return undefined !== funs[match] ?
-                        funs[match]() :
-                        p;
-                });
-                
-                this.options.onPickDate(ret);
-                
-                this.unMountWrapper();
+                this.fillDate();
+                this.unMount();
                 
                 break;
             default:
                 break;
         }
-    },
-    unMountWrapper: function() {
-        this.wrapper.parentNode.removeChild(this.wrapper);
-    },
-    mountWrapper: function(mountId) {
-        var self = this;
-        var wrapper = this.doc.createElement('div');
-        wrapper.className = 'ycalendar';
-        wrapper.style.zIndex = this.options.zIndex;
-        
-        this.wrapper = wrapper;
-        
-        wrapper.onclick = function(e) {
-            self.handlerEvent(e);
-        };
-        wrapper = null;
-        
-        if(undefined === mountId) {
-            this.doc.body.insertBefore(this.wrapper, this.doc.body.firstChild);
-            
-            return;
-        }
-        
-        this.doc.getElementById(mountId).appendChild(this.wrapper);
     },
     appendHtml: function(html, firstAppend) {
         if(firstAppend) {
@@ -625,22 +556,77 @@ YCalendar.prototype = {
         
         popLay.innerHTML = ret;
     },
-    mount: function(mountId, options) {
-        this.mountWrapper(mountId);
-        this.setOptions(options);
+    fillDate: function() {
+        var _self = this;
+        var funs = {
+            y: function() {
+                return _self.year;
+            }
+            ,m: function() {
+                return _self.lPad(String(_self.month), '0', 2);
+            }
+            ,d: function() {
+                return _self.lPad(String(_self.date), '0', 2);
+            }
+            ,h: function() {
+                return _self.lPad(String(_self.hours), '0', 2);
+            }
+            ,i: function() {
+                return _self.lPad(String(_self.minutes), '0', 2);
+            }
+            ,s: function() {
+                return _self.lPad(String(_self.seconds), '0', 2);
+            }
+        };
         
+        var ret = this.options.format.replace(/(.?)/ig, function(match, p/* , offset, string */) {
+            return undefined !== funs[match] ?
+                funs[match]() :
+                p;
+        });
+        
+        // 填充时间
+        this.doc.getElementById(this.options.targetId).value = ret;
+        
+        if(null !== this.options.onPickDate) {
+            this.options.onPickDate(ret);
+        }
+    },
+    unMount: function() {
+        if(!this.hasMount) {
+            return;
+        }
+    
+        this.doc.body.removeChild(this.wrapper);
+        
+        this.hasMount = false;
+    },
+    mount: function() {
+        if(this.hasMount) {
+            return;
+        }
+        this.hasMount = true;
+    
+        var targetObject = this.doc.getElementById(this.options.targetId);
+    
+        // 定位日期
+        this.initDate(targetObject.value);
+    
+        this.doc.body.appendChild(this.wrapper);
+           
         this.render();
     }
 };
 
 
 // ==========
-new YCalendar().mount('demo', {
+new YCalendar({
+    targetId: 'time',
     showTime: true,
     timeIntervals: 30,
     format: 'y-m-d h:i',
     onPickDate: function(v) {
-        document.getElementById('time').value = v
+        console.log(v)
     }
 });
 </script>
