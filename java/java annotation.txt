@@ -1,0 +1,67 @@
+/**
+ * java 注解
+ */
+一 系统提供的 3 个默认的标准注解
+    1. @Override ------------ 表示重写
+    2. @Deprecated ---------- 表示不建议使用 java doc 中经常遇到 提示我们类或方法过期了
+    3. @SuppressWarnings() -- 抑制警告 这个针对 jdk 不同版本 屏蔽一些小警告
+        其值有 7 个
+        -- deprecation  
+        -- unchecked
+        -- fallthrough
+        -- path
+        -- serial
+        -- finally
+        -- all
+
+二 Meta-annotation  ( 用来修饰注解可以用到哪里 )
+    1. @Retention() -- 注解将被保留到哪里 比如保留到源代码中 那么编译后 注解信息就没了 其值是一个 RetentionPolicy 枚举值
+        public enum RetentionPolicy {
+            SOURCE,  // 注解只留在源代码文件中
+            CLASS,   // 注解留在class文件中 但虚拟机无法读取
+            RUNTIME  // 注解留在class文件中 虚拟机可以读取 这时反射机制就可以得到这个注解
+        }
+    2. @Target() -- 该注解可以在哪些目标上使用 其值是一个 ElementType 枚举值
+        public enum ElementType {
+            ANNOTATION_TYPE,
+            CONSTRUCTOR,      // 只能用到构造方法上
+            FIELD,            // 只能用到属性上
+            LOCAL_VARIABLE,   // 只能用到局部变量上
+            METHOD,           // 只能用到方法上
+            PACKAGE,          // 只能用到包上
+            TYPE              // 只能用到 类 接口 枚举上
+        }
+    3. @Documented -- 在制作 javaDoc 时是否将注解信息写入 javaDoc
+    4. @Inherited -- 没用过 -_-!
+
+三 自己定义注解
+    当注解中的属性名字为 value 时 在对其进行赋值时可以不指定属性名
+    除了 value 以外的属性名在为其赋值时都要指定属性名
+注意
+    当我们定义的注解类其实隐式的实现了 java.lang.annotation.Annotation 接口
+    如果我们自己定义一个接口让它显式的实现 Annotation 接口 则这个接口仍然只是一个接口而不是注解
+
+
+有了上面的基础知识 我们来定义一个自己的注解类
+@Retention(RetentionPolicy.SOURCE)  // 注解只留在源代码文件中
+@Target(ElementType.METHOD)         // 我们的注解可以放到方法上修饰方法
+public @interface AnnotationDemo {
+    String value() default "hello";  // 定义成员并给定默认值
+    EnumTest value2();  // 定义一个枚举成员 下面给出枚举定义
+    int[] value3();  // 定义数组成员
+}
+enum EnumTest {
+    Hello, World, Welcome
+}
+ 
+之后我们就能使我们的注解了
+public class MyAnnotationDemo {
+    public static void main(String[] args) {
+
+    }
+
+    @AnnotationDemo(value="demo", value2= EnumTest.World, value3={1,3})
+    public void echo() {
+        .........
+    }
+}

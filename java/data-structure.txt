@@ -1,0 +1,297 @@
+1.数据结构概述
+    1). 定义
+        我们如何把现实中大量而复杂的问题以特定的数据类型和特定的存储结构保存到主存储器 ( 内存 ) 中 以及在此基础上为实现某个
+        功能 ( 比如查找某元素 ) 而执行的相应操作 这个操作叫算法
+    2). 算法
+        |_ 解题的步骤
+        |_ 衡量算法的标准
+            i). 时间复杂度
+                大概程序要运行的次数，而非执行的时间
+            ii). 空间复杂度
+                算法执行过程中大概所占的最大内存
+            iii). 难易程度
+            iv). 健壮性
+
+2.预备知识
+	1). 指针
+		|_ 指针 ---------- 就是地址
+		|_ 指针变量 ------ 是存放内存单元的地址的变量
+		|_ 指针的本质是一个操作受限的非负整数
+		|	对于32位电脑内存最大为 2^32 = 4GB 地址编号是从 0 - 4G-1 的非负数
+		|_ int * p; -- 不是定义了一个名为 *p 的变量 而是定义了一个存地址的变量 变量名为 p 类型为 int *
+		|_ *p -- 如果 p 中存放了地址 那么 *p 就是以这个地址为地址的一个变量 ( 以 p 的内容为地址的变量|表示 p 中的地址指向的变量 )
+			int i = 0;
+			int * p = &i; -- p 中存放了地址
+			*p = 10; -- 相当于 i = 10
+			类似的有 a[0] 等同于 *(a+0)  // 以首地址位地址的变量即 a[0]
+	
+	2). 指针和数组
+		指针和一维数组
+			数组名
+			下标和指针的关系
+			指针变量的运算
+	
+	3). 结构体
+		|_ 为什么出现结构体
+		|	为了表示一些复杂的数据 而普通的基本类型变量无法满足要求
+		|_ 什么是结构体
+		|	结构体是用户根据实际需要自己定义的复合数据类型
+		|		# include <stdio.h>
+		|		struct Student {
+		|			int sid;
+		|			char name[50];
+		|			int age;
+		|		};  // 分号不能少
+		|		
+		|		int main(void) {
+		|			struct Student s = {0001, "lisi", 23};
+		|			s.sid = 0002; // 第一种方式赋值
+		|			
+		|			struct Student * p;  // 第二种方式赋值
+		|			p = &s;
+		|			p->sid = 0003;  // 等价于 (*p).sid 而 (*p).sid 等价于 s.sid 
+		|		}
+		|_ 如何使用结构体
+		|	1. 通过 点 的方式
+		|	2. 通过 指针
+		|	#include <stdio.h>
+		|	#include <string.h>
+		|	struct Student {
+		|		int sid;
+		|		char name[50];
+		|		int age;
+		|	};
+		|	void addInfo(struct Student *);
+		|	void outInfo(struct Student);
+		|	void outInfo2(struct Student *);
+		|	int main(void) {
+		|		struct Student s;
+		|		addInfo(&s);
+		|		outInfo(s);
+		|		outInfo2(&s);
+		|		//printf("%d %s %d\n",st.sid, st.name, st.age);
+		|		return 0;
+		|	}
+		|	//添加信息方法
+		|	void addInfo(struct Student * p) {
+		|		(*p).sid = 0005;
+		|		strcpy(p->name,"wangwu");
+		|		p->age = 10;
+		|	}
+		|	// 输出信息方法 不推荐用 因为这样把整个 Student 传过去了 浪费时间和内存 推荐把 Student 地址传过去
+		|	void outInfo(strcpy Student s) {
+		|		printf("%d %s %d\n",s.sid, s.name, s.age);
+		|	}
+		|	// 推荐使用传地址的方式
+		|	void outInfo2(struct Student * p) {
+		|		printf("%d %s %d\n", p->sid, p->name, p->age);
+		|	}
+				
+	4). 动态内存的分配和释放
+		|_ 动态分配一段空间并把首地址赋给 addr
+		|	int * addr = (int *)malloc(sizeof(int) * length);
+		|_ 用 free 释放
+			free(addr);
+		
+		#include <stdio.h>
+		#include <malloc.h>
+		struct Student {
+			int sid;
+			int age;
+		};
+		struct Student * createStudent();
+		void showStudent(p);
+		int main(void) {
+			struct Student * p;
+			p = createStudent();
+			showStudent(p);
+			return 0;
+		}
+		struct Student * createStudent() {
+			struct Student * ps = (struct Student *)malloc(sizeof(struct Student));
+			ps->sid = 1000;
+			ps->age = 20;
+			return ps;
+		}
+		void showStudent(struct Student * ps) {
+			printf("%d %d", ps->sid, ps->age);
+		}
+	
+	5). typedef 用法
+		typedef 是为某类型起一个别名
+		typedef int myint;  // 为 int 类型起个别名为 myint
+		myint i = 10;
+		
+3. 线性结构
+	1). 连续存储[数组]
+		
+	2). 离散存储[链表]
+		定义:
+			n 个节点离散分配 彼此通过指针相连
+            每个节点只有一个前驱节点和一个后续节点
+            首节点没有前驱结点 尾节点没有后续节点
+		专业术语:
+			首节点: 第一个有效节点
+			尾节点: 最后一个有效节点
+			头节点: 第一个有效节点之前的节点 头节点不存放有效数据
+			头指针: 指向头节点的指针变量
+			尾指针: 指向尾节点的指针变量
+		链表分类:
+			单向链表
+			双向链表
+			循环链表
+			非循环链表
+		算法:
+			狭义的算法是与数据的存储方式密切相关
+			广义的算法是与数据的存储方式无关
+	
+	3). 线性结构的两种常见应用
+		栈:
+			特点: 一种可以实现 先进后出 的存储结构
+			分类:
+				静态栈
+				动态栈
+			应用:
+				函数调用
+				中断
+				表达式求值
+				内存分配
+				缓冲处理
+		队列:
+			定义: 一种可以实现 先进先出 的存储结构
+		分类:
+			链式队列 -- 用链表实现
+			静态队列 -- 用数组实现
+				静态队列通常是循环队列
+					1). 静态队列为什么必须是循环队列
+					2). 循环队列需要几个参数来确定
+					3). 循环队列各个参数的含义
+					4). 循环队列入队伪算法
+					5). 循环队列出队伪算法
+					6). 如何判断循环队列是否为空
+					7). 如何判断循环队列是否已满
+	
+专题: 递归
+	定义:
+		一个函数自己直接或间接调用自己
+	递归要满足的三个条件
+		1). 递归必须得有个明确的终止条件
+		2). 该函数所处理的数据规模必须在递减
+		3). 这个转化必须是可解的
+		
+//例子
+/** 
+ * ====================================
+ *	链表
+ * ====================================
+ */
+#include <stdio.h>
+typedef struct Node {
+	int data;
+	struct Node * next;  // next 存放下个节点地址
+} NODE, * PNODE;  // NODE 等价于 struct Node PNODE 等价于 struct Node *
+
+int main(void) {
+	PNODE head = NULL;  // struct Node * head = NULL;
+	
+	return 0;
+}
+
+/**
+ * 栈
+ */
+#include <stdio.h>
+#include <malloc.h>
+#include stdlib.h>
+
+typedef struct Node {
+	int data;
+	struct Node * pNext;
+} NODE, * PNODE;
+
+typedef struct Stack {
+	PNODE pTop;
+	PNODE pBottom;  // 假定 pBottom 是栈底最后一个有效元素的下一个元素
+}STACK, * PSTACK;
+
+void init(PSTACK pS) {
+	pS->pTop = (PNODE) malloc(sizeof(NODE));
+	if(NULL == pS->pTop) {
+		printf("内存分配失败");
+		exit(-1);
+	} else {
+		pS->pBottom = pS-pTop;
+		pS->pBottom->pNext = NULL;  // pS->pTop->pNext = NULL;
+	}
+}
+
+void push(PSTACK pS, data) {
+	PNODE pNew = (PNODE)malloc(sizeof(NODE));
+	pNew->data = data;  // 赋值
+	pNew->pNew = pTop;  // 把新的 Node 的指针域指向原来的栈顶
+	pS->pTop = pNew;  // 把 pTop 指向新的栈顶
+	
+}
+
+void traverse(PSTACK pS) {
+	PNODE p = pS-pTop;  // 定义一个指针指向栈顶的 Node
+	while(p != pS->pBottom) {
+		printf("%d ", p->data);
+		p = p->pNext;
+	}
+	printf("\n");
+}
+
+bool empty(PSTACK pS) {
+	if(pS->pTop == pS->pBottom)
+		return true;
+	else
+		return false;
+}
+
+int pop(PSTACK pS) {
+	int popValue = NULL;
+	if(empty(pS)) {
+		return NULL;
+	} else {  // 弹出栈顶元素
+		PNODE p = pS-pTop;  // 定义一个临时指针指向栈顶的Node
+		pS->pTop = p->pNext;  // pS->pTop = pS->pTop->pNext;  // 把指针指向栈顶下面的 Node
+		popValue = p->data;  // 把栈顶元素的值取出来
+		free(p);  // 释放栈顶元素空间
+		p = NULL;
+	}
+	return popValue;
+}
+
+// 清空栈
+bool clear(PSTACK pS) {
+	if(empty(pS)) {
+		return true;
+	} 
+	PNODE p = pS-pTop;
+	PNODE q = NULL;
+	while(p != pS->pBottom) {
+		q = p->pNext; // 用一个临时指针来存储下一个节点地址 因为一旦释放了当前节点空间 下一个地址就找不到了
+		free(p); // 释放当前节点空间
+		p = q;
+	}
+	pS->pTop = pS->pBottom;
+	return true;
+}
+
+int main(void) {
+	STACK s;
+	init(&s);
+	push(&s, 1);
+	push(&s, 2);
+	push(&s, 3);
+	
+	pop(&s)
+	traverse();
+	
+	return 0;
+}
+
+/**
+ * 递归
+ */
