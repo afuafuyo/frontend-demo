@@ -5,8 +5,12 @@
     <title>Range 范围</title>
 </head>
 <body>
-<p contenteditable="true">a<b>b</b>123</p>
-<div>x<b>y</b></div>
+
+<section>
+    <p contenteditable="true">abcd<b>xyz</b>123</p>
+    <div><b>xyz<em>inner</em>outer</b><i>123</i></div>
+</section>
+
 <script>
 // 元素节点计算偏移量是算子元素 (childNodes) 数量 其他节点计算偏移量是算内容长度
 
@@ -15,33 +19,33 @@ var range = document.createRange();
 
 
 // 1. 使用 setStart setEnd 创建一段区域
-var startNode = document.getElementsByTagName('p')[0];  // p 元素
-var startOffset = 0;  // 从头部开始
-range.setStart(startNode, startOffset);
+//var startNode = document.getElementsByTagName('p')[0];  // p 元素
+//var startOffset = 0;  // 从头部开始
+//range.setStart(startNode, startOffset);
 
-var endNode = document.getElementsByTagName('p')[0];
-var endOffset = 2;  // 偏移量为 2 即到 b
-range.setEnd(endNode, endOffset);
+//var endNode = document.getElementsByTagName('p')[0];
+//var endOffset = 2;  // 偏移量为 2 即到 b
+//range.setEnd(endNode, endOffset);
 
-console.log(range.toString());
+//console.log(range.toString());
 
 
-/*
+
 // 2. 使用 selectNode 创建一段区域
-range.selectNode(document.getElementsByTagName('p').item(0));
+range.selectNode(document.getElementsByTagName('p')[0].firstChild);
 
-console.log(range)
+console.log(range);
 console.log('result:', range.toString());  // result: ab123
 
 // 折叠选取 折叠后的选取不包含任何数据
-var range2 = document.createRange();
-range2.selectNode(document.getElementsByTagName('p').item(0));
-document.getElementsByTagName('p').item(0).focus();
-range2.collapse(true);
+//var range2 = document.createRange();
+//range2.selectNode(document.getElementsByTagName('p')[0]);
+//document.getElementsByTagName('p')[0].focus();
+//range2.collapse(true);
 
-console.log(range2)
-console.log('collapsed result:', range2.toString());  // collapsed result:
-*/
+//console.log(range2)
+//console.log('collapsed result:', range2.toString());  // collapsed result:
+
 </script>
 </body>
 </html>
