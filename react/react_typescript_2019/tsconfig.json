@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "baseUrl": "src",
+        "module": "es6",  // 使用 es6 模块
+        "target": "es6",  // 转成 es6 代码 再由 babel 负责转成 es5
+        "moduleResolution": "Node",
+        "sourceMap": false,
+        "allowJs": true,
+        "jsx": "preserve"  // 告诉 ts 不要转换 jsx 交给 babel 转换
+    },
+    "exclude": [
+        "node_modules" // 这个目录下的代码不会被 typescript 处理
+    ]
+}
