@@ -593,6 +593,11 @@ XCalendar.prototype = {
         // 定位日期
         this.initDate(this.targetElement.value);
 
+        // pos
+        var pos = this.targetElement.getBoundingClientRect();
+        this.wrapper.style.top = pos.top + pos.height + 2 + 'px';
+        this.wrapper.style.left = pos.left + 'px';
+
         this.doc.body.appendChild(this.wrapper);
         this.render();
     },
@@ -601,14 +606,10 @@ XCalendar.prototype = {
 
         this.targetElement = targetElement;
 
-        var pos = this.targetElement.getBoundingClientRect();
-
         // dom
         this.wrapper = this.doc.createElement('div');
         this.wrapper.className = 'x-calendar-wrapper';
         this.wrapper.style.zIndex = this.options.zIndex;
-        this.wrapper.style.top = pos.top + pos.height + 2 + 'px';
-        this.wrapper.style.left = pos.left + 'px';
 
         // event
         this.wrapper.onclick = function(e) {
