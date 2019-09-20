@@ -28,7 +28,7 @@
 }
 .x-calendar-table label:hover {
     cursor: pointer;
-    background-color: #ccc;
+    background-color: #e4e8f1;
 }
 
 /* title */
@@ -71,11 +71,11 @@
 }
 .x-calendar-day span:hover {
     cursor: pointer;
-    background-color: #eee;
+    background-color: #e4e8f1;
 }
 .x-calendar-day span.active {
     color: #fff;
-    background-color: #216ba5;
+    background-color: #00a1d6;
 }
 
 /* content -> poplay */
@@ -92,13 +92,16 @@
 .x-calendar-poplay-item-number {
     display: inline-block;
     width: 25%;
-    height: 33%;
+    height: 32px;
+    line-height: 32px;
     text-align: center;
+    margin-top: 25px;
     background-color: #fff;
+    cursor: pointer;
 }
 .x-calendar-poplay-item-number:hover,
 .x-calendar-poplay-item-number.active {
-    background-color: #aeaeae;
+    background-color: #e4e8f1;
 }
 .x-calendar-time {
     position: absolute;
@@ -119,7 +122,7 @@
     cursor: pointer;
 }
 .x-calendar-time div:hover {
-    background-color: #f0f0f0;
+    background-color: #e4e8f1;
 }
 .x-calendar-time div.active {
     color: #fff;
@@ -522,7 +525,8 @@ XCalendar.prototype = {
         var popLay = this.getPopLay();
         var ret = '';
 
-        for(var i=0,tmp=''; i<12; i++) {
+        // 前面留 4 个月
+        for(var i=-4,tmp=''; i<7; i++) {
             tmp = this.year === startYear + i ? 'active' : '';
             ret += '<span class="x-calendar-poplay-item-number '+ tmp +'" data-action="pickYear" data-value="'+ (startYear + i) +'">'+ (startYear + i) +'</span>';
         }
