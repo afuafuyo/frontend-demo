@@ -3,32 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Select</title>
-    
+
 <style>
-.yselect {
+.xc-select {
     position: relative;
     display: inline-block;
     background-color: #fff;
     height: 30px;
     line-height: 30px;
-    padding: 0 12px;
     font-size: 14px;
     color: rgba(0, 0, 0, .6);
     border: 1px solid #d9d9d9;
     border-radius: 4px;
     transition: border-color .5s;
 }
-.yselect:after {
+.xc-select:after {
     content: '▼';
     position: absolute;
     top: 0;
     right: 6px;
 }
-.yselect:focus,
-.yselect:hover {
+.xc-select:focus,
+.xc-select:hover {
     border-color: #49a9ee
 }
-.yselect-list {
+.xc-select-text {
+    display: inline-block;
+    padding-left: 10px;
+}
+.xc-select-list {
     position: absolute;
     z-index: 600;
     left: 0;
@@ -41,58 +44,37 @@
     box-shadow: 0 4px 6px 0 rgba(0, 0, 0, .2);
     display: none;
 }
-.yselect-list span {
+.xc-select-list span {
     display: block;
     height: 32px;
     line-height: 32px;
     padding: 0 6px;
 }
-.yselect-list span:hover {
+.xc-select-list span:hover {
     background-color: #eee;
     cursor: pointer;
 }
 </style>
-</head>
-<body>
-    
-    <div id="demo" data-value="9" style="width: 120px">
-        <div class="yselect-list">
-            <span data-role="item" data-value="1">选项1</span>
-            <span data-role="item" data-value="2">选项2</span>
-            <span data-role="item" data-value="3">选项3</span>
-            <span data-role="item" data-value="4">选项4</span>
-            <span data-role="item" data-value="5">选项5</span>
-            <span data-role="item" data-value="6">选项6</span>
-            <span data-role="item" data-value="7">选项7</span>
-            <span data-role="item" data-value="8">选项8</span>
-            <span data-role="item" data-value="9">选项9</span>
-            <span data-role="item" data-value="0">选项0</span>
-        </div>
-    </div>
-    
-    <br/><br/><br/>
-    
-    <div id="demo2" data-value="0" style="width: 80px"></div>
-
 <script>
-function YSelect() {
+function Select() {
     this.doc = document;
     this.wrapper = null;
-    this.tipWrapper = null;
+    this.textWrapper = null;
     this.listWrapper = null;
+    this.onChange = null;
+
     this.value = '';
-    this.onchange = null;
 }
-YSelect.prototype = {
-    constructor: YSelect,
+Select.prototype = {
+    constructor: Select,
     E: {
         addHandler: function(ele, type, func) {
             if(ele.addEventListener) {
                 ele.addEventListener(type, func, false);
-                
+
             } else if(ele.attachEvent) {
                 ele.attachEvent('on' + type, func);
-                
+
             } else {
                 ele['on' + type] = func;
             }
@@ -100,10 +82,10 @@ YSelect.prototype = {
         removeHandler: function(ele, type, func) {
             if(ele.removeEventListener) {
                 ele.removeEventListener(type, func, false);
-                
+
             } else if(ele.detachEvent) {
                 ele.detachEvent('on' + type, func);
-                
+
             } else {
                 ele['on' + type] = null;
             }
@@ -115,105 +97,109 @@ YSelect.prototype = {
     eventHandler: function(e) {
         e.stopPropagation && e.stopPropagation();
         e.cancelBubble = true;
-        
+
         var target = e.target;
-        
+
         if('block' !== this.listWrapper.style.display) {
             this.listWrapper.style.display = 'block';
-            
+
         } else {
             this.listWrapper.style.display = 'none';
         }
-        
+
         if('item' === target.getAttribute('data-role')) {
             this.value = target.getAttribute('data-value');
-            this.tipWrapper.innerHTML = target.innerHTML;
-            
-            null !== this.onchange && this.onchange(this.value);
+            this.textWrapper.innerHTML = target.innerHTML;
+
+            if(null !== this.onChange) {
+                this.onChange(this.value);
+            }
         }
     },
     initStructure: function(items) {
-        this.wrapper.className = 'yselect';
-        
-        this.tipWrapper = this.doc.createElement('span');
-        this.tipWrapper.className = 'yselect-value';
-        
-        if(undefined !== items) {
-            var ret = '';
-            for(var i=0,len=items.length; i<len; i++) {
-                ret += '<span data-role="item" data-value="'+ items[i].value +'">'+ items[i].text +'</span>'
-            }
-            
-            this.listWrapper = this.doc.createElement('div');
-            this.listWrapper.className = 'yselect-list';
-            this.listWrapper.innerHTML = ret;
-            
-            this.tipWrapper.innerHTML = items[0].text;
-                        
-        } else {
-            this.listWrapper = this.wrapper.querySelector('.yselect-list');
-            var first = this.listWrapper.querySelector('[data-role="item"]');
-            
-            this.tipWrapper.innerHTML = first.innerHTML;
+        this.wrapper.className += ' xc-select';
+        this.textWrapper = this.doc.createElement('span');
+        this.textWrapper.className = 'xc-select-text';
+        this.listWrapper = this.doc.createElement('div');
+        this.listWrapper.className = 'xc-select-list';
+
+        var ret = '';
+        for(var i=0,len=items.length; i<len; i++) {
+            ret += '<span data-role="item" data-value="'+ items[i].value +'">'+ items[i].text +'</span>';
         }
-        
-        this.wrapper.appendChild(this.tipWrapper);
+        this.listWrapper.innerHTML = ret;
+
+        this.wrapper.appendChild(this.textWrapper);
         this.wrapper.appendChild(this.listWrapper);
-        
-        // 默认值
-        var value = null;
-        var list = null;
-        if(null !== (value = this.wrapper.getAttribute('data-value'))) {
-            this.value = value;
-            
-            list = this.listWrapper.querySelectorAll('[data-role="item"]');
-            for(var i=0,len=list.length; i<len; i++) {
-                if(value === list[i].getAttribute('data-value')) {
-                    // 显示选定项
-                    this.tipWrapper.innerHTML = list[i].innerHTML;
-                    
-                    break;
-                }
+    },
+    processDefaultValue: function(value) {
+        var list = this.listWrapper.querySelectorAll('[data-role="item"]');
+
+        // 匹配不到 则不设置值
+        for(var i=0,len=list.length; i<len; i++) {
+            if(String(value) === list[i].getAttribute('data-value')) {
+                this.value = value;
+                this.textWrapper.innerHTML = list[i].innerHTML;
+
+                break;
             }
         }
+
+        if(null !== this.onChange) {
+            this.onChange(value);
+        }
+    },
+
+    /**
+     * 渲染
+     *
+     * @param Element wrapper
+     * @param Array items eg. [ {text: '选项描述', value: 1} ]
+     */
+    render: function(wrapper, items) {
+        var _self = this;
+        var select = this.wrapper = wrapper;
+
+        this.initStructure(items);
+
+        select.onclick = function(e) {
+            _self.eventHandler(e);
+        };
+        select = null;
+
+        this.E.addHandler(this.doc, 'click', function(e){
+            _self.closeList();
+        });
+
+        return this;
     },
     getValue: function() {
         return this.value;
     },
-    /**
-     * 渲染
-     *
-     * @param {String} id
-     * @param {Array} items
-     * [ {text: '选项', value: 1} ]
-     */
-    render: function(id, items) {
-        var self = this;
-        var select = this.wrapper = this.doc.getElementById(id);
-        
-        this.initStructure(items);
-        
-        select.onclick = function(e) {
-            self.eventHandler(e);
-        };
-        select = null;
-        
-        this.E.addHandler(this.doc, 'click', function(e){
-            self.closeList();
-        });
-        
-        return this;
+    setValue: function(value) {
+        this.processDefaultValue(value);
     }
 };
+</script>
+</head>
+<body>
 
-var demo = new YSelect().render('demo');
-demo.onchange = function(v) {
-    console.log(v)
+<div id="demo" style="width: 120px"></div>
+
+<script>
+var se = new Select();
+se.render(document.getElementById('demo'), [
+    {text: 'this is one', value: 1},
+    {text: '这是第二', value: 2},
+    {text: '这是第三个', value: 3},
+]);
+se.onChange = (v) => {
+    console.log(v);
 };
-var demo2 = new YSelect().render('demo2', [{text: '男', value: 1}, {text: '女', value: 0}])
-demo2.onchange = function(v) {
-    console.log(v)
-};
+
+setTimeout(() => {
+    se.setValue(1);
+}, 1000);
 </script>
 </body>
 </html>
