@@ -3,7 +3,7 @@
  *
  * @author afu
  *
- * structure
+ * structure 两端没有空隙
  *
  * -----------------
  * ||----|   |----||
@@ -84,6 +84,9 @@ WaterFall.prototype = {
         
         return ret;
     },
+    maxHeight: function() {
+        return Math.max.apply(null, this.heightArr);
+    },
     // 数组中的最小值的索引
     minIndex: function() {
         var min = Math.min.apply(null, this.heightArr);
@@ -134,7 +137,7 @@ WaterFall.prototype = {
         this.callback = callback;
         
         var img = null;
-        for(var i=0; i<this.batchFalls; i++) {
+        for(var i=0,len=this.batchFalls; i<len; i++) {
             if(null !== (img = allItems[i].querySelector(itemImageSelector))) {
                 if(img.complete) {
                     this.imgLoaded(allItems[i], true);
