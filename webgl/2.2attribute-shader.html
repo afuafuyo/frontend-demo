@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>使用 attribute 变量给顶点着色器传位置信息</title>
+    <script></script>
 </head>
 <body>
 
@@ -12,7 +13,7 @@
 (function(){
     var canvas = document.getElementById('webgl');
     var gl = canvas.getContext('webgl');
-    
+
     // shader source
     var VSHADER_SOURCE =
         `attribute vec4 a_Position;
@@ -24,37 +25,37 @@
         `void main() {
             gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         }`;
-        
+
     // 创建 shader
     var vShader = gl.createShader(gl.VERTEX_SHADER);
     // 设置 shader 的 source
     gl.shaderSource(vShader, VSHADER_SOURCE);
     // 编译 shader
     gl.compileShader(vShader);
-    
+
     var fShader = gl.createShader(gl.FRAGMENT_SHADER);
     gl.shaderSource(fShader, FSHADER_SOURCE);
     gl.compileShader(fShader);
-    
+
     // 创建程序 并附加 shader
     var program = gl.createProgram();
     gl.attachShader(program, vShader);
     gl.attachShader(program, fShader);
     // 连接程序到 webgl
     gl.linkProgram(program);
-    
+
     gl.useProgram(program);
     gl.program = program;
-    
+
     // 给 attribute 赋值
     var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
     gl.vertexAttrib3f(a_Position, 0.5, 0.0, 0.0);
-    
+
     // 指定清空 canvas 的颜色
     gl.clearColor(0, 0, 0, .6);
     // 清空 canvas
     gl.clear(gl.COLOR_BUFFER_BIT);
-    
+
     // 绘制
     gl.drawArrays(gl.POINTS, 0, 1);
 })();

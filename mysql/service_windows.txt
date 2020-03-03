@@ -1,0 +1,9 @@
+进入 mysql 的 bin 目录
+
+安装服务
+
+./mysqld.exe -install mysql
+
+删除服务
+
+./mysqld.exe -remove mysql

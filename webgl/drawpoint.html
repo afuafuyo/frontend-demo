@@ -19,23 +19,23 @@
             'gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n' +
             'gl_PointSize = 10.0;\n' +
         '}\n';
-    
+
     // 片元着色器
     var FSHADER_SOURCE =
         'void main(){\n' +
             'gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
         '}';
-    
+
     var canvas = document.getElementById('webgl');
     var gl = getWebGLContext(canvas);
-    
+
     // 初始化着色器
     if(!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
         console.log('init shader failed');
-        
+
         return;
     }
-    
+
     // 设置背景色
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     // 清空 canvas
