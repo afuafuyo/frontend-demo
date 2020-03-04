@@ -188,6 +188,7 @@ XUI.dialog = function() {
         this.zIndex = 1120;
 
         this.wrapper = null;
+        this.header = null;
         this.content = null;
         this.footer = null;
         this.cancelButton = null;
@@ -207,9 +208,12 @@ XUI.dialog = function() {
     XDialog.BTN_CANCEL = 2;
     XDialog.prototype = {
         constructor: XDialog,
-        init: function(msg, type, configs) {
+        init: function(msg, title, type, configs) {
             var conf = this.defaultConfigs;
 
+            if(undefined === title) {
+                title = '提示';
+            }
             if(undefined !== configs) {
                 for(var k in configs) {
                     conf[k] = configs[k];
@@ -226,7 +230,7 @@ XUI.dialog = function() {
                 minWidth: '220px',
                 fontSize: '14px',
                 backgroundColor: '#fff',
-                borderRadius: '8px',
+                borderRadius: '5px',
                 transition: 'top .2s linear'
             });
 
@@ -235,32 +239,36 @@ XUI.dialog = function() {
             this.closeButton.setAttribute('data-role', 'close');
             XUI.setStyle(this.closeButton, {
                 position: 'absolute',
-                width: '16px',
-                height: '16px',
-                lineHeight: '16px',
-                top: '6px',
-                right: '6px',
+                width: '20px',
+                height: '20px',
+                lineHeight: '18px',
+                top: '8px',
+                right: '8px',
                 textAlign: 'center',
-                fontSize: '16px',
+                fontSize: '20px',
                 cursor: 'pointer'
             });
             this.closeButton.innerHTML = '&times;';
 
+            // header
+            this.header = this.doc.createElement('div');
+            XUI.setStyle(this.header, {
+                height: '30px',
+                lineHeight: '30px',
+                padding: '10px 10px',
+                textAlign: 'left'
+            });
+            this.header.innerHTML = title;
+
             // content
             this.content = this.doc.createElement('div');
-            XUI.setStyle(this.content, {
-                padding: '40px 20px 20px 20px',
-                textAlign: 'left',
-                wordBreak: 'break-all'
-            });
             this.content.innerHTML = msg;
 
             // footer
             this.footer = this.doc.createElement('div');
             XUI.setStyle(this.footer, {
-                padding: '5px 10px',
-                textAlign: 'right',
-                borderTop: '1px solid #f5f5f5'
+                padding: '10px 10px',
+                textAlign: 'right'
             });
 
             // button
@@ -276,23 +284,23 @@ XUI.dialog = function() {
                 display: 'inline-block',
                 height: '30px',
                 lineHeight: '30px',
-                padding: '0 12px',
+                padding: '0 15px',
                 textAlign: 'center',
                 marginLeft: '10px',
                 cursor: 'pointer',
-                borderRadius: '4px'
+                borderRadius: '5px'
             };
             XUI.setStyle(this.cancelButton, style);
             XUI.setStyle(this.okButton, style);
             XUI.setStyle(this.cancelButton, {
-                color: '#888',
-                border: '1px solid #e5e9ef',
-                backgroundColor: '#e5e9ef'
+                color: '#7fbbe2',
+                border: '1px solid #7fbbe2',
+                backgroundColor: '#fff'
             });
             XUI.setStyle(this.okButton, {
                 color: '#fff',
-                border: '1px solid #00a1d6',
-                backgroundColor: '#00a1d6'
+                border: '1px solid #7fbbe2',
+                backgroundColor: '#7fbbe2'
             });
 
             // structure
@@ -304,6 +312,7 @@ XUI.dialog = function() {
             }
 
             this.wrapper.appendChild(this.closeButton);
+            this.wrapper.appendChild(this.header);
             this.wrapper.appendChild(this.content);
 
             if(XDialog.BTN_NONE !== type) {
@@ -379,39 +388,45 @@ XUI.dialog = function() {
         },
 
         // api
-        alert: function(msg, callback) {
+        alert: function(msg, title, callback) {
             this.setCallback(callback);
 
-            this.init(msg, XDialog.BTN_OK);
+            this.init(
+                '<div style="padding: 20px 20px">'+ msg +'</div>',
+                title,
+                XDialog.BTN_OK);
 
             this.render();
             this.resetPosition();
             this.bindEvent();
         },
-        confirm: function(msg, callback) {
+        confirm: function(msg, title, callback) {
             this.setCallback(callback);
 
-            this.init(msg, XDialog.BTN_OK | XDialog.BTN_CANCEL);
+            this.init(
+                '<div style="padding: 20px 20px">'+ msg +'</div>',
+                title,
+                XDialog.BTN_OK | XDialog.BTN_CANCEL);
 
             this.render();
             this.resetPosition();
             this.bindEvent();
         },
-        show: function(content, configs) {
-            this.init(content, XDialog.BTN_NONE, configs);
+        show: function(content, title, configs) {
+            this.init(content, title, XDialog.BTN_NONE, configs);
 
             this.render();
-            this.resetPosition();
             this.bindEvent();
+            this.resetPosition();
         },
-        showWithBtn: function(content, btn, configs, callback) {
+        showWithBtn: function(content, title, btn, configs, callback) {
             this.setCallback(callback);
 
-            this.init(content, btn, configs);
+            this.init(content, title, btn, configs);
 
             this.render();
-            this.resetPosition();
             this.bindEvent();
+            this.resetPosition();
         },
         close: function() {
             var wrapper = this.doc.getElementById(this.id);
