@@ -20,7 +20,7 @@ var XEvent = function() {
 
 XEvent.prototype = {
     constructor: XEvent,
-    
+
     /**
      * 保存 event
      *
@@ -30,21 +30,21 @@ XEvent.prototype = {
      */
     $insertEventBin: function(eventName, handler, thisObject) {
         var map = this.$eventBinMap;
-        
+
         if(undefined === map[eventName]) {
             map[eventName] = [];
         }
-        
+
         var eventBin = {
             target: this,
             type: eventName,
             handler: handler,
             thisObject: thisObject
         };
-        
+
         map[eventName].push(eventBin);
     },
-    
+
     /**
      * 添加事件监听
      *
@@ -56,10 +56,10 @@ XEvent.prototype = {
         if(undefined === thisObject) {
             thisObject = null;
         }
-        
+
         this.$insertEventBin(eventName, handler, thisObject);
     },
-    
+
     /**
      * 移除事件处理器
      *
@@ -69,26 +69,26 @@ XEvent.prototype = {
      */
     off: function(eventName, handler, thisObject) {
         var map = this.$eventBinMap;
-        
+
         if(undefined === map[eventName]) {
             return;
         }
-        
+
         if(undefined === thisObject) {
             thisObject = null;
         }
-        
-        for(var i=0, len=map[eventName].length, bin=null; i<len; i++) {
+
+        for(var i=0, bin=null; i<map[eventName].length; i++) {
             bin = map[eventName][i];
-            
+
             if(thisObject === bin.thisObject && handler === bin.handler) {
                 map[eventName].splice(i, 1);
-                
+
                 break;
             }
         }
     },
-    
+
     /**
      * 派发事件
      *
@@ -97,14 +97,14 @@ XEvent.prototype = {
      */
     fire: function(eventName, data) {
         var map = this.$eventBinMap;
-        
+
         if(undefined === map[eventName]) {
             return;
         }
-        
+
         for(var i=0, len=map[eventName].length, bin=null; i<len; i++) {
             bin = map[eventName][i];
-            
+
             bin.handler.call(bin.thisObject, data);
         }
     }

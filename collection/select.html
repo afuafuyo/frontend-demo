@@ -137,7 +137,7 @@ Select.prototype = {
 
         // 匹配不到 则不设置值
         for(var i=0,len=list.length; i<len; i++) {
-            if(String(value) === list[i].getAttribute('data-value')) {
+            if(value === list[i].getAttribute('data-value')) {
                 this.value = value;
                 this.textWrapper.innerHTML = list[i].innerHTML;
 
@@ -154,7 +154,7 @@ Select.prototype = {
      * 渲染
      *
      * @param Element wrapper
-     * @param Array items eg. [ {text: '选项描述', value: 1} ]
+     * @param Array items eg. [ {text: '选项描述', value: '1'} ]
      */
     render: function(wrapper, items) {
         var _self = this;
@@ -177,7 +177,7 @@ Select.prototype = {
         return this.value;
     },
     setValue: function(value) {
-        this.processDefaultValue(value);
+        this.processDefaultValue(String(value));
     }
 };
 </script>
@@ -189,16 +189,16 @@ Select.prototype = {
 <script>
 var se = new Select();
 se.render(document.getElementById('demo'), [
-    {text: 'this is one', value: 1},
-    {text: '这是第二', value: 2},
-    {text: '这是第三个', value: 3},
+    {text: 'this is one', value: '1'},
+    {text: '这是第二', value: '2'},
+    {text: '这是第三个', value: '3'},
 ]);
 se.onChange = (v) => {
     console.log(v);
 };
 
 setTimeout(() => {
-    se.setValue(1);
+    se.setValue('1');
 }, 1000);
 </script>
 </body>
