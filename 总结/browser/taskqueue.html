@@ -1,0 +1,39 @@
+<html>
+<body>
+<script>
+// 浏览器中任务执行流程
+// 1. 执行一个完整宏任务
+// 2. 执行微任务队列
+// 3. 执行一个完整宏任务
+// 4. 执行微任务队列
+// 循环 1 - 4
+
+// result: 1 2 3 4 5 6
+// 第一个宏任务
+setTimeout(() => {
+    console.log(1);
+    
+    // 微任务
+    Promise.resolve().then(() => {
+        console.log(3);
+    });
+    
+    // 宏任务结束
+    console.log(2);
+});
+
+// 第二个宏任务
+setTimeout(() => {
+    console.log(4);
+    
+    // 微任务
+    Promise.resolve().then(() => {
+        console.log(6);
+    });
+    
+    // 宏任务结束
+    console.log(5);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "baseUrl": "src",
+        "module": "es6",
+        "target": "es6",
+        "moduleResolution": "Node",
+        "sourceMap": false,
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true
+    },
+    "exclude": [
+        "node_modules" // 这个目录下的代码不会被 typescript 处理
+    ]
+}

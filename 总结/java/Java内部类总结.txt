@@ -1,0 +1,345 @@
+Java内部类总结
+
+定义在一个类内部的类叫内部类，包含内部类的类称为外部类。内部类可以声明public、protected、private等访问限制，可以声明为abstract的供其他内部类或外部类继承与扩展，或者声明为static、final的，也可以实现特定的接口。static的内部类行为上象一个独立的类，非static在行为上类似类的属性或方法且禁止声明static的方法。内部类可以访问外部类的所有方法与属性，但static的内部类只能访问外部类的静态属性与方法。
+Java的设计者在内部类身上的确是专心良苦。学会使用内部类，是把握Java高级编程的一部分，它可以让你更优雅地设计你的程序结构。
+为什么需要内部类？
+java中的内部类和接口加在一起，可以实现多继承。
+可以使某些编码根简洁。
+隐藏你不想让别人知道的操作。
+非静态内部类对象有着指向其外部类对象的引用
+一个静态成员类，若去掉“static”关键字，就成为成员类
+
+public class InnerClass {
+    private static String nickName = "anan";
+    private String name;
+    private int age;
+
+    public InnerClass(String name, int age)
+    {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public int getAge()
+    {
+        return age;
+    }
+    public void setAge(int age)
+    {
+        this.age = age;
+    }
+
+    public class Inner
+    {
+        private String heart = "zhaoli";
+        public String getHeart()
+        {
+            return heart;
+        }
+        public void setHeart(String h)
+        {
+            this.heart = h;
+        }
+
+        public void print()
+        {
+            System.out.println(InnerClass.nickName);
+            System.out.println(InnerClass.this.name);
+            System.out.println(InnerClass.this.age);
+            System.out.println(getHeart());
+        }
+    }
+}
+public class InnerClassTest {
+    public static void main(String[] args)
+    {
+        InnerClass outer = new InnerClass("simply-simple", 23);
+
+        InnerClass.Inner inner = outer.new Inner();
+        inner.print();
+    }
+}
+测试输出为：
+anan
+simply-simple
+23
+zhaoli
+
+
+
+类似于外部类的实例函数，成员类有public/private/default权限修饰符
+一个成员类实例必然所属一个外部类实例，成员类可访问外部类的任一个实例字段和实例函数。
+一个成员类实例必然所属于其外部类的一个实例，那么如何在成员类内部获得其所属外部类实例呢？如示例代码所示，采用“OuterClass.this”的形式。
+另外，如示例代码所示，对于给定的一个外部类实例outerClass，可以直接创建其内部类实例，语法形式为：
+OuterClass.InnerClass innerClass = outerClass.new InnerClass();
+成员类不能与外部类重名
+不能在成员类中定义static字段、方法和类（static final形式的常量定义除外）。因为一个成员类实例必然与一个外部类实例关联，这个static定义完全可以移到其外部类中去
+成员类不能是接口（interface）。因为成员类必须能被某个外部类实例实例化，而接口是不能实例化的。事实上，如示例代码所示，如果你以成员类的形式定义一个接口，该接口实际上是一个静态成员类，static关键字对inner interface是内含（implicit）的。
+什么时候使用成员类
+成员类的显著特性就是成员类能访问它的外部类实例的任意字段与方法。方便一个类对外提供一个公共接口的实现是成员类的典型应用。以JDK Collection类库为例，每种Collection类必须提供一个与其对应的Iterator实现以便客户端能以统一的方式遍历任一Collection实例。每种Collection类的Iterator实现就被定义为该Collection类的成员类。例如JDK中AbstractList类的代码片断：
+
+
+
+public abstract class AbstractList<E> extends AbstractCollection<E> implements List<E> {
+    private class Itr implements Iterator<E> {
+         ………;
+    }
+    public Iterator<E> iterator() {
+        return new Itr();
+    }
+}
+因为定义在AbstractList中的Itr可访问AbstractList中的任意字段和方法，所以很方便实现Iterator，无需AbstractList对外暴露更多的接口。
+试想，如果没有成员类机制，只有在AbastractList源码之外定义一个实现Iterator的类Itr，该类有一个AbstractList实例成员list，为了Itr能获取list的内部信息以便实现遍历，AbstractList必然要向Itr开放额外的访问接口。
+
+
+
+注重在创建非静态内部类对象时，一定要先创建起相应的外部类对象。至于原因，也就：
+非静态内部类对象有着指向其外部类对象的引用，它可以访问创建它的外部类对象的内容，甚至包括私有变量！
+非静态内部类不能声明本类的static成员 ，只有一个静态的内部类,才可以声明一个static成员,
+非静态内部类非静态方法中：可以直接访问该类的非静态成员、外部类内中的静态和非静态的成员;访问静态内部类和非静态内部类的成员的方法一样。
+静态内部类
+类声明中包含“static”关键字的内部类。如以下示例代码:
+public class InnerClass {
+    private static String nickName = "anan";
+    private String name;
+    private int age;
+
+    public InnerClass(String name, int age)
+    {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public int getAge()
+    {
+        return age;
+    }
+    public void setAge(int age)
+    {
+        this.age = age;
+    }
+
+    public static class Inner
+    {
+        private String heart = "zhaoli";
+        public String getHeart()
+        {
+            return heart;
+        }
+        public void setHeart(String h)
+        {
+            this.heart = h;
+        }
+
+        public void print()
+        {
+            System.out.println(InnerClass.nickName);
+            System.out.println(getHeart());
+        }
+    }
+}
+public class InnerClassTest {
+    public static void main(String[] args)
+    {
+        InnerClass.Inner inner = new InnerClass.Inner();
+        inner.print();
+        inner.setHeart("simple-simply");
+        inner.print();
+    }
+}
+
+
+
+测试输出为：
+anan
+zhaoli
+anan
+simple-simply
+
+
+
+这里说明public 修饰的静态内部类其实跟外部类的使用并没有太大区别,以“OuterClass.InnerClass”的方式来引用某个如此修饰的静态内部类。
+
+
+
+静态成员类特性
+静态内部类没有了指向外部的引用。
+静态内部类中可以定义任何静态和非静态的成员
+静态内部类里的静态方法中：可以直接访问该类和外部类中的静态成员，访问该类和外部类中成员通过创建对象访问
+静态内部类里的非静态方法中：可以直接访问该类中的所有的非静态、静态成员和直接访问外部类中的静态成员;访问外部类中成员通过创建类对象访问
+像静态方法或静态字段一样，静态成员类有public/private/default权限修饰符
+静态成员类约束
+静态成员类不能与外部类重名
+像外部类的静态方法一样，不能直接访问外部类的实例字段和实例方法
+静态成员类只能定义于外部类的顶层代码或外部类其它静态成员类的顶层代码中（嵌套定义）；不能定义于外部类的某个函数中。
+
+
+
+局部内部类
+如果我们在用一个内部类的时候仅需要创建它的一个对象并创给外部，就可以创建一个局部内部类并返回。局部内部类的访问域是受限的。
+匿名内部类
+也就是没有名字。可以这样使用。
+在java的事件处理的匿名适配器中，匿名内部类被大量的使用。
+匿名内部类由于没有名字，所以它没有构造函数（但是如果这个匿名内部类继承了一个只含有带参数构造函数的父类，创建它的时候必须带上这些参数，并在实现的过程中使用super关键字调用相应的内容）。如果你想要初始化它的成员变量，有下面几种方法：
+1.如果是在一个方法的匿名内部类，可以利用这个方法传进你想要的参数，不过记住，这些参数必须被声明为final。
+2.将匿名内部类改造成有名字的局部内部类，这样它就可以拥有构造函数了。
+3.在这个匿名内部类中使用初始化代码块。
+　　public interface Contents {
+　　int value();
+　　}
+　　
+　　public interface Destination {
+　　String readLabel();
+　　}
+　　
+　　public class Goods {
+　　private class Content implements Contents {
+　　private int i = 11;
+　　public int value() {
+　　return i;
+　　}
+　　}
+　　
+　　protected class GDestination implements Destination {
+　　private String label;
+　　private GDestination(String whereTo) {
+　　label = whereTo;
+　　}
+　　public String readLabel() {
+　　return label;
+　　}
+　　}
+　　
+　　public Destination dest(String s) {
+　　return new GDestination(s);
+　　}
+　　public Contents cont() {
+　　return new Content();
+　　}
+　　}
+　　
+　　class TestGoods {
+　　public static void main(String[] args) {
+　　Goods p = new Goods();
+　　Contents c = p.cont();
+　　Destination d = p.dest("Beijing");
+　　}
+　　}
+　　
+　　在这个例子里类Content和GDestination被定义在了类Goods内部，并且分别有着protected和private修饰符来控制访问级别。Content代表着Goods的内容，而GDestination代表着Goods的目的地。它们分别实现了两个接口Content和Destination。在后面的main方法里，直接用 Contents c和Destination d进行操作，你甚至连这两个内部类的名字都没有看见！这样，内部类的第一个好处就体现出来了——隐藏你不想让别人知道的操作，也即封装性。
+
+
+
+
+       外部类按常规的类访问方式使用内部类，唯一的差别是外部类可以访问内部类的所有方法与属性，包括私有方法与属性。
+       内部类类似外部类的属性，因此访问内部类对象时总是需要一个创建好的外部类对象。内部类对象通过‘外部类名.this.xxx’的形式访问外部类的属性与方法。
+方法中的内部类只允许访问方法中的final局部变量和方法的final参数列表，所以说方法中的内部类和内部类没什麽区别。但方法中的内部类不能在方法以外访问
+方法中不可以有static内部类
+
+
+
+如果需要在其他类中访问内部类，可以使用：
+(1)外部类提供创建内部类的方法供其他类使用。如：
+       // 外部类
+        pinner getInner()
+        {
+            return new pinner();
+        }
+
+
+
+        // 其他类
+        pouter.pinner pi = po.getInner();
+        pi.Print();
+(2)直接创建内部类的对象。如：
+        pouter po = new pouter();
+        pouter.pinner pi = po.new pinner();
+        pi.Print();
+         内部类可以声明在外部类的方法中或语句块中。如果内部类需要访问包含它的外部类方法或语句块的局部变量或参数，则该局部变量或参数必须是final的。外部类的其他方法、其他类无法访问声明在方法内部或块内部的内部类。
+
+
+
+如果一个类继承内部类，则创建该类的对象时需提供一个外部类的对象作为构造方法的参数。如：
+class Car
+{
+    class Wheel
+    {
+
+
+
+    }
+}
+
+
+
+class SuperWheel extends Car.Wheel
+{
+    SuperWheel(Car car)
+    {
+        car.super();
+    }
+
+
+
+    public static void main(String [] args)
+    {
+        Car car = new Car();
+        SuperWheel wl = new SuperWheel(car);
+    }
+}
+如果创建命名的内部类没有多少实际意义时，可以创建匿名的内部类。比如使用内部类实现接口的功能(如事件处理器、适配器等)，而功能的差异较大，需要根据实际的情况创建相应的内部类时，可以使用匿名内部类。简单的示例如下：
+interface WebView
+{
+    void doGet();
+}
+
+
+
+class A
+{
+    WebView ShowName()
+    {
+        return new WebView()
+        {
+            void doGet()
+            {
+                System.out.println("Name");
+            }
+        };
+    }
+
+
+
+    WebView ShowCode()
+    {
+        return new WebView()
+        {
+            void doGet()
+            {
+                System.out.println("Code");
+            }
+        };
+    }
+}
+
+
+
+最后，JAVA 内部类还有一个作用，那就是实现JAVA的多继承。JAVA本身是不允许多继承的，如果我们想一个类继承多个基类，就可以使用内部类。通过内部类分别继承一个基类，外部类创建内部类的对象，并使用内部类的方法，变相地实现了多继承。

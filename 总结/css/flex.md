@@ -1,18 +1,18 @@
-### flex 布局
+## flex 布局
 
 <pre>
-概念
+### 概念
     采用 flex 布局的元素 称为 flex 容器 (flex container)
     它的所有子元素自动成为容器成员 称为 flex 项目 (flex item)
 
-轴
+### 轴
     容器默认存在两根轴
         水平的主轴 (main axis)
         垂直的交叉轴 (cross axis)
 
     项目默认沿主轴排列
 
-容器拥有的属性
+### 容器拥有的属性
     flex-direction 决定主轴的方向
         可能存在的值
             row: 主轴为水平方向 起点在左端 -- 默认值
@@ -47,7 +47,7 @@
 
     align-content
 
-子项的属性
+### 子项的属性
 
     order
     flex-grow 定义项目的放大比例 默认为 0 即不放大

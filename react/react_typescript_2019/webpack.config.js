@@ -13,11 +13,11 @@ module.exports = {
     output: {
         path: __dirname + '/dist',
         filename: 'bundle.js',
-        publicPath: '/public'
+        publicPath: '/'
     },
     resolve: {
         // 配置查找的文件类型
-        extensions: ['.js', '.ts', 'tsx'],
+        extensions: ['.js', '.ts', '.tsx'],
         // 配置模块可从以下路径查找
         modules: [path.join(__dirname, 'src'), 'node_modules']
     },
@@ -37,7 +37,19 @@ module.exports = {
                     // babel.config 文件告诉 babel 如何转换文件
                     { loader: 'babel-loader' }
                 ]
+            },
+
+            // 或者合并到一块
+            /*
+            {
+                test: /\.(js|ts|tsx)$/,
+                exclude: /node_modules/,
+                use: {
+                    // babel.config 文件告诉 babel 如何转换文件
+                    loader: 'babel-loader'
+                }
             }
+            */
         ]
     },
     plugins: [

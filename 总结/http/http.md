@@ -30,7 +30,7 @@
 在 HTTP/0.9 和 1.0 中 连接在单个请求/响应对之后关闭
 
 + HTTP/1.1 引入了持久连接
-    
+
     TCP 连接默认不关闭 ( 默认 Connection: keep-alive ) 直到一段时间后自动关闭或者发送 Connection: close 手动关闭
 
     对于同一个域名 大多数浏览器允许同时建立 6 个左右持久连接
@@ -38,7 +38,7 @@
 + 请求流水线 (Pipelining)
 
     HTTP Pipelining 其实是把多个 HTTP 请求放到一个 TCP 连接中一一发送 而且在发送过程中不需要等待前一个请求的响应就可以发出下一次请求
-    
+
     只不过 HTTP1.1 中服务器还是要按照发送请求的次序来处理请求 客户端也还是要按照发送请求的顺序来接收响应 这就造成了线头阻塞 ( Head-of-line blocking )
 
 ![image](imgs/multilink.jpg)
@@ -57,19 +57,19 @@ http1.x 主要问题就是延迟
 + 二进制分帧
 
     * 帧 所有HTTP 2. 0 通信都在一个TCP连接上完成
-        
+
         HTTP 2.0 通信的基本单位
-        
+
         每个帧有一个头部信息 其中包含帧的长度和类型、一些布尔标志、一个保留位和一个流标识符
-        
+
     * 消息
-        
+
         消息是一组帧 表示 HTTP 请求或响应
-        
+
         特定消息的帧在同一个流上发送
-    
+
     * 流
-    
+
         流是连接中的一个虚拟信道 可以承载双向消息传输
 
 + 多路复用 (Multiplexing)
@@ -128,7 +128,7 @@ HTTP/1.1 200 OK                         <-- 状态行
 Server: Microsoft-IIS/5.0               <--
 Date: Thu, 13 Jul 2000 05:46:53 GMT        |
 Content-Length: 2291                       | 消息头
-Content-Type: text/html                    | 
+Content-Type: text/html                    |
 Cache-control: private                  <--
 < empty line >                          <-- 一个空行
 data from server ...                    <-- 实体内容
@@ -140,15 +140,15 @@ data from server ...                    <-- 实体内容
 + 请求行
 
     - 格式： 请求方式 资源路径 HTTP版本号< CRLF >
-  
+
     - eg. GET /index.html HTTP/1.1
-  
+
     - 请求方式举例： POST HEAD OPTIONS DELETE TRACE PUT
 
 + 状态行
 
     - 格式： HTTP版本号 状态码 原因叙述< CRLF >
-  
+
     - eg. HTTP/1.1 200 OK
 
 
@@ -157,7 +157,7 @@ data from server ...                    <-- 实体内容
 + 消息头分为
 
     - 通用消息头、请求头、响应头、实体头
-  
+
     - 既可用在请求消息中 也可用在响应消息中的消息头叫做通用消息头 其他类似
 
 + 使用消息头 可以实现 HTTP 客户机与服务器之间的条件请求和应答 消息头相当于服务器和浏览器之间的一些暗号指令
@@ -195,11 +195,11 @@ data from server ...                    <-- 实体内容
 
 var YNode = require('YNode');
 class IndexController extends YNode.WebController {
-    
+
     run(req, res) {
         res.end('hello afu');
     }
-    
+
 }
 module.exports = IndexController;
 ```
@@ -230,11 +230,11 @@ hello afuq
 + 规则如下
 
     - 将空格转换为加号 '+'
-  
+
     - 对 0-9  a-z A-Z 之间的字符保持不变
-  
+
     - 对于所有其他的字符 用这个字符的当前字符集编码在内存中的十六进制格式表示 并在每个字节前加上一个百分号 '%' 如字符 '+' 用 %2B 表示 每个中文字符在内存中占两个字节 字符 '中' 用 %D6%D0 表示
-  
+
     - 对于空格也可以直接使用其十六进制编码方式 即用 %20 表示
 
 
@@ -243,7 +243,7 @@ hello afuq
 + GET 方式
 
     - 特点： 传送的数据量是有限制的 一般限制在 1KB 以下
-  
+
     - eg. GET /get.html?param1=xxx&param2=yyy HTTP/1.1
 
 + POST 方式
@@ -267,11 +267,11 @@ param1=xxx&param2=yyy
 + 100 - 199
 
     - 表示成功接收请求 要求客户端继续提交下一次请求才能完成整个处理过程
-  
+
 + 200 - 299
 
     - 表示成功接收请求并已完成整个处理过程
-  
+
 + 300 - 399
 
     - 为完成请求 客户需进一步细化请求 例如 请求的资源已经移动一个新地址
@@ -279,7 +279,7 @@ param1=xxx&param2=yyy
 + 400 - 499
 
     - 客户端的请求有错误
-  
+
 + 500 - 599
 
     - 服务器端出现错误
@@ -292,7 +292,7 @@ param1=xxx&param2=yyy
 + Cache-Control: cache-directive
 
     - 用于控制 HTTP 缓存 ( 在 HTTP/1.0 中可能部分没实现 仅仅实现了 Pragma: no-cache )
-    
+
     - cache-directive 部分值可为如下
         + max-age=[xx seconds]
             - 设置缓存最大的有效时间
@@ -304,7 +304,7 @@ param1=xxx&param2=yyy
             - 响应不会被缓存 而是实时向服务器端请求资源
         + no-store
             - 在任何条件下响应都不会被缓存 并且不会被写入到客户端的磁盘里
-        
+
 + Connection: close | Keep-Alive
 
     - 在 HTTP1.0 和 HTTP1.1 协议中都有对 KeepAlive 持久连接的支持 HTTP1.0 需要在请求消息中增加 Connection: keep-alive 头才能够支持 而 HTTP1.1 默认所有连接就是持久的
@@ -312,21 +312,21 @@ param1=xxx&param2=yyy
 + Date: Tue, 11 Jul 2000 18:23:51 GMT
 
     - 表示消息发送的时间
-    
+
 + Pragma: no-cache
 
     - 作用同 HTTP1.1 的 Cache-Control: no-cache
-    
+
 + Transfer-Encoding: chunked
 
     - 代表报文采用了分块编码
-    
+
     - 分块机制
         + 每个分块包含十六进制的长度值和数据
         + 长度值独占一行
         + 长度不包括它结尾的 CRLF 也不包括分块数据结尾的 CRLF
         + 最后一个分块长度值必须为 0 对应的分块数据没有内容 表示实体结束
-        
+
 ```javascript
 require('net').createServer(function(sock) {
     sock.on('data', function(data) {
@@ -363,27 +363,27 @@ require('net').createServer(function(sock) {
 + Referer: http://www.xxx.org/index.html
 
     - 先前网页的地址 即来路
-    
+
 + User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64)
 
     - 发出请求的用户信息
 
 + Accept: text/html,image/*
-    
+
     - 指定客户端能够接收的内容类型
-    
+
 + Accept-Charset: ISO-8859-1,unicode-1-1
 
     - 浏览器可以接受的字符编码集
-    
+
 + Accept-Encoding: gzip,compress
 
     - 指定浏览器可以支持的 web 服务器返回内容压缩编码类型
-    
+
 + Accept-Language: en-gb,zh-cn
 
     - 浏览器可接受的语言
-    
+
 + Authorization: Basic enh4OjEyMzQ1Ng==
 
     - HTTP 授权的授权证书
@@ -395,7 +395,7 @@ require('net').createServer(function(sock) {
 + Host: www.xxx.org:80
 
     - 指定想要请求的服务器的 域名/IP 和 端口号
-    
+
     - 在 HTTP 1.1 中不能缺失 host 字段 如果缺失 服务器返回 400 bad request 但 host 字段可以是空值
 
 + If-Modified-Since: [UTCTIMEString]
@@ -403,9 +403,9 @@ require('net').createServer(function(sock) {
     - 与实体头 Last-Modified 对应
 
     - 客户端持有的资源的时间 其值等于服务器发送的 Last-Modified 头字段的值
-    
-    - 客户端发送请求时会携带该头字段 以便服务器进行验证资源是否需要更新 如果不需要则返回 304
-    
+
+    - 客户端发送请求时会携带该头字段 将 Last-Modified 值上传 以便服务器进行验证资源是否需要更新 如果不需要则返回 304
+
     - 只能根据时间来判断资源是否更新
 
 + If-None-Match: [ETag]
@@ -414,7 +414,7 @@ require('net').createServer(function(sock) {
 
     - 客户端持有的资源的信息 其值等于服务器发送的 ETag 头字段的值
 
-    - 客户端发送请求时会携带该头字段 以便服务器利用该值进行资源对比 如果资源的计算值和该字段值相等则返回 304
+    - 客户端发送请求时会携带该头字段 将 ETag 值上传 以便服务器利用该值进行资源对比 如果资源的计算值和该字段值相等则返回 304
 
 + Range: bytes=100-599
 
@@ -434,7 +434,7 @@ require('net').createServer(function(sock) {
 ### 响应头
 
 + 响应头字段用于服务器在响应消息中向客户端传递附加信息 包括服务程序名 被请求资源需要的认证方式 被请求资源已移动到的新地址等信息
-    
+
 + Accept-Range: [bytes | none]
 
     - 标示服务器是否支持 Range
@@ -451,33 +451,33 @@ require('net').createServer(function(sock) {
 + Last-Modified: [UTCTIMEString]
 
     - 请求的资源的最后修改时间
-   
+
 + Allow: GET,POST
 
     - 允许的请求方式
-    
+
 + Content-Encoding: gzip
 
     - 实体内容压缩方式
-    
+
 + Content-Language: zh-cn
 
     - 实体内容语言
-    
+
 + Content-Length: 80
 
     - 实体内容长度
-    
+
 + Content-Range: bytes 2543-4532/7898
 
     - 在整个实体内容中本部分的字节位置 7898 为总长度
-    
+
 + Content-Type: text/html; charset=utf-8
 
     - 实体内容对应的 MIME 信息
-    
+
 + Expires: [UTCTIMEString]
-    
+
     - 响应过期的日期和时间
 
 

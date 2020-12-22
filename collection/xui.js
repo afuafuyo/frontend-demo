@@ -199,17 +199,27 @@ XUI.dialog = function() {
         this.onContentClick = null;
 
         this.defaultConfigs = {
+            dialogWidth: 220,
             okButtonText: '确定',
-            cancelButtonText: '取消'
+            cancelButtonText: '取消',
+            okButtonStyle: null,
+            cancelButtonStyle: null
         };
     };
     XDialog.BTN_NONE = 0;
     XDialog.BTN_OK = 1;
     XDialog.BTN_CANCEL = 2;
     XDialog.prototype = {
+        extend: function(src, configs) {
+            for(var k in configs) {
+                src[k] = configs[k];
+            }
+
+            return src;
+        },
         constructor: XDialog,
         init: function(msg, title, type, configs) {
-            var conf = this.defaultConfigs;
+            var conf = this.extend({}, this.defaultConfigs);
 
             if(undefined === title) {
                 title = '提示';
@@ -227,7 +237,7 @@ XUI.dialog = function() {
                 position: 'fixed',
                 zIndex: this.zIndex,
                 top: '10%',
-                minWidth: '220px',
+                width: conf.dialogWidth + 'px',
                 fontSize: '14px',
                 backgroundColor: '#fff',
                 borderRadius: '5px',
@@ -253,10 +263,12 @@ XUI.dialog = function() {
             // header
             this.header = this.doc.createElement('div');
             XUI.setStyle(this.header, {
-                height: '30px',
-                lineHeight: '30px',
-                padding: '10px 10px',
-                textAlign: 'left'
+                width: '80%',
+                height: '50px',
+                lineHeight: '50px',
+                textIndent: '10px',
+                textAlign: 'left',
+                overflow: 'hidden'
             });
             this.header.innerHTML = title;
 
@@ -281,27 +293,43 @@ XUI.dialog = function() {
             this.okButton.setAttribute('data-role', 'ok');
 
             var style = {
+                boxSizing: 'border-box',
                 display: 'inline-block',
                 height: '30px',
                 lineHeight: '30px',
                 padding: '0 15px',
                 textAlign: 'center',
-                marginLeft: '10px',
                 cursor: 'pointer',
                 borderRadius: '5px'
             };
-            XUI.setStyle(this.cancelButton, style);
-            XUI.setStyle(this.okButton, style);
-            XUI.setStyle(this.cancelButton, {
-                color: '#7fbbe2',
-                border: '1px solid #7fbbe2',
-                backgroundColor: '#fff'
-            });
-            XUI.setStyle(this.okButton, {
-                color: '#fff',
-                border: '1px solid #7fbbe2',
-                backgroundColor: '#7fbbe2'
-            });
+            var okButtonStyle = null;
+            var cancelButtonStyle = null;
+            if(null !== conf.cancelButtonStyle) {
+                cancelButtonStyle = this.extend({}, style);
+                cancelButtonStyle = this.extend(cancelButtonStyle, conf.cancelButtonStyle);
+                XUI.setStyle(this.cancelButton, cancelButtonStyle);
+            } else {
+                XUI.setStyle(this.cancelButton, style);
+                XUI.setStyle(this.cancelButton, {
+                    color: '#7fbbe2',
+                    marginRight: '5px',
+                    border: '1px solid #7fbbe2',
+                    backgroundColor: '#fff'
+                });
+            }
+
+            if(null !== conf.okButtonStyle) {
+                okButtonStyle = this.extend({}, style);
+                okButtonStyle = this.extend(okButtonStyle, conf.okButtonStyle);
+                XUI.setStyle(this.okButton, okButtonStyle);
+            } else {
+                XUI.setStyle(this.okButton, style);
+                XUI.setStyle(this.okButton, {
+                    color: '#fff',
+                    border: '1px solid #7fbbe2',
+                    backgroundColor: '#7fbbe2'
+                });
+            }
 
             // structure
             if(XDialog.BTN_CANCEL === type || (XDialog.BTN_CANCEL | XDialog.BTN_OK) === type) {
