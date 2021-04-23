@@ -247,10 +247,10 @@ tsconfig.json
 
     contentBase 绝对路径 表示网站的根目录 比如 path.join(__dirname, 'dist')
 
-publicPath 表示静态资源的路径
+    publicPath 表示静态资源的路径
 
-    如果配置成 / 那么表示资源就在 contentBase 下 那么 script 引入地址为 /xxx.js
-    如果设置成 /dist 那么表示资源在 contentBase/dist 下 那么 script 引入地址为 /dist/xxx.js
+        如果配置成 / 那么表示资源就在 contentBase 下 那么 script 引入地址为 /xxx.js
+        如果设置成 /dist 那么表示资源在 contentBase/dist 下 那么 script 引入地址为 /dist/xxx.js
 
 
 ## ESLint
