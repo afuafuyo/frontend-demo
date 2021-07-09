@@ -71,7 +71,9 @@ module.exports = {
     ],
     plugins: [
         // 当类中使用了成员变量或者箭头函数 那么 babel 默认无法识别 需要安装以下插件
-        ["@babel/plugin-proposal-class-properties", { loose: true }]
+        ["@babel/plugin-proposal-class-properties", { loose: true }],
+        // 用于让 babel 识别 import() 语法
+        "@babel/plugin-syntax-dynamic-import",
     ]
 };
 
@@ -113,6 +115,9 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: [
+                    // style loader 会将 css 插入到页面
+                    // 如果想将 css 打包成文件 可以使用 mini-css-extract-plugin 插件
+                    // 将 style-loader 这一行提换成 MiniCssExtractPlugin.loader
                     'style-loader',
                     {
                         // 启用 css 的模块化
