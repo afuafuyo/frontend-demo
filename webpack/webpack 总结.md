@@ -260,12 +260,73 @@ tsconfig.json
 
 ## ESLint
 
-是用来校验 js 规范性的工具 它的默认解释器为 Espree 不能进行 typescript 的校验
-如果需要进行 typescript 校验 需要使用解析 typescript 的解释器
-在 .eslintrc.js 中添加如下语句
+eslint 是用来校验 js 规范性的工具 它的默认解释器为 Espree 不能进行 typescript 的校验
+
+如果需要进行 typescript 校验 需要使用解析 typescript 的解释器 `@typescript-eslint/parser`
+
+一般情况下 我们使用 lint-staged 来进行校验 lint-staged 能够只检测暂存区的文件，速度比较快
+
+#### 依赖包如下
 
 ```
-"parser": "@typescript-eslint/parser",
+eslint
+lint-staged
+pre-commit
+typescript                          解析 ts
+@typescript-eslint/parser           让 eslint 支持 ts 校验
+
+eslint-plugin-react                 校验 react 的插件
+@typescript-eslint/eslint-plugin    校验 ts 的插件
+```
+
+
+#### 典型的配置文件如下
+
+```
+// .eslintrc.js
+module.exports = {
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    // 使用 typescript 解释器
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "plugins": [
+        // react plugin 需要单独安装 npm install eslint-plugin-react --save-dev
+        "react",
+        // 校验 ts 需要安装此包 npm install @typescript-eslint/eslint-plugin --save-dev
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/explicit-module-boundary-types": 0,
+        "prefer-const": 0,
+        "@typescript-eslint/no-this-alias": 0,
+        "@typescript-eslint/no-empty-function": 0
+    }
+};
+```
+
+#### package.json
+
+```
+"scripts": {
+    "staged-test": "lint-staged",
+},
+"lint-staged": {
+    "src/**/*.{ts,tsx,react}": "./node_modules/.bin/eslint"
+}
 ```
 
 

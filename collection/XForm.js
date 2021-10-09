@@ -40,10 +40,10 @@
  */
 function XForm() {
     this.doc = document;
-    
+
     this.validateFields = [];
     this.focusBlurFeedback = true;
-    
+
     // 样式配置
     this.stylesConfig = {
         normal : {
@@ -59,7 +59,7 @@ function XForm() {
             tip : 'xform-style-error-tip'
         }
     };
-    
+
     // 规则配置
     this.rulesConfig = {
         standard : {
@@ -79,7 +79,7 @@ function XForm() {
             callback : null
         }
         ,email : {
-            regular : /^[a-zA-Z0-9_\.\-]+\@([a-zA-Z0-9\-]+\.)+[a-zA-Z0-9]{2,4}$/,
+            regular : /^[a-zA-Z0-9_\.\-]+\@([a-zA-Z0-9\-]+\.)+[a-zA-Z0-9]{2,8}$/,
             minLength : 0,
             infoText : '邮箱可用于登录和找回密码',
             errorText : '您输入的邮箱有错误',
@@ -110,7 +110,7 @@ XForm.prototype = {
             src[key] = target[key];
         }
     }
-    
+
     /**
      * 保存旧样式
      *
@@ -122,7 +122,7 @@ XForm.prototype = {
             obj.setAttribute('data-oldstyle', str);
         }
     }
-    
+
     /**
      * 获取旧样式
      *
@@ -130,10 +130,10 @@ XForm.prototype = {
      */
     ,getOldStyle: function(obj) {
         var v = obj.getAttribute('data-oldstyle');
-        
+
         return (null === v || '' === v) ? '' : v;
     }
-    
+
     /**
      * 聚焦检测
      *
@@ -143,15 +143,15 @@ XForm.prototype = {
     ,focusField: function(id, config) {
         var field = this.doc.getElementById(id);
         var tip = this.getTipElement(id);
-        
+
         // 处理 input
         field.className = this.getOldStyle(field) + ' ' + this.stylesConfig.normal.field;
         // 处理 tip
         tip.className = this.getOldStyle(tip) + ' ' + this.stylesConfig.normal.tip;
-        
+
         tip.innerHTML = config.infoText;
     }
-    
+
     /**
      * 失焦检测
      *
@@ -161,36 +161,36 @@ XForm.prototype = {
     ,blurField: function(id, config) {
         var hasError = false;
         var minLength = config.minLength;
-        
+
         var field = this.doc.getElementById(id);
         var tip = this.getTipElement(id);
         var value = field.value;
-        
+
         // 长度检测
         if(minLength > 0 && value.length < minLength) {
             hasError = true;
         }
-        
+
         // 如果已经错误 就没必要再验证其他条件了
         if(!hasError && null !== config.regular) {
             if( !config.regular.test(value) ) {
                 hasError = true;
             }
         }
-        
+
         if(hasError) {
             field.className = this.getOldStyle(field) + ' ' + this.stylesConfig.error.field;
             tip.className = this.getOldStyle(tip) + ' ' + this.stylesConfig.error.tip;
-            
+
             tip.innerHTML = config.errorText;
-            
+
         } else {
             field.className = this.getOldStyle(field) + ' ' + this.stylesConfig.success.field;
             tip.className = this.getOldStyle(tip) + ' ' + this.stylesConfig.success.tip;
-            
+
             tip.innerHTML = config.successText;
         }
-        
+
         // 回调
         if('function' === typeof config.callback) {
             // 回调返回 false 表示有错误
@@ -198,10 +198,10 @@ XForm.prototype = {
                 hasError = true;
             }
         }
-        
+
         return hasError;
     }
-    
+
     /**
      * 组件检测初始化
      *
@@ -210,14 +210,14 @@ XForm.prototype = {
      */
     ,confirm: function(id, config) {
         var _self = this;
-        
+
         var field = this.doc.getElementById(id);
         var tip = this.getTipElement(id);
 
         // 保存控件原有的样式
         this.saveOldStyle(field, field.className);
         this.saveOldStyle(tip, tip.className);
-        
+
         if(this.focusBlurFeedback) {
             field.onfocus = function() {
                 _self.focusField(id, config);
@@ -226,11 +226,11 @@ XForm.prototype = {
                 _self.blurField(id, config);
             };
         }
-        
+
         field = null;
         tip = null;
     }
-    
+
     /**
      * 获取提示控件
      *
@@ -250,13 +250,13 @@ XForm.prototype = {
         if(undefined !== options) {
             this.extend(this.rulesConfig.account, options);
         }
-        
+
         this.confirm(id, this.rulesConfig.account);
         this.validateFields.push([id, this.rulesConfig.account]);
-        
+
         return this;
     }
-    
+
     /**
      * 检查邮箱
      *
@@ -267,13 +267,13 @@ XForm.prototype = {
         if(undefined !== options) {
             this.extend(this.rulesConfig.email, options);
         }
-        
+
         this.confirm(id, this.rulesConfig.email);
         this.validateFields.push([id, this.rulesConfig.email]);
-        
+
         return this;
     }
-    
+
     /**
      * 检查手机
      *
@@ -284,13 +284,13 @@ XForm.prototype = {
         if(undefined !== options) {
             this.extend(this.rulesConfig.mobile, options);
         }
-        
+
         this.confirm(id, this.rulesConfig.mobile);
         this.validateFields.push([id, this.rulesConfig.mobile]);
-        
+
         return this;
     }
-    
+
     /**
      * 检查验证码
      *
@@ -301,13 +301,13 @@ XForm.prototype = {
         if(undefined !== options) {
             this.extend(this.rulesConfig.verifyCode, options);
         }
-        
+
         this.confirm(id, this.rulesConfig.verifyCode);
         this.validateFields.push([id, this.rulesConfig.verifyCode]);
-        
+
         return this;
     }
-    
+
     /**
      * 其他验证
      *
@@ -316,49 +316,49 @@ XForm.prototype = {
      */
     ,checkOther: function(id, options) {
         var conf = {};
-        
+
         this.extend(conf, this.rulesConfig.standard);
         if(undefined !== options) {
             this.extend(conf, options);
         }
-        
+
         this.confirm(id, conf);
         this.validateFields.push([id, conf]);
-        
+
         return this;
     }
-    
+
     /**
      * 自动验证
      */
     ,validate: function() {
         var flag = false;
-        
+
         for(var i=0,len=this.validateFields.length; i<len; i++) {
             if( this.blurField(this.validateFields[i][0], this.validateFields[i][1]) ) {
                 flag = true;
             }
         }
-        
+
         return !flag;
     }
-    
+
     /**
      * 销毁
      */
     ,destroy: function() {
         var component = null;
-        
+
         for(var i=0,len=this.validateFields.length; i<len; i++) {
             component = this.doc.getElementById(this.validateFields[i][0]);
-            
+
             component.onfocus = null;
             component.onblur = null;
         }
-        
+
         this.validateFields = [];
     }
-    
+
     /**
      * 手动设置提示信息
      *
@@ -368,13 +368,13 @@ XForm.prototype = {
     ,setTipMessage: function(id, msg) {
         var field = this.doc.getElementById(id);
         var tip = this.getTipElement(id);
-        
+
         this.saveOldStyle(field, field.className);
         this.saveOldStyle(tip, tip.className);
-        
+
         field.className = this.getOldStyle(field) + ' ' + this.stylesConfig.error.field;
         tip.className = this.getOldStyle(tip) + ' ' + this.stylesConfig.error.tip;
-        
+
         tip.innerHTML = msg;
     }
 };
