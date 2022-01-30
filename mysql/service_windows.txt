@@ -1,9 +1,31 @@
-进入 mysql 的 bin 目录
+## 安装 mysql
 
-安装服务
+    下载 mysql 的 windows 版本的 zip 包，解压到某个位置即可
+    
+    修改根目录下的 my.ini 配置文件，着重修改以下三个配置
+    
+    // mysql 的安装目录
+    basedir = D:\phpenv\mysql8
+    // mysql 数据库的数据存放目录
+    datadir = D:\phpenv\mysql8\data
+    port = 3306
+    
+## 初始化数据库
 
-./mysqld.exe -install mysql
+    在 mysql 的 bin 目录下执行命令 执行完成后会打印 root 用户的初始默认密码
+    
+    mysqld --initialize --console
+    
+    要是没记住默认密码，那也没事，删掉初始化的 data 目录，再执行一遍初始化命令，又会重新生成密码
 
-删除服务
+## 服务的安装与删除
 
-./mysqld.exe -remove mysql
+    进入 mysql 的 bin 目录
+
+    安装服务
+
+    ./mysqld.exe -install mysql
+
+    删除服务
+
+    ./mysqld.exe -remove mysql

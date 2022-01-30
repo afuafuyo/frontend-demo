@@ -2,7 +2,7 @@
 
 静态方法 `Object.defineProperty()` 用来精确地在一个对象上定义一个属性或者修改一个已经存在的属性，然后返回这个对象
 
-通过普通赋值方式添加到对象的属性是可枚举、可修改、可删除的，但此方法可以修改这些行为
+通过普通赋值方式添加到对象的属性是可枚举、可修改、可删除的，但 defineProperty 方法可以修改这些行为
 
 
 
@@ -11,7 +11,7 @@
 ```javascript
 /**
  * @param obj 要定义属性的对象
- * 
+ *
  */
 Object.defineProperty(obj, prop, descriptor)
 ```
