@@ -21,24 +21,27 @@
  */
 function WaterFall(options) {
     this.doc = document;
-    
+
     this.configs = {
         itemClassName: '',
+        // 容器实际宽度
         wrapperWidth: 0,
+        // 项目宽度
         itemWidth: 1,
+        // 垂直方向间距
         verticalGap: 30
     };
-    
+
     /**
      * 回调函数
      */
     this.callback = null;
-    
+
     /**
      * 总共元素数量
      */
     this.batchFalls = 0;
-    
+
     this.config(options);
     this.init();
 }
@@ -54,12 +57,12 @@ WaterFall.prototype = {
          * 列数
          */
         this.columnNumber = Math.floor(this.configs.wrapperWidth / this.configs.itemWidth);
-        
+
         /**
          * 列的左右间距
          */
         this.columnGap = Math.floor(this.configs.wrapperWidth % this.configs.itemWidth / (this.columnNumber - 1));
-        
+
         /**
          * 每一列的高度数组
          */
@@ -71,17 +74,16 @@ WaterFall.prototype = {
         if(className !== ret.className) {
             ret = this.findParent(ret, className);
         }
-        
+
         return ret;
     },
     // 生成一个全是零的数组
     fillZero: function(num) {
-        var ret = []/* new Array(num) */;
+        var ret = new Array(num);
         for(var i=0; i<num; i++) {
-            // ret[i] = 0;
-            ret.push(0);
+            ret[i] = 0;
         }
-        
+
         return ret;
     },
     maxHeight: function() {
@@ -91,14 +93,14 @@ WaterFall.prototype = {
     minIndex: function() {
         var min = Math.min.apply(null, this.heightArr);
         var idx = -1;
-        
+
         for(var i=0,len=this.heightArr.length; i<len; i++) {
             if(min === this.heightArr[i]) {
                 idx = i;
                 break;
             }
         }
-    
+
         return idx;
     },
     // 布局
@@ -107,21 +109,21 @@ WaterFall.prototype = {
             ? element
             : this.findParent(element, this.configs.itemClassName);
         var minIndex = this.minIndex();
-        
+
         // 放到一行中最低的地方
         item.style.cssText = 'position: absolute; top:'+ this.heightArr[minIndex]
             + 'px; left:'+ (this.configs.itemWidth * minIndex + this.columnGap * minIndex) +'px;';
-        
+
         // 当前元素的高度存入数组
         this.heightArr[minIndex] = this.heightArr[minIndex]
             + item.offsetHeight + this.configs.verticalGap;
-        
+
         this.batchFalls--;
         if(this.batchFalls <= 0) {
             'function' === typeof this.callback && this.callback();
         }
     },
-    
+
     /**
      * 布局方法
      *
@@ -130,27 +132,27 @@ WaterFall.prototype = {
      */
     fall: function(itemImageSelector, callback) {
         var _self = this;
-        
+
         var allItems = this.doc.querySelectorAll('.' + this.configs.itemClassName);
-        
+
         this.batchFalls = allItems.length;
         this.callback = callback;
-        
+
         var img = null;
         for(var i=0,len=this.batchFalls; i<len; i++) {
             if(null !== (img = allItems[i].querySelector(itemImageSelector))) {
                 if(img.complete) {
                     this.imgLoaded(allItems[i], true);
-                    
+
                 } else {
                     img.onload = function(e){
                         _self.imgLoaded(this, false);
                     };
                 }
-                
+
                 continue;
             }
-            
+
             this.imgLoaded(allItems[i], true);
         }
         img = null;

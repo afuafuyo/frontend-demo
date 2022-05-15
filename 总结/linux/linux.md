@@ -713,7 +713,7 @@ linux 正好相反 是先有目录 再将物理地址映射到目录中
         /etc/init.d/服务名 start|stop|status|restart
         或用简便方式
         service 服务名 start|stop|status|restart
-        service 会搜索 /etc/init.d 目录 RPM 安装的软件的服务一般都放在这里
+            service 会搜索 /etc/init.d 目录 RPM 安装的软件的服务一般都放在这里
 
     独立服务器的自启动几种修改方式
         1. chkconfig  [--level 运行级别] 服务名 [on|off]

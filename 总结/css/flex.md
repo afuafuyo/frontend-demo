@@ -45,13 +45,13 @@
             baseline
             stretch
 
-    align-content
+    align-content 多根轴线（多行）的对齐方式
 
 ### 子项的属性
 
     order
     flex-grow 定义项目的放大比例 默认为 0 即不放大
     flex-shrink 定义了项目的缩小比例 默认为 1 即项目将缩小
-    align-self
+    align-self 允许单个项目有与其他项目不一样的对齐方式 可覆盖 align-items 属性
 
 </pre>
