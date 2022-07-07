@@ -91,7 +91,7 @@ class InsertionSort {
 
 
 /**
- * 选定一个分界值进行分割 将比分界值小的元素放到左边 比分界值大的放到右边
+ * 选定一个分界值对序列进行分割 将比分界值小的元素放到左边 比分界值大的放到右边
  *
  * 不稳定算法
  */
@@ -123,23 +123,38 @@ class QuickSort {
         // 分界值
         let key = arr[low];
 
-        // 定义两个指针 分别指向待分割元素最小索引 和 最大索引的下一个位置
+        // 定义两个指针 分别指向待分割元素最小索引 和 最大索引
         let left = low;
-        let right = high + 1;
+        let right = high;
 
+        // 下面可以优化 为了可读性 分开写了
         while(true) {
-            // 从右向左移动 right 指针 找到一个比分界值小的元素 停止
-            while(arr[--right] > key) {
-                if(right === low) {
+            // 从右向左移动 right 指针 找到比分界值小的元素（不找相等的 相等时没必要交换位置） 停止
+            while(true) {
+                if(right <= left) {
                     break;
                 }
+
+                // 2 4 6
+                if(arr[right] < key) {
+                    break;
+                }
+
+                right--;
             }
 
             // 从左向右移动 left 指针 找到一个比分界值大的元素 停止
-            while(arr[++left] < key) {
-                if(left === high) {
+            while(true) {
+                if(left >= right) {
                     break;
                 }
+
+                // 5 3 1
+                if(arr[left] > key) {
+                    break;
+                }
+
+                left++;
             }
 
             // left >= right 要退出循环 否则交换元素
@@ -151,9 +166,10 @@ class QuickSort {
             }
         }
 
-        // 将分界值和 结束时索引位置的值交换
+        // 最后 将分界值和 结束时索引位置的值交换
         this.exchange(arr, low, right);
 
+        // 或 return left;
         return right;
     }
 
@@ -166,8 +182,12 @@ class QuickSort {
 
 // test
 // let arr = [6, 7, 6, 2, 8, 1];
-let arr = [4, 3, 2, 10, 12, 1, 5, 6];
+// let arr = [4, 3, 4, 12, 10, 4, 10, 5, 6];
+let arr = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
 let sort = new QuickSort();
 sort.sort(arr);
 
+
+console.time();
 console.log(arr.toString());
+console.timeEnd();
