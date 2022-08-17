@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>三角</title>
+</head>
+<body>
+
+<canvas id="webgl" width="400" height="400"></canvas>
+
+<script>
+(function() {
+var canvas = document.getElementById('webgl');
+var gl = canvas.getContext('webgl');
+
+
+// 1. 准备 shader
+var VSHADER_SOURCE =
+    `attribute vec4 a_Position;
+
+    // A 表示旋转度数
+    // x1 = x cosA - y sinA;
+    // y1 = x sinA + y cosA;
+    uniform float u_Angle;  // 旋转的度数
+    void main() {
+        float radian = radians(u_Angle);  // 转为弧度
+        gl_Position.x = a_Position.x * cos(radian) - a_Position.y * sin(radian);
+        gl_Position.y = a_Position.x * sin(radian) + a_Position.y * cos(radian);
+        gl_Position.z = a_Position.z;
+        gl_Position.w = 1.0;
+    }`;
+
+var FSHADER_SOURCE =
+    `void main() {
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }`;
+
+var vShader = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vShader, VSHADER_SOURCE);
+gl.compileShader(vShader);
+
+var fShader = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fShader, FSHADER_SOURCE);
+gl.compileShader(fShader);
+
+
+// 2. 准备程序
+var program = gl.createProgram();
+gl.attachShader(program, vShader);
+gl.attachShader(program, fShader);
+gl.linkProgram(program);
+gl.useProgram(program);
+gl._program = program;
+
+
+// 将旋转度数传入 webgl 系统
+var u_Angle = gl.getUniformLocation(gl._program, 'u_Angle');
+gl.uniform1f(u_Angle, 45.0);
+
+// 向 attribute 传递未旋转的坐标
+var attributeAddress = gl.getAttribLocation(gl._program, 'a_Position');
+var buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    0.0, 0.5,
+    -0.5, -0.5,
+    0.5, -0.5
+]), gl.STATIC_DRAW);
+gl.vertexAttribPointer(attributeAddress, 2, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(attributeAddress);
+
+
+// 指定清空 canvas 的颜色
+gl.clearColor(0, 0, 0, .6);
+// 清空 canvas
+gl.clear(gl.COLOR_BUFFER_BIT);
+// 绘制
+gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+
+})();
+</script>
+</body>
+</html>

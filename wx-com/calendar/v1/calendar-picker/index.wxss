@@ -1,0 +1,161 @@
+/* components/calendar/index.wxss */
+.date-top-wrapper {
+    position: relative;
+    width: 100%;
+    height: 180rpx;
+    background-color: #fff;
+}
+.date-top-rs {
+    position: absolute;
+    top: 20rpx;
+    left: 40rpx;
+    right: 40rpx;
+    height: 80rpx;
+}
+.date-top-rs-date {
+    position: absolute;
+    top: 0;
+    height: 44rpx;
+    line-height: 44rpx;
+    font-weight: bold;
+    font-size: 32rpx;
+    color: #333;
+}
+.date-top-rs-date-start {
+    left: 0;
+}
+.date-top-rs-date-end {
+    right: 0;
+}
+.date-top-rs-days {
+    position: absolute;
+    top: 6rpx;
+    left: 50%;
+    width: 320rpx;
+    height: 32rpx;
+    line-height: 32rpx;
+    margin-left: -160rpx;
+    text-align: center;
+}
+.date-top-rs-days-line {
+    position: absolute;
+    z-index: 5;
+    top: 16rpx;
+    height: 1px;
+    width: 100%;
+    background-color: #EBEFFC;
+}
+.date-top-rs-days-num {
+    position: relative;
+    z-index: 10;
+    display: inline-block;
+    background-color: #EBEFFC;
+    font-size: 24rpx;
+    color: #405FEA;
+    padding: 0 16rpx;
+    font-weight: bold;
+}
+.date-top-rs-time {
+    position: absolute;
+    bottom: 0;
+    font-size: 24rpx;
+    color: #999;
+    height: 36rpx;
+    line-height: 36rpx;
+}
+.date-top-rs-time-start {
+    left: 0;
+}
+.date-top-rs-time-end {
+    right: 0;
+}
+
+.date-top-week {
+    display: flex;
+    justify-content: space-around;
+    position: absolute;
+    left: 16rpx;
+    bottom: 8rpx;
+    right: 16rpx;
+    height: 36rpx;
+    line-height: 36rpx;
+}
+.date-top-week-item {
+    width: 14.2%;
+    text-align: center;
+    font-size: 24rpx;
+    color: #333;
+}
+
+/* scroll view */
+.date-list-wrapper {
+    /* 100vh - 180rpx - 450rpx */
+    height: calc(100vh - 630rpx);
+}
+.date-list-item-title {
+    height: 60rpx;
+    line-height: 60rpx;
+    margin: 16rpx 40rpx 0 40rpx;
+    font-size: 28rpx;
+    color: #333;
+}
+.data-list-item-table {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin: 0 16rpx;
+}
+.data-list-item-table-cell {
+    position: relative;
+    width: 14.2%;
+    height: 88rpx;
+    text-align: center;
+    margin-top: 2px;
+}
+.data-list-item-table-cell[data-bg="1"] {
+    background-color: #EBEFFC;
+}
+.data-list-item-table-cell[data-isstart="1"] {
+    background: linear-gradient(to right, #f6f6f6 50%, #EBEFFC 50%);
+}
+.data-list-item-table-cell[data-isend="1"] {
+    background: linear-gradient(to left, #f6f6f6 50%, #EBEFFC 50%);
+}
+/* 即为开始按钮 也为 结束按钮 不显示背景 */
+.data-list-item-table-cell[data-isend="1"][data-isstart="1"] {
+    background: none;
+}
+.data-list-item-table-cell-inner {
+    display: inline-block;
+    width: 88rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    border-radius: 44rpx;
+    font-size: 24rpx;
+    color: #333;
+}
+.data-list-item-table-cell-inner[data-active="1"] {
+    color: #fff;
+    background-color: #405FEA;
+}
+.data-list-item-table-cell-inner[data-disabled="1"] {
+    color: #ccc;
+}
+.data-list-item-table-cell-inner-today {
+    position: absolute;
+    top: 6rpx;
+    left: 0;
+    width: 100%;
+    height: 24rpx;
+    line-height: 24rpx;
+    font-size: 14rpx;
+}
+.data-list-item-table-cell-inner-tip {
+    position: absolute;
+    bottom: 6rpx;
+    left: 0;
+    width: 100%;
+    height: 24rpx;
+    line-height: 24rpx;
+    font-size: 14rpx;
+}

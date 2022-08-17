@@ -1,0 +1,227 @@
+/* components/calendar/index.wxss */
+.date-top-wrapper {
+    position: relative;
+    width: 100%;
+    height: 180rpx;
+    background-color: #fff;
+}
+.date-top-rs {
+    position: absolute;
+    top: 20rpx;
+    left: 40rpx;
+    right: 40rpx;
+    height: 80rpx;
+}
+.date-top-rs-date {
+    position: absolute;
+    top: 0;
+    height: 44rpx;
+    line-height: 44rpx;
+    font-weight: bold;
+    font-size: 32rpx;
+    color: #333;
+}
+.date-top-rs-date-start {
+    left: 0;
+}
+.date-top-rs-date-end {
+    right: 0;
+}
+.date-top-rs-days {
+    position: absolute;
+    top: 6rpx;
+    left: 50%;
+    width: 320rpx;
+    height: 32rpx;
+    line-height: 32rpx;
+    margin-left: -160rpx;
+    text-align: center;
+}
+.date-top-rs-days-line {
+    position: absolute;
+    z-index: 5;
+    top: 16rpx;
+    height: 1px;
+    width: 100%;
+    background-color: #EBEFFC;
+}
+.date-top-rs-days-num {
+    position: relative;
+    z-index: 10;
+    display: inline-block;
+    background-color: #EBEFFC;
+    font-size: 24rpx;
+    color: #405FEA;
+    padding: 0 16rpx;
+    font-weight: bold;
+}
+.date-top-rs-time {
+    position: absolute;
+    bottom: 0;
+    font-size: 24rpx;
+    color: #999;
+    height: 36rpx;
+    line-height: 36rpx;
+}
+.date-top-rs-time-start {
+    left: 0;
+}
+.date-top-rs-time-end {
+    right: 0;
+}
+
+.date-top-week {
+    display: flex;
+    justify-content: space-around;
+    position: absolute;
+    left: 16rpx;
+    bottom: 8rpx;
+    right: 16rpx;
+    height: 36rpx;
+    line-height: 36rpx;
+}
+.date-top-week-item {
+    width: 14.2%;
+    text-align: center;
+    font-size: 24rpx;
+    color: #333;
+}
+
+/* scroll view */
+.date-list-wrapper {
+    /* 100vh - 180rpx - 450rpx */
+    height: calc(100vh - 630rpx);
+}
+.date-list-item-title {
+    height: 60rpx;
+    line-height: 60rpx;
+    margin: 16rpx 40rpx 0 40rpx;
+    font-size: 28rpx;
+    color: #333;
+}
+.data-list-item-table {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin: 0 16rpx;
+}
+.data-list-item-table-cell {
+    position: relative;
+    width: 14.2%;
+    height: 88rpx;
+    text-align: center;
+    margin-top: 2px;
+}
+.data-list-item-table-cell[data-lightbg="1"] {
+    /* 显示浅色背景 */
+    background-color: #EBEFFC;
+}
+.data-list-item-table-cell[data-isstart="1"] {
+    background: linear-gradient(to right, #f6f6f6 50%, #EBEFFC 50%);
+}
+.data-list-item-table-cell[data-isend="1"] {
+    background: linear-gradient(to left, #f6f6f6 50%, #EBEFFC 50%);
+}
+/* 即为开始按钮 也为 结束按钮 不显示背景 */
+.data-list-item-table-cell[data-isend="1"][data-isstart="1"] {
+    /* 覆盖掉背景图 */
+    background-image: none;
+    /* 覆盖掉背景色 */
+    background-color: #f6f6f6;
+}
+.data-list-item-table-cell-inner {
+    display: inline-block;
+    width: 88rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    border-radius: 44rpx;
+    font-size: 24rpx;
+    color: #333;
+}
+.data-list-item-table-cell-inner[data-darkbg="1"] {
+    color: #fff;
+    background-color: #405FEA;
+}
+.data-list-item-table-cell-inner[data-disabled="1"] {
+    color: #ccc;
+}
+.data-list-item-table-cell-inner-today {
+    position: absolute;
+    top: 6rpx;
+    left: 0;
+    width: 100%;
+    height: 24rpx;
+    line-height: 24rpx;
+    font-size: 14rpx;
+}
+.data-list-item-table-cell-inner-tip {
+    position: absolute;
+    bottom: 6rpx;
+    left: 0;
+    width: 100%;
+    height: 24rpx;
+    line-height: 24rpx;
+    font-size: 14rpx;
+}
+
+/* 底部时间 */
+.data-time-wrapper {
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 450rpx;
+    background-color: #fff;
+}
+.date-time-title {
+    position: absolute;
+    top: 20rpx;
+    left: 32rpx;
+    right: 32rpx;
+    height: 44rpx;
+    line-height: 44rpx;
+}
+.date-time-title-item {
+    display: inline-block;
+    width: 49.8%;
+    text-align: center;
+    font-size: 32rpx;
+    color: #333;
+    font-weight: bold;
+}
+.date-time-picker {
+    position: absolute;
+    top: 80rpx;
+    left: 32rpx;
+    right: 32rpx;
+    height: 240rpx;
+}
+.date-time-picker-col {
+    width: 49.8%;
+}
+.date-time-picker-col-item {
+    height: 64rpx;
+    line-height: 64rpx;
+    color: #333;
+    font-weight: bold;
+    font-size: 32rpx;
+    text-align: center;
+}
+.date-time-ok {
+    position: absolute;
+    bottom: 40rpx;
+    left: 32rpx;
+    right: 32rpx;
+    height: 72rpx;
+    line-height: 72rpx;
+    background-color: #405FEA;
+    font-weight: bold;
+    font-size: 28rpx;
+    color: #fff;
+    text-align: center;
+    border-radius: 8rpx;
+}
+.date-time-ok[data-disabled="1"] {
+    background-color: #ccc;
+}

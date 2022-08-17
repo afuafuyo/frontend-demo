@@ -19,6 +19,8 @@ var VSHADER_SOURCE =
     `attribute vec4 a_Position;
     void main() {
         gl_Position = a_Position;
+        // 如果是画点 这个变量必须指定
+        // gl_PointSize = 10.0;
     }`;
 var FSHADER_SOURCE =
     `void main() {

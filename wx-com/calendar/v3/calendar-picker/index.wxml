@@ -1,0 +1,112 @@
+<!--components/calendar/index.wxml-->
+<wxs src="./TimeHelper.wxs" module="helpers" />
+
+<!-- 顶部结果区 -->
+<view class="date-top-wrapper">
+    <view class="date-top-rs">
+        <text class="date-top-rs-date date-top-rs-date-start">{{result.startDateString}}</text>
+        <view class="date-top-rs-days">
+            <view class="date-top-rs-days-line"></view>
+            <text class="date-top-rs-days-num">{{result.totalDays}}天</text>
+        </view>
+        <text class="date-top-rs-date date-top-rs-date-end">{{result.endDateString}}</text>
+        <text class="date-top-rs-time date-top-rs-time-start">{{result.startWeek}} {{result.startTimeString}}</text>
+        <text class="date-top-rs-time date-top-rs-time-end">{{result.endWeek}} {{result.endTimeString}}</text>
+    </view>
+    <view class="date-top-week">
+        <view class="date-top-week-item">日</view>
+        <view class="date-top-week-item">一</view>
+        <view class="date-top-week-item">二</view>
+        <view class="date-top-week-item">三</view>
+        <view class="date-top-week-item">四</view>
+        <view class="date-top-week-item">五</view>
+        <view class="date-top-week-item">六</view>
+    </view>
+</view>
+
+<!-- 日期列表区 -->
+<scroll-view
+    scroll-y
+    class="date-list-wrapper"
+    bindtap="doSelectDate"
+>
+    <view
+        wx:for="{{data}}"
+        wx:for-item="oneMonth"
+        wx:key="title"
+    >
+        <view class="date-list-item-title">{{oneMonth.title}}</view>
+        <view class="data-list-item-table">
+            <view
+                class="data-list-item-table-cell"
+                wx:for="{{oneMonth.days}}"
+                wx:for-item="item"
+                wx:key="day"
+                data-lightbg="{{item.active ? '1' : '0'}}"
+                data-isstart="{{item.is_select_start ? '1' : '0'}}"
+                data-isend="{{item.is_select_end ? '1' : '0'}}"
+            >
+                <view
+                    class="data-list-item-table-cell-inner"
+                    data-darkbg="{{(item.is_select_start || item.is_select_end) ? '1' : '0'}}"
+                    data-disabled="{{item.disabled ? '1' : '0'}}"
+                >
+                    <text
+                        wx:if="{{item.is_today}}"
+                        class="data-list-item-table-cell-inner-today"
+                    >今天</text>
+                    <view
+                        data-disabled="{{item.disabled ? '1' : '0'}}"
+                        data-action="pick"
+                        data-value="{{ item.year + '/' + helpers.padZero(item.month) + '/' + helpers.padZero(item.day) }}"
+                    >{{item.day <= 0 ? '' : item.day}}</view>
+                    <text
+                        class="data-list-item-table-cell-inner-tip"
+                    >{{
+                        (item.is_select_start || item.is_select_end)
+                            ? (item.is_select_start ? '取车' : '还车')
+                            : ''
+                    }}</text>
+                </view>
+            </view>
+        </view>
+    </view>
+
+</scroll-view>
+
+<!-- 时间区 -->
+<view class="data-time-wrapper">
+    <view class="date-time-title">
+        <view class="date-time-title-item">取车时间</view>
+        <view class="date-time-title-item">还车时间</view>
+    </view>
+
+    <picker-view
+        class="date-time-picker"
+        indicator-style="height: 64rpx;"
+        value="{{_timeValues}}"
+        bindchange="doChangeTime"
+    >
+        <picker-view-column class="date-time-picker-col">
+            <view
+                class="date-time-picker-col-item"
+                wx:for="{{_startTimeList}}"
+                wx:key="hour"
+            >{{ helpers.padZero(item.hour) +':'+ helpers.padZero(item.minute) }}</view>
+        </picker-view-column>
+        <picker-view-column class="date-time-picker-col">
+            <view
+                class="date-time-picker-col-item"
+                wx:for="{{_endTimeList}}"
+                wx:key="hour"
+            >{{ helpers.padZero(item.hour) +':'+ helpers.padZero(item.minute) }}</view>
+        </picker-view-column>
+    </picker-view>
+
+    <view
+        class="date-time-ok"
+        bindtap="doConfirmRange"
+        data-v="{{result.totalDays}}"
+        data-disabled="{{result.totalDays === 0 ? '1' : '0'}}"
+    >确认时间</view>
+</view>
