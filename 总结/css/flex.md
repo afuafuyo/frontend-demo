@@ -26,6 +26,7 @@
             wrap: 换行 第一行在上方
             wrap-reverse: 换行 第一行在下方
 
+    简写形式
     flex-flow
         flex-direction 属性和 flex-wrap 属性的简写形式
 
@@ -52,6 +53,10 @@
     order
     flex-grow 定义项目的放大比例 默认为 0 即不放大
     flex-shrink 定义了项目的缩小比例 默认为 1 即项目将缩小
+    flex-basis 定义了在分配多余空间之前，项目占据的主轴空间
     align-self 允许单个项目有与其他项目不一样的对齐方式 可覆盖 align-items 属性
+
+    简写形式
+    flex: none | [ <flex-grow> <flex-shrink> || <flex-basis> ]
 
 </pre>
