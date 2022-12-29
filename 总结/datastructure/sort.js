@@ -72,6 +72,7 @@ class InsertionSort {
     sort(arr) {
         // 控制右边未排序部分
         for(let i=1; i<arr.length; i++) {
+            // 跟左边的元素比较 进行插入操作
             for(let j=i; j>0; j--) {
                 // 由于左边是有序列表
                 // 所以如果待插入的元素 比 有序列表最后一个都大 那就无需进行插入操作了
@@ -188,9 +189,10 @@ class QuickSort {
 // let arr = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
 let arr = [4, 1, 3, 5, 2, 8];
 let sort = new QuickSort();
-sort.sort(arr);
 
 
 console.time();
-console.log(arr.toString());
+sort.sort(arr);
 console.timeEnd();
+
+console.log(arr.toString());

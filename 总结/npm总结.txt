@@ -1,0 +1,35 @@
+## npm 钩子
+
+#### pre post 钩子
+
+    npm 脚本有 pre 和 post 两个钩子 build 脚本命令的钩子就是 prebuild 和 postbuild
+
+    ```
+    {
+        "scripts": {
+            "prebuild": "echo I run before the build script",
+            "build": "todo build",
+            "postbuild": "echo I run after the build script"
+        }
+    }
+    ```
+
+#### 其他钩子
+
+    prepare
+    prepublish, publish, postpublish 发布模块
+    preinstall, install, postinstall 安装模块
+
+
+## git 钩子
+
+#### commit-msg 钩子
+
+    该钩子用于检查注释信息的规范性
+
+#### pre-commit 钩子
+
+    该钩子在 git commit 之前执行操作
+
+    在 npm 中用 pre-commit 插件。或者使用 husky 插件，来调用该 git 钩子
+
