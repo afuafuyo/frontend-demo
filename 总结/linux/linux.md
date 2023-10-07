@@ -902,7 +902,10 @@ POSTROUTING 对数据包作路由选择后应用此链中的规则
         ps aux
     标准 Linux 格式
         ps -le
-    结果 ( 不加 grep 过滤时会看到如下标题 )
+
+    不同命令输出格式不同
+
+    aux 输出结果 ( 不加 grep 过滤时会看到如下标题 )
         USER  -- 进程由哪个用户产生
         PID  -- 进程号
         CPU

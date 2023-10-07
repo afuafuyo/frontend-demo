@@ -1,0 +1,984 @@
+uniswap
+    用 eth 换 uni 币
+        先吧 eth 转到 uniswap 的合约中（实际上先到了 UniversalRouter 交易路由）
+        接着 uniswap 的交易路由会将 eth 换成 weth，相当于把以太坊的币在其他网络进行了等值兑换
+        uniswap 将 uni 币转到用户地址
+
+EOA 钱包
+    MPC 钱包（多方计算钱包）
+        EOA 私钥被拆成更多的碎片，然后合起来使用
+    多重签名钱包 mutisig wallet
+        多人共同管理一个地址，打开钱包需要有半数或以上的人同意才能进行
+        比如有 2/2 钱包，就是需要两个人同时同时签名才能使用钱包
+        2/3 钱包需要3个人中的两个就可以使用钱包
+        使用多签钱包，用户就能大幅避免由于私钥丢失或被盗所引起的安全性问题。因为即使其中之一的私钥被盗，资金也将是安全的。
+
+AA 账户（抽象账户） erc4337 协议
+    账户抽象是一种协议
+    账户抽象钱包是一种钱包产品，它是基于 erc4337 实现的
+    以太坊只有两种账户 外部账户 (EOA) 和智能合约 (CA) 账户，抽象账户就是智能合约账户
+    抽象账户可以管理外部账户和智能合约账户，他内部实现了一些底层的逻辑，对用户透明，所以这是它抽象的地方
+
+
+为什么不基于现有的智能合约开发钱包，而是要单独制定一套合约协议？
+    目前智能合约无法主动发起交易，只能被动通过外部账户触发，这样还是需要用户先用外部账户签名，然后调用合约实现钱包功能，更麻烦了，也没有解决外部账户私钥安全性问题
+
+    defi 世界中主要是操作代币，但是外部账户在转出代币时，需要有 eth 作为交易费，但是用户可能只有代币，没有 eth，这样就无法实现转账
+
+
+4337 协议如何运作
+    4337 协议定义了智能合约钱包需要实现的接口，以及交易打包和 GAS 代付等的基础功能，他为智能合约钱包提供了统一的标准
+
+    1. 新增了交易类型 UserOperation 和对应的交易池 UserOperationMempool
+    2. 添加了新的交易角色 Bundler 和 代付人 Paymaster
+    3. 引入新的合约 Entry Point Contract 和 Wallet Contract
+
+
+    UserOperation -> UserOperationMempool
+        UserOperation
+            新增的交易形式
+        UserOperationMempool
+            只存放 UserOperation 交易的内存池
+    Transaction   -> mempool
+        Transaction
+            EOA 的交易形式
+        mempool
+            存放 EOA 交易的池子
+
+    bundler 打包者
+        负责将 UO 打包成一个 bundle 并法网 mempool，他们的账户是 EOA 形式，打包并发往以太坊内存池是需要 eth 费用的
+        用户在 AA 账户发起交易意图时会付会用代币付出一笔费用，这些费用会被打包者聚集，打包者获得收益，有收益自然可以支付的起 gas 费
+        ===================== 存疑
+    Entry Point Contract 入口合约
+        负责验证 UserOperation 合法性的合约，并于钱包合约进行沟通协调的合约
+    Wallet Contract 钱包合约
+        用户在链上的身份地址，属于智能合约账户，实现了自定义钱包逻辑，负责执行 UserOperation
+    Paymaster Contract 代付人合约
+        是可选的第三方 gas fee 代付人合约账户
+    Wallet Factory Contract 钱包工厂合约
+        创建智能合约钱包的合约
+
+
+
+EOA 账户的交互逻辑
+    1. 用私钥对交易数据（transaction）的 hash 进行签名，得到签名
+    2. 将交易数据和签名发送到内存池（mempool）
+    3. 矿工从 mempool 拿到交易数据和签名，校验其合法性（用公钥解密签名得到交易数据 hash1，在自己算一下交易数据 hash2，比较 hash1 和 hash2），如果合法则上链
+        这一步需要注意：矿工只检查签名、nounce、gas fee 这几项，不会对账户余额进行检查
+    4. 上链之后调用对应合约，实现一些逻辑
+
+AA 账户交互逻辑
+    1. 使用任意算法形式的私钥对交易意图的 hash 进行签名，得到签名
+        交易意图是啥 =============
+    2. 将签名和交易意图（两者合并称为 UserOperation）发送到 UserOperationMempool
+    3. 打包者 bundler 从 UserOperationMempool 挑选出一批 UserOperation，进行打包，得到一个 bundle，用打包者的私钥对这个 bundle 进行签名
+    4. 将打包者的签名和 bundle 发送到 mempool
+        这里的 3 4 步骤和 EOA 账户的 1 2 步骤所作的操作是一样的
+    5. 矿工从 mempool 拿到 bundle 和签名，校验其合法性，如果合法则上链
+        矿工用打包者的公钥解密签名，得到 bundle 的 hash1
+        自己计算 bundle 的 hash2，比较 hash1 hash2 看是否相同
+    6. 上链后，由于 bundle 是 UserOperation 的集合，需要特殊的合约进行解析，就是入口合约（Entry Point Contract）
+        入口合约校验 UserOperation （签名和交易意图）的合法性，如果合法则调用对应的钱包合约
+        入口合约用钱包所有人公钥解密签名，得到交易意图 hash1
+        入口合约自己计算交易意图的 hash2，比较 hash1 hash2 看是否相同
+    7. 钱包合约验证
+
+
+体验
+    unipass
+    stackup wallet
+    candide wallet
+    soul wallet
+    argent
+
+AA 账户却缺点
+    创建钱包需要花钱
+    gas 费花费多
+
+
+
+账户抽象目标
+    去除生态中的 EOA 账户，使用户完全转向账户抽象钱包（长远目标）
+    把账户变成可编程的，图灵完备的，可主动发起交易的全能型账户
+
+
+
+
+
+pow -> pos
+
+
+
+# bitcoin
+    比特币钱包有N个公钥（公钥对应收款地址，公钥里有特殊字符，所以实际地址是公钥转换了一下得来的），每个地址都有自己的私钥，wallet.dat 是私钥的集合
+    每次接收转账比特币钱包都会生成新的地址和私钥，达到隐藏自己资产的目的
+    wallet.dat 会自动帮我们维护地址和私钥对儿，所以给别人转账不需要手动自己选择一个地址作为转出方
+
+# 区块链
+
+    公钥与私钥
+        私钥经过某种计算可以推导出公钥，但是公钥没办法推导出私钥
+
+        区块链交易使用的是地址，这个地址实际上就是你用私钥计算得到的公钥
+
+        转账交易过程
+            1 付款方用自己的私钥对交易信息（包含了付款地址、收款地址、金额等信息）的 hash 值进行加密（称为签名）
+            2 广播自己的交易
+                类似于：我支付了 xxx 币到 yyyy 地址，签名信息是 kkk，大家来验证一下把
+            3 验证
+                其他人用付款人的地址（也就是公钥）可以对签名进行解密，得到交易信息的 hash 值（摘要）
+                然后自己根据交易信息进行计算得到一个 hash 值，用这个 hash 和 解密出来的 hash 进行比较，如果一样就表示合法
+                原理：因为私钥加密的数据，只有对应的公钥才能解开，其他都解不开，所以可以证明是你进行的签名
+
+    Provider
+        当我们想要与区块链上的数据和代码进行交互时，我们只需要找其中一个节点进行交互，因为任何节点都可以广播要在 EVM 上执行的事务的请求
+        您与区块链交互时连接的节点（无论是您自己设置还是使用来自第三方服务的现有节点）通常被称为“Provider”，比如小狐狸钱包就是一个 provider
+
+        自己存储以太坊区块信息可以使自己成为一个 provider，但存储完整以太坊区块链成本很高，所以一般选择第三方节点服务（provider）
+
+
+    波场 TRON 的网络协议一共有两种：分别是 TRC10 和 TRC20 ，trc20  是通过部署智能合约的方式来发行资产的一套标准，是一套代币协议。就像以太坊的代币协议是 erc20 一样
+
+    以太坊账户类型
+        外部账户
+            普通账户，所有以太坊的交易都由外部账户发起，它没有关联代码。使用用户私钥进行控制
+            比如小狐狸钱包创建的账户
+        合约账户
+            内部账户，有关联代码
+
+        交易和消息
+            交易是外部账户发起的，会打包区块上链
+            消息是合约之间进行的调用
+
+# Fiber diff 过程
+
+1. 先判断有没有旧 fiber 如果没有 那肯定是走创建流程 涉及不到 diff
+2. 判断 key 是否相同，如果不同，不管其子节点变没变直接删掉 这就是 react 所谓的逐级比较
+3. 如果 key 相同，则比较 type ，如果 type 不同，也是直接删除
+
+子元素比较
+    新的元素在 旧集合 中找位置 pos
+    如果位置 pos 比 lastIndex 小才需要移动
+    然后更新 lastIndex 为 Math.max(pos, lastIndex)
+
+
+
+# Active Record 模式
+
+它是一个对象，它的实例对应于数据表的一行，实例的属性表示该行中特定列的值
+
+Active Record 提供了一种访问数据库中数据的方式，符合该模式的对象应该包含数据库 CRUD 的方法
+
+这种模式对简单增删改查很有用
+
+
+# 论开闭原则
+
+对修改关系与对扩展开放是辩证统一的，两者相互联系、相互依赖、相互制约。
+
+联系性：对扩展开放与对修改关闭有着密切的联系性，两者相辅相成。没有对扩展开放的能力就不能实现对修改关闭的要求；没有对修改关闭的要求就不会有对扩展开放的结果。要实现对修改关闭就必须提供对扩展开放的能力；有了对扩展开放的能力才可以实现对修改的关闭。
+
+区别性：对修改关闭要求我们构建的软件具有一定的稳定性；对扩展开放要求我们构建的软件有能力适应不同的场景。两者具有矛盾性。
+
+方法论：
+    对扩展开放和对修改关闭本质上是一对矛盾，两者相互依存，一方可以利用另一方的不断完善发展，使得自身得到完善和发展。在软件设计中细节往往是复杂多变的，而抽象则具有稳定性，这就要求我们在构建软件时要站在更高维度的抽象层面看待问题和进行软件设计，要面向抽象编程，而不是面向具体编程。
+
+
+# 排序
+    快排
+        选定一个分界值，每趟排序均能将序列分为两部分，一部分比分界值大，一部分比分界值小，然后分别再对两部分进行排序，以达到整体有序
+
+    选择
+        每次循环找出最小索引，然后将最小元素放到前面
+
+
+# new 关键字会进行如下的操作
+
+    1. 创建一个空的简单 JavaScript 对象（即 {} ）；
+    2. 为步骤 1 新创建的对象添加属性 __proto__ ，将该属性链接至构造函数的原型对象 ；
+    3. 将第一步的对象作为 this 绑定到构造函数，执行构造函数
+    4. 如果该函数没有返回对象（比如返回了个基本类型），则返回第一步创建的对象。如果返回了对象，那么返回值就是指定的对象了
+
+
+# react 用 index 做 key 问题
+
+    在 element diff 中会有游标算法，通过 key 到老集合中查找元素，并判断是否需要移动，而 index 会导致查找位置不变，导致 react 不更新
+
+
+# git 服务端钩子
+
+1. pre-receive
+    预提交钩子，它是服务端最先调用的钩子，可用于拦截用户推送
+
+2. update
+    同 pre-receive 类似，也在真实提交之前执行，update 与分支对应，同时推送多个分支，update 会执行多次
+
+3. post-receive
+    在成功推送之后调用，可以用来更新服务和通知等等
+
+
+
+# 树的定义
+
+    节点的度
+        一个节点含有的子树的个数称为该节点的度
+
+    叶节点
+        度为 0 的节点称为叶节点
+
+    分支节点
+        度不为 0 的节点称为分支节点
+
+    节点的层次
+        从根节点开始，根节点的层次为 1 ，其直接后继层次为 2 ，以此类推
+
+    节点的层序编号
+        将树中的节点，按照从上层到下层，从左到右次序排成一个线性序列，把他们编成连续的自然数
+
+    树的度
+        树中所有节点的度的最大值
+
+    树的深度（高度）
+        树中节点的最大层次
+
+# 二叉树
+
+    二叉树
+        度不超过 2 的树（每个节点最多有两个子节点）
+
+    满二叉树
+        除最后一层无任何子节点外，每一层上的所有节点都有两个子节点的二叉树
+
+    完全二叉树
+        深度为 h 的二叉树，除第 h 层外，其它各层 的节点数都达到最大个数，第 h 层所有的节点都连续集中在最左边，这就是完全二叉树
+
+# 二叉树遍历
+
+    先序遍历
+        先访问根节点，然后先序遍历左子树，再先序遍历右子树
+                          --------------
+                                |
+               这里是递归定义，拿到左子树，又开始访问根节点
+
+    中序遍历
+        从根节点开始（注意并不是先访问根节点），先中序遍历根结点的左子树，然后访问根结点，最后中序遍历右子树
+
+    后序遍历
+        从根节点开始（注意并不是先访问根节点），先后序遍历根结点的左子树，然后后序遍历根结点的右子树，最后访问根结点
+
+# 二叉查找树（二叉排序树、二叉搜索树）
+
+    特殊性
+        二叉查找树要求，在树中的任意一个节点，其左子树中的每个节点的值，都要小于这个节点的值，而右子树节点的值都大于这个节点的值
+
+    查找操作（较简单）
+        先取根节点，如果它等于我们要查找的数据，那就返回
+        如果要查找的数据比根节点的值小，那就在左子树中递归查找
+        如果要查找的数据比根节点的值大，那就在右子树中递归查找
+
+    插入操作（较简单）
+        如果要插入的数据比节点的数据大，并且节点的右子树为空，就将新数据直接插到右子节点的位置
+            如果不为空，就再递归遍历右子树，查找插入位置
+        如果要插入的数据比节点数值小，并且节点的左子树为空，就将新数据插入到左子节点的位置
+            如果不为空，就再递归遍历左子树，查找插入位置
+
+    删除操作（复杂）
+        删除操作较为复杂，分情况讨论
+
+        1. 要删除的节点没有子节点
+            只需要直接将父节点中，指向要删除节点的指针置为 null 即可
+
+        2. 要删除的节点只有一个子节点（左或右子节点）
+            1) 待删除节点的父节点指向待删除节点的子节点（也就是指针绕过待删除节点）
+            2) 清空待删除节点指针
+
+        3. 要删除的节点有两个子节点
+            1) 需要找到这个节点的右子树中的最小节点（右子树的最小节点也比左子树最大值要大），把它替换到要删除的节点上
+            2) 直接删掉这个最小节点（最小节点肯定没有左子节点，如果有，那么它就不是最小节点了）
+
+![](./tree.png)
+
+
+# 二叉树最大深度问题
+
+    利用递归算出一棵树的左右两个树高度，取最大值
+
+    ```
+    function maxDepth(node) {
+        let max = 0;
+        let maxLeft = 0;
+        let maxRight = 0;
+
+        if(node.left !== null) {
+            maxLeft = maxDepth(node.left);
+        }
+        if(node.right !== null) {
+            maxRight = maxDepth(node.right);
+        }
+
+        max = Math.max(maxLeft, maxRight);
+
+        return max + 1;
+    }
+    ```
+
+
+
+
+protobuf
+    使用
+        定义 schema
+        装配数据
+        编码
+        传输
+
+    protobuf 自己封装的编码协议包含了 payload 的长度、类型、tag 信息（没有传输 属性字段，而是用 tag 取代了属性，减少数据传输量，但缺点是客户端和服务端都得维护同一份schema）
+
+    一般情况下我们用一个固定长度的 bit 位来表示 payload 的长度（比如 7 bit），但是这样只能表示 payload 最大长度 2^7 - 1 = 127 字节（ payload 以字节为单位），可能不够用
+    websocket 中针对这种情况，规定
+        如果 7 bit 的值为 126 那么接下来还会传递 2 个字节（16 bit）的位来表示 payload 的真实长度
+        如果 7 bit 的值位 127 那么接下来还会传递 8 个字节（64 bit）来表示 payload 长度，这样就解决了不同长度数据传输规范问题
+
+
+encodeURI encodeURIComponent
+
+    两者都不会转义：字母、数字、下划线、感叹号、单引号等（AZaz09-_.!~*'()）
+
+    encodeURI 会转义 空格、%、中文；不会转义 httpURL 中的预留符号 如 & ? 等
+    encodeURIComponent 对于 http 参数关键字也会转义
+
+
+TCP 握手
+
+    第一次  SYN=1 seq=x
+
+        客户端发送 syn 请求报文，客户端进入 syn_send 状态
+            seq=x 表示这个tcp包的序列号，tcp协议拼凑接收到的数据包时，根据seq来确定顺序，并且能够确定是否有数据包丢失)
+            此时 tcp 标头中
+                SYN 位值为 1， ACK 位未设置
+                sequence number 段值为 x (一个具体数值 这里用 x 代替)， acknowledgement number 位未设置
+
+    第二次  SYN=1 ACK=1 seq=y ack=x+1
+
+        服务端收到请求，发送 ack+syn 请求和响应报文，进入 syn_recv 状态
+            此时 tcp 标头中
+                SYN 位值为 1，ACK 位值为 1
+                sequence number 段值为 y， acknowledgement number 值为 x+1
+
+    第三次 ACK=1 seq=x+1 ack=y+1
+        客户但向服务端发送 ack 响应报文 然后双端进入 establish 状态
+            此时 tcp 标头中
+                SYN 位未设置，ACK 位值为 1
+                sequence number 段值为 x+1， acknowledgement number 值为 y+1
+
+    两次握手可以吗？
+        不可以，两次握手只能保证单向连接是畅通的，为了保证双工通信，两端都得维护序列号，以标识数据包是否正常
+
+
+四次挥手
+
+    第一次  FIN=1 seq=u
+        进入 FIN_WAIT_1 状态
+
+    第二次  ACK=1 seq=v ack=u+1
+        服务端进入 CLOSE_WAIT 状态
+        客户端进入 FIN_WAIT_2 状态
+
+    第三次  FIN=1 seq=w ack=u+1
+        服务端进入 LAST_ACK 状态
+
+    第四次  ACK=1 seq=u+1 ack=w+1
+
+    三次挥手行不行？
+        通常状况下不行，四次可以保证客户端服务端数据传输完成
+        而且第二次 ACK 报文是内核返回的报文，第三次 FIN 报文是由应用程序发送的，时机不同
+
+
+
+https 交互流程
+    https握手的过程，一定先经过tcp的三次握手。tcp链接建立好之后，才进入https的对称密钥协商过程，对称密钥协商好之后，就开始正常的收发数据流程
+
+    1 明文传递，客户端发送hello信息，版本信息，将支持的加密套件，压缩算法列表传给服务端
+
+    2 服务端下发协商后的确认加密算法和压缩算法，同时下发CA证书( 证书包含了用CA私钥加密后的服务器信息和服务器公钥 )
+
+    3 服务器将证书发给客户端以后，客户端从内置的CA根证书中获取CA公钥，对服务器证书的密文进行解密，得到服务器公钥和一些其他信息
+
+    4 有了服务端公钥，客服端会生成一个回话密钥，然后用服务端公钥加密这个回话密钥，发送给服务端
+
+    5 服务端用私钥解密，得到回话密钥
+
+    6 双方基于这个回话密钥进行对称加密沟通
+
+
+
+缓存
+
+    强缓存
+        通过 http header 实现（一般是 cache-control 和 expires，前者优先级高）
+        这种缓存一般浏览器会出现请求资源时 from disk cache 的标志
+
+    协商缓存（优先级 < 强缓存）
+        强缓存未命中时，浏览器会携带 If-Modified-Since （对应 Last-Modified ）和 If-None-Match （对应 etag ）到服务端进行验证，如果资源未变化，那么将返回 304 not modified
+
+        服务端一般优先校验 etag
+
+
+简单请求
+
+    不会触发 cors 预检请求的请求
+
+    同时满足以下条件
+        使用 get post 或者 head
+        没有用户自定义 http header
+        xmlhttprequest 对象没有监听任何事件
+        请求没有使用 readablestream
+
+
+dom 事件
+
+    DOMContentLoaded 在页面 dom 加载完成触发
+    load 整个页面所有资源加载完成之后触发
+
+defer 和 async
+
+    defer 要等到整个页面在内存中正常渲染结束（DOM 结构完全生成，以及其他脚本执行完成，所有 defer 脚本按顺序执行），才会执行
+    async 一旦下载完，渲染引擎就会中断渲染，执行这个脚本以后，再继续渲染（多个 async 脚本是不能保证加载顺序的）
+    一句话， defer 是“渲染完再执行”， async 是“下载完就执行”
+
+
+
+输入网址发生步骤
+
+    1. 输入网址
+    2. 查找缓存
+    3. DNS 解析
+    4. 建立连接发送请求
+    5. 进入浏览器渲染步骤
+
+
+浏览器渲染
+
+    1. 请求 html
+    2. 构建 dom
+
+        其中发现 css 引用 就会解析 css 对象模型
+
+    3. 构建 cssom
+    4. 生成渲染树 render tree
+    5. 计算布局（计算节点在屏幕中的位置）
+    6. 绘制
+
+
+浏览器重绘 回流
+
+    重绘
+        当一个元素的外观发生变化，但没有改变布局，重新把元素外观绘制出来的过程叫做重绘
+
+    回流（重排）
+
+        dom 元素的几何信息发生变化，浏览器需要重新计算元素的几何信息，将其安放在正确位置，这个过程叫重排
+
+    重排一定会有重绘，重绘不一定会出现重排
+
+
+盒子模型
+
+    组成
+        content
+        padding
+        border
+        margin
+
+    bfc (block formating context)
+        是一个独立的渲染区域，不会影响到外面
+
+        形成条件
+            1. 浮动元素 float 不会 none 值时
+            2. 绝对定位元素
+            3. display 为以下之一： inline-block、table-cell、table-caption、fixed
+            4. overflow 除了 visible 以外的值
+            5. body 元素
+
+        bfc 特性
+            1. 内部 box 会在垂直方向一个接一个放置
+            2. 垂直方向上距离由 margin 决定
+            3. bfc 的区域不会与 float 元素的区域重叠
+            4. 计算 bfc 高度时，浮动元素也参与计算（浮动元素会撑开 bfc 元素）
+
+
+
+浏览器事件循环与 Node 事件循环
+
+    浏览器事件循环主要涉及 微任务 和 宏任务队列
+        微任务： promise mutationobserver
+        宏任务：script setTimeout requestanimationframe（但较为特殊，由浏览器决定何时执行） IO 操作
+
+    node 事件循环主要借助 libuv
+        node11 之后事件循环和浏览器保持一致了
+
+        node 事件循环 6 个阶段
+            timer  执行满足条件的 setTimeout、setInterval 回调
+            pending callbacks （处理上一轮剩余的未处理的 IO 回调）
+            idle, prepare
+            pool
+            check（执行setImmediate）
+            close callbacks
+
+
+Typescript
+
+    any 类型：表示任意类型，设置为 any 相当于对该变量关闭了 TS 的类型检测
+    never 类型：表示的是那些永不存在的值的类型，比如抛出异常
+        没有值可以赋值给 never 变量
+    unknown 类型：表示未知的类型，unknown 赋值给其他变量时需要做判断确定类型
+        任何值都可以赋值给 unknown 变量
+    void 类型：它表示没有任何类型，以函数为例，表示没有返回值
+
+    内置类型
+        Record
+            作用：定义一个有固定集中类型键和值的对象
+
+            使用：
+            type myType = 'age' | 'name'
+            let obj = Record<myType, string> = {
+                age: '10',
+                name: 'lisi'
+            }
+
+        Partial
+            作用：根据类型生成一个新类型，新类型所有属性都为可选
+            源码：
+            type Partial<T> = {
+                [P in keyof T]?: T[P]
+            };
+
+            使用：
+            type myType = { age: number }
+            type newType = Partial<myType>  // 此时所有属性变为可选
+
+        Required
+            作用：根据类型生成一个新类型，新类型所有属性都为必选
+            源码：
+            type Required<T> = {
+                [P in keyof T]-?: T[P]
+            };
+
+            使用：
+            type myType = { age?: number }
+            type newType = Required<myType>  // 此时所有属性变为必选
+
+        Readonly
+            作用：标记所有属性为只读
+            源码：
+            type Readonly<T> = {
+                readonly [P in keyof T]: T[P]
+            };
+
+            使用：
+            type myType = { age?: number }
+            type newType = Readonly<myType>  // 此时所有属性变为只读
+
+        Pick
+            作用：取一个类型的子集 形成一个新类型
+            源码：
+            type Pick<T, K extends keyof T> = {
+                [P in K]: T[P]
+            };
+
+            使用：
+            type myType = { age: number, name: string }
+            type newType = Pick<myType, 'name'>  // 此时类型只有 name 字段
+
+        Omit
+            作用：与 Pick 相反，从一个类型中删除某些属性 形成一个新类型
+            使用：
+            type myType = { age: number, name: string }
+            type newType = Omit<myType, 'name'>  // 此时类型只有 age 字段
+
+        ReturnType
+            作用：获取函数返回值类型
+            使用：
+            declare function demo(): number;
+            type t = ReturnType<typeof demo>  // number
+
+
+    类型断言
+        类似于强制类型转换、自己很清楚某个对象的类型时可以使用
+
+        两种方式
+            xxx as number
+            <number>xxx
+
+    readonly vs const
+        做为变量使用的话用 const，若做为属性则使用 readonly
+
+    索引类型
+        interface SquareConfig {
+            color?: string;
+            width?: number;
+            [propName: string]: any;  // 这里定义索引签名
+        }
+
+    只读索引（属性无法进行赋值操作）
+        interface Animal {
+            readonly [index: string]: string;
+        }
+
+    接口
+        接口可以多继承。接口也可以从类继承（类的私有成员也会继承过来）
+
+    函数类型
+        由参数和返回值构成
+            let myFun: (x: number, y: number) => number = xxx;
+
+    泛型构成
+        类型参数 参数
+        <T>(args: T)
+
+    类型保护
+        使用 typeof 或者 if else 判断
+        或者使用 parameterName is Type
+
+    类型别名
+        类型别名不能被 extends 和 implements（自己也不能 extends和 implements其它类型）
+
+    条件类型
+        T extends U ? X : Y;
+            T extends U 表示 T 是否时 U 的子集
+
+            type isString<T> = T extends string ? true : false;
+            type a = isString<2>;  // false
+
+
+        infer
+            T extends U ? X : Y; 如果 U 是一个可以被分解为多部分的数据，这时候可以通过infer来获取U类型中某个部分的类型
+                infer语法的限制如下：
+                    infer 只能在条件类型的 extends 子句中使用
+                    infer 得到的类型只能在 true 语句中使用, 即 X 中使用
+
+            // 推断数组类型
+            type testArrType<T> = T extends (infer U)[] ? U : unknown;
+            type a = testArrType<[string, number]>  // string | number
+
+            // 推断第一个 和 最后一个数组元素类型
+            type firstType<T> = T extends [infer U, ...infer _] ? U : unknown;
+            type firstType<T> = T extends [...infer _, infer U] ? U : unknown;
+
+            // 推断函数参数类型  ...args 表示所有参数均推断
+            type argType<T extends Function> = T extends (...args: infer U) => any ? U : never;
+            或者
+            type argType<T> = T extends (...args: infer U) => any ? U : never;
+
+            // 推断函数返回值类型  一定要有 ...args 这样可以匹配任意个参数的函数
+            type funcReturnType<T> = T extends (...args: any) => infer U ? U : void;
+
+            // 推断 promise 返回类型
+            type promiseType<T> = T extends Promise<infer U> ? U : void;
+
+
+        装饰器
+            装饰器格式
+                function(target, propertyKey, descriptor) {}
+            分类
+                装饰器工厂
+                装饰器
+
+设计模式
+
+    单一职责原则
+        一个类应该只有一个使其发生变化的原因（一个类应该只有一个职责）
+
+    接口隔离原则
+        客户端不应该依赖他所不需要的方法，一个类对另一个类的依赖应该建立在最小的接口上
+
+    依赖倒转原则（手机打开app例子）
+        高层模块不应该依赖低层模块，两者应该都依赖其抽象
+        核心思想是面向抽象和面向接口编程，而不是面向实现编程
+
+    里氏替换原则
+        继承中应该保证父类的特性在子类中依然成立（只要有父类出现的地方，都可以使用子类来替代）
+
+    合成复用原则
+        在软件复用时，尽量先使用 组合或者聚合（关联关系） 等方式实现，其次才考虑使用继承
+
+    迪米特原则
+        又叫最少知道原则，一个对象应该对其他对象了解的尽可能少
+
+    开闭原则
+        软件实体应当对扩展开放，对修改关闭
+
+
+UML
+
+    依赖关系
+        依赖关系是一种“使用关系”，它是对象之间耦合度最弱的一种关系，是临时性的关系
+        特征：某个类以局部变量或方法参数的形式出现在另一个类
+
+    关联关系（包含聚合和组合关系）
+        关联关系是一种“引用关系”，表示一类对象与另一类对象之间的关系
+        特征：某个类以成员变量的形式出现在另一个类
+
+
+生命周期
+
+    mount
+        constructor()
+        getDerivedStateFromProps(nextProps, prevState)
+        render()
+        componentDidMount()
+
+    update
+        getDerivedStateFromProps()
+        shouldComponentUpdate()
+        render()
+        getSnapshotBeforeUpdate(prevProps, prevState) 该方法返回值将会传递给 componentDidUpdate
+        componentDidUpdate(prevProps, prevState, snapshot)
+
+
+Prototype
+    每个构造函数都有一个 prototype 属性，该属性的 __proto__ 指向 Object.prototype
+    每个实例对象都有一个 __proto__ 属性，指向对象构造函数的 prototype
+
+
+csrf
+    利用用户的登录信息做攻击
+
+    1. 检查请求来源 http referer
+    2. 添加 csrf token 头字段
+    3. 使用验证码，比如手机验证码
+
+xss
+    反射型 xss
+        在网址上拼接 js 参数
+
+    存储型
+        通过发帖等实现
+
+    1. 过滤用户的输入
+    2. 不要使用 innerHTML
+    3. 敏感 cookie 信息等设置 http only
+
+
+http1.1
+
+    默认情况下，http1.1 的每个请求都会创建一个 tcp 连接，在开启 keep-alive 时 可以复用 tcp 连接
+    虽然 http1.1 有了可复用的 tcp 链接，实现了 pipline 管道化，可以同时发送多个请求，但是服务器必须按照客户端的发送顺序响应请求，而不能乱序，否则客户端会对应不上，这也就是所谓的线头阻塞
+
+http2
+    为什么HTTP/1.1 不能实现“多路复用”？
+        简单回答是：HTTP/2 是基于二进制“帧”的协议，而 HTTP/1.1 是基于“文本分割”解析的协议
+
+        http1.1 这种以回车换行符分割消息的数据，在完成之前不能停止解析（不知道有多少 header 头），解析这种数据无法预知需要多少内存，但 HTTP/2 设计是基于“二进制帧”进行设计的，它是可预知可控的。
+
+        桢的格式
+
+            名称              长度      描述
+            Length            3 字节    表示帧负载的长度，默认最大帧大小2^14
+            Type              1 字节    当前帧的类型
+                                            主要有 DATA 和 HEADERS 等类型（对应 http1.1 的头信息和实体内容）
+            Flags             1 字节    具体帧的标识
+            R                 1 字节    保留位，不需要设置，否则可能带来严重后果
+            Stream Identifier 31位      帧所对应的流
+            Frame Payload     不固定    真实帧的长度，真实长度在Length中设置
+
+
+        流
+            “流”是一个逻辑上的概念，每个帧都会标记自己属于哪个流（这个流就可以人为是“多路”）
+            各个帧在 tcp 连接上交错发送，服务端可以按照流将帧合并
+                1. 帧是交错传输的！
+                2. Header 帧必须在 data 帧前面，因为无论是客户端还是服务端，都依赖 header 帧的信息解析 data 帧的数据！
+                3. 先到的帧不一定先返回，快的可以先返回！
+
+
+http1 http2 补充
+
+    http1 中最后一个消息头末尾有2个换行符(\r\n\r\n)，所以HTTP服务器,只需要一直读,直到读取到2个换行符(\r\n\r\n),就可以认定为已经读取1个HTTP请求的所有头部信息，然后分析请求头 找 content-length 再读取某个长度内容作为实体内容；如果有 Transfer-Encoding: chunked 那么就读取分块直到遇到2个换行符
+
+    http2 中是根据帧的 Flags 标记流是否结束
+
+
+静态方法中使用 this
+
+    静态方法中的 this 指的是类本身，而不是类的实例。静态成员可以被子类继承
+
+    function Demo() {
+        this.age = 30;
+    }
+    Demo.age = 20;
+    Demo.getAge = function() {
+        console.log(this.age)  // 获取到类本身的属性 age 也就是 20
+    };
+    Demo.getAge = () => {
+        console.log(this.age)  // undefined
+    };
+
+
+
+箭头函数 this
+
+    普通函数中，this 的值在函数被调用的时候才会指定，你需要花点时间弄清楚函数调用的上下文是什么
+
+    箭头函数的 this 在声明时就确定了
+
+
+
+Prototype
+
+    除了 Object.create(null) 意外，所有对象都有一个 constructor 属性，指向自己的构造函数
+    对象字面量类型的对象，其 constructor 指向它所对应类型的构造函数，比如 var obj = {} 那么 obj.constructor === Object
+
+    可以修改对象的 constructor 属性值，但是修改后不影响 instanceof 计算结果（还是原来的类型计算）
+    原理是，当赋值的时候，改变的并不是原型上的 constructor，而是在对象实例上添加了一个同名的属性
+
+
+
+Map 与 Object
+
+    Map 的键可为任意类型  Object 一般为字符串
+    Map 键名排序是按照插入顺序
+    Map 对象有对应的迭代方法
+
+
+
+Map 与 Set
+
+    Map 是键值集合  Set 类似于数组，但查找速度比数组快
+    Map 的键不会重复  Set 的值不会重复
+
+
+
+WeekMap 与 WeekSet
+
+    他俩的出现是为了解决对象引用问题
+    WeakMap 和 WeakSet 相似，没有遍历方法和清空方法
+    WeakMap 和 WeakSet 相似，只能接收对象作为键名
+
+
+Object.seal() & Object.freeze()
+
+    Object.seal() 封闭一个对象，不能修改属性的配置，不能添加新属性，但属性值可以修改
+    Object.freeze() 冻结一个对象，属性值不能修改，也不能添加删除新属性
+
+
+
+
+严格模式限制
+
+    1 变量需先声明再使用
+    2 不能随意删除声明的变量
+    3 this 不再指向全局window
+    4 参数不允许重名
+
+
+
+异步编程实现方式
+
+    1 回调函数
+    2 使用事件，发布订阅模式
+    3 promise
+    4 asyn generator 函数
+
+
+
+项目优化
+
+    1 减少 http 请求类
+
+        合并 js css 雪碧图
+
+    2. 离线缓存类
+
+        http 缓存、localStorage 等
+
+    3. CDN 类
+
+        使用 cdn 加快访问速度、配合 dns-prefetch
+
+    4. 域名类
+
+        静态资源多域名增加并发量
+
+    5. 延迟加载类
+
+        图片懒加载、模块懒加载
+
+    6. 减少 dom 操作，使用 gpu 加速的css
+
+
+
+js 垃圾回收
+
+    1 引用计数
+        内部通过引用计数器维护对象的引用数，当引用数为0就回收
+        缺点：对循环引用没办法清除，空间开销也大
+
+    2 标记清楚（这个算法把“对象是否不再需要”简化定义为“对象是否可以获得”）
+        标记阶段：首先通过根节点，标记所有从根节点开始的可达对象。因此，未被标记的对象就是未被引用的垃圾对象。
+        清除阶段：然后在清除阶段清除所有未被标记的对象。
+        缺点：容易产生碎片
+
+
+
+Redux mobx
+    redux
+        优点
+            规范性好，数据流向明确 从 action 到 store 到 view
+            函数式编程，函数接受输入，然后输出结果，除此之外不会有任何影响
+        缺点
+            流程繁琐，代码量大，需要遵循 redux 的一套的模板代码
+
+    mobx
+        优点
+            学习成本少，基础知识非常简单
+            代码量少
+        缺点
+            规范性差
+
+
+WebRTC
+    媒体协商（SDP协议）
+        协商双端都支持的音视频编码格式
+    网络协商
+        找到双端可以相互通讯的链路
+            局域网中的电脑需要映射到外网某个端口，才能实现互通
+            需要通过 STUN （NAT会话穿越）服务拿到映射的外网端口
+
+            如果通过 STUN 服务映射到外网端口后，双端仍不能正常链接，这时候需要使用一个中继公共服务 TURN 做转发，这种情况下中间服务器带宽要求高
+
+
+    信令服务器
+        媒体协商 和 网络协商等（还包括房间管理） 需要一个公网服务来交换两端各自的数据，这个服务就是信令服务器
+
+
+
+
+
+树
+    子树
+        一个节点的后代节点整体上也可以看成是一棵树，这个树称为子树
+    节点的度
+        一个节点含有的子树个数叫做节点的度
+    树的度
+        所有节点的度的最大值
+    叶子节点
+        度为 0 的节点
+    分支节点
+        度不为 0 的节点
+    节点的层次
+        从根节点开始，根层次为 1，其直接后代层次为 2，以此类推
+    节点的层序编号
+        节点按照从上到下，从左到右的顺序进行编号，这个编号就是节点的层次序号
+    树的高度（深度）
+        树中节点的最大层次
+    森林
+        n 个不相交的树的集合（将一颗树的根节点去掉得到的就是一个森林）
+    孩子节点
+        一个节点的直接后继节点叫做孩子节点
+    双亲节点（父节点）
+        一个节点的直接前驱节点叫做双亲节点
+
+    二叉树
+        度不超过 2 的树
+    满二叉树
+        每一层节点数满足 2^k-1 次方

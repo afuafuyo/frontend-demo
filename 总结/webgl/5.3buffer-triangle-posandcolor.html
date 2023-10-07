@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用 buffer 传递坐标和颜色值绘制三角</title>
+</head>
+<body>
+
+<canvas id="webgl" width="400" height="400"></canvas>
+
+<script>
+(function() {
+var canvas = document.getElementById('webgl');
+var gl = canvas.getContext('webgl');
+
+
+// 1. 准备 shader
+var VSHADER_SOURCE =
+    `
+    // 接收位置数据
+    attribute vec4 a_Position;
+    // 接收颜色数据
+    attribute vec4 a_Color;
+    // 用于向片元着色器传颜色数据 该值会自动传递给片元着色器同名的变量
+    varying vec4 v_Color;
+    void main() {
+        gl_Position = a_Position;
+        gl_PointSize = 10.0;
+        v_Color = a_Color;
+    }`;
+var FSHADER_SOURCE =
+    `
+    // 片元着色器需要声明度 否则报错 No precision specified for (float)
+    precision mediump float;
+    // 接收来自顶点着色器同名变量的值
+    varying vec4 v_Color;
+    void main() {
+        gl_FragColor = v_Color;
+    }`;
+
+var vShader = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vShader, VSHADER_SOURCE);
+gl.compileShader(vShader);
+
+var fShader = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fShader, FSHADER_SOURCE);
+gl.compileShader(fShader);
+
+// 2. 准备程序
+var program = gl.createProgram();
+gl.attachShader(program, vShader);
+gl.attachShader(program, fShader);
+gl.linkProgram(program);
+gl.useProgram(program);
+gl._program = program;
+
+
+// 3. 用 buffer 向 attribute 传值
+var datas = new Float32Array([
+    // 前两个值是位置 后三个是颜色
+    0.0,  0.5,  1.0, 0.0, 0.0,
+    -0.5, -0.5, 0.0, 1.0, 0.0,
+    0.5,  -0.5, 0.0, 0.0, 1.0
+]);
+var dataSize = datas.BYTES_PER_ELEMENT;
+// 3.1 创建 buffer
+var buffer = gl.createBuffer();
+// 3.2 绑定 buffer
+gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+// 3.3 写数据
+gl.bufferData(gl.ARRAY_BUFFER, datas, gl.STATIC_DRAW);
+// 3.4 分配 buffer 到 attribute 变量
+var positionAddress = gl.getAttribLocation(gl._program, 'a_Position');
+gl.vertexAttribPointer(positionAddress, 2, gl.FLOAT, false, dataSize * 5, 0);
+gl.enableVertexAttribArray(positionAddress);
+
+var colorAddress = gl.getAttribLocation(gl._program, 'a_Color');
+gl.vertexAttribPointer(colorAddress, 3, gl.FLOAT, false, dataSize * 5, dataSize * 2);
+gl.enableVertexAttribArray(colorAddress);
+
+
+// 指定清空 canvas 的颜色
+gl.clearColor(0, 0, 0, .6);
+// 清空 canvas
+gl.clear(gl.COLOR_BUFFER_BIT);
+// 绘制
+gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+})();
+</script>
+</body>
+</html>
