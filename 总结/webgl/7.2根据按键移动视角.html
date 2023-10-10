@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>根据按键移动视角</title>
+    <script src="./lib/cuon-matrix.js"></script>
+</head>
+<body>
+
+<canvas id="webgl" width="400" height="400"></canvas>
+
+<script>
+(function() {
+var canvas = document.getElementById('webgl');
+var gl = canvas.getContext('webgl');
+
+
+// 1. 准备 shader
+var VSHADER_SOURCE =
+    `
+    // 接收位置数据
+    attribute vec4 a_Position;
+    // 接收颜色数据
+    attribute vec4 a_Color;
+    // 接收视图矩阵
+    uniform mat4 u_ViewMatrix;
+    // 向 片元着色器 传参数
+    varying vec4 v_Color;
+    void main() {
+        // 计算经过变换后的坐标
+        gl_Position = u_ViewMatrix * a_Position;
+        // 向 片元着色器 传参数
+        v_Color = a_Color;
+    }`;
+var FSHADER_SOURCE =
+    `
+    precision mediump float;
+    varying vec4 v_Color;
+    void main() {
+        gl_FragColor = v_Color;
+    }`;
+
+var vShader = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vShader, VSHADER_SOURCE);
+gl.compileShader(vShader);
+
+var fShader = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fShader, FSHADER_SOURCE);
+gl.compileShader(fShader);
+
+// 2. 准备程序
+var program = gl.createProgram();
+gl.attachShader(program, vShader);
+gl.attachShader(program, fShader);
+gl.linkProgram(program);
+gl.useProgram(program);
+gl._program = program;
+
+
+// 3. 三角形用的顶点和颜色数据
+var datas = new Float32Array([
+    // 最后面的三角
+    0.0,  0.5,  -0.5, 0.4, 1.0, 0.4,  // 上面顶点位置和颜色
+    -0.5, -0.5, -0.5, 0.4, 1.0, 0.4,  // 左面顶点位置和颜色
+    0.5,  -0.5, -0.5, 0.4, 1.0, 0.4,  // 右面顶点位置和颜色
+
+    // 中间三角形
+    0.0,  0.5,  -0.3, 1.0, 0.4, 0.4,  // 上面顶点位置和颜色
+    -0.5, -0.5, -0.3, 1.0, 0.4, 0.4,  // 左面顶点位置和颜色
+    0.5,  -0.5, -0.3, 1.0, 0.4, 0.4,  // 右面顶点位置和颜色
+
+    // 最前面三角形
+    0.0,  0.5,  0.0, 0.4, 0.4, 1.0,  // 上面顶点位置和颜色
+    -0.5, -0.5, 0.0, 0.4, 0.4, 1.0,  // 左面顶点位置和颜色
+    0.5,  -0.5, 0.0, 0.4, 0.4, 1.0   // 右面顶点位置和颜色
+]);
+var dataSize = datas.BYTES_PER_ELEMENT;
+// 3.1 创建 buffer
+var buffer = gl.createBuffer();
+// 3.2 绑定 buffer
+gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+// 3.3 写数据
+gl.bufferData(gl.ARRAY_BUFFER, datas, gl.STATIC_DRAW);
+// 3.4 缓冲区数据分配给 位置 变量
+var positionAddress = gl.getAttribLocation(gl._program, 'a_Position');
+gl.vertexAttribPointer(positionAddress, 3, gl.FLOAT, false, dataSize * 6, 0);
+gl.enableVertexAttribArray(positionAddress);
+
+// 缓冲区数据分配给 颜色 变量
+var colorAddress = gl.getAttribLocation(gl._program, 'a_Color');
+gl.vertexAttribPointer(colorAddress, 3, gl.FLOAT, false, dataSize * 6, dataSize * 3);
+gl.enableVertexAttribArray(colorAddress);
+
+// 4. 初始化视图矩阵
+var viewMatrix = new Matrix4();
+var u_ViewMatrix = gl.getUniformLocation(gl._program, 'u_ViewMatrix');
+
+
+var eyeX = 0.2, eyeY = 0, eyeZ = 0.2;
+document.onkeydown = (e) => {
+    var key = e.key
+    switch(key) {
+        case 'ArrowUp':
+            eyeY += 0.01;
+            break;
+        case 'ArrowDown':
+            eyeY -= 0.01;
+            break;
+        case 'ArrowLeft':
+            eyeX -= 0.01;
+            break;
+        case 'ArrowRight':
+            eyeX += 0.01;
+            break;
+    }
+    reDraw();
+};
+function reDraw() {
+    viewMatrix.setLookAt(eyeX, eyeY, eyeZ, 0, 0, 0, 0, 1, 0);
+    gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
+
+    // 指定清空 canvas 的颜色
+    gl.clearColor(0, 0, 0, .4);
+    // 清空 canvas
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    // 实际绘制
+    gl.drawArrays(gl.TRIANGLES, 0, 9);
+}
+
+// 初始执行一次
+reDraw();
+
+})();
+</script>
+</body>
+</html>

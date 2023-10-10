@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用 buffer 传递坐标和颜色值绘制三角</title>
+</head>
+<body>
+
+<canvas id="webgl" width="400" height="400"></canvas>
+
+<script>
+(function() {
+var canvas = document.getElementById('webgl');
+var gl = canvas.getContext('webgl');
+
+
+// 1. 准备 shader
+var VSHADER_SOURCE =
+    `
+    // 接收位置数据
+    attribute vec4 a_Position;
+    // 接收纹理坐标
+    attribute vec2 a_TextureCoord;
+    // 纹理坐标传给片元着色器
+    varying vec2 v_TextureCoord;
+    void main() {
+        gl_Position = a_Position;
+        v_TextureCoord = a_TextureCoord;
+    }`;
+var FSHADER_SOURCE =
+    `
+    precision mediump float;
+    uniform sampler2D u_Sampler;
+    varying vec2 v_TextureCoord;
+    void main() {
+        gl_FragColor = texture2D(u_Sampler, v_TextureCoord);
+    }`;
+
+var vShader = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vShader, VSHADER_SOURCE);
+gl.compileShader(vShader);
+
+var fShader = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fShader, FSHADER_SOURCE);
+gl.compileShader(fShader);
+
+// 2. 准备程序
+var program = gl.createProgram();
+gl.attachShader(program, vShader);
+gl.attachShader(program, fShader);
+gl.linkProgram(program);
+gl.useProgram(program);
+gl._program = program;
+
+
+// 3. 用 buffer 向 attribute 传值
+var datas = new Float32Array([
+    // 前两个值是顶顶点坐标 后两个是纹理坐标
+    -0.5, 0.5,  0.0, 1.0,
+    -0.5, -0.5, 0.0, 0.0,
+    0.5,  0.5,  1.0, 1.0,
+    0.5,  -0.5, 1.0, 0.0,
+]);
+var dataSize = datas.BYTES_PER_ELEMENT;
+// 3.1 创建 buffer
+var buffer = gl.createBuffer();
+// 3.2 绑定 buffer
+gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+// 3.3 写数据
+gl.bufferData(gl.ARRAY_BUFFER, datas, gl.STATIC_DRAW);
+// 3.4 分配 buffer 到位置变量
+var positionAddress = gl.getAttribLocation(gl._program, 'a_Position');
+gl.vertexAttribPointer(positionAddress, 2, gl.FLOAT, false, dataSize * 4, 0);
+gl.enableVertexAttribArray(positionAddress);
+
+// 分配 buffer 到纹理变量
+var textureAddress = gl.getAttribLocation(gl._program, 'a_TextureCoord');
+gl.vertexAttribPointer(textureAddress, 2, gl.FLOAT, false, dataSize * 4, dataSize * 2);
+gl.enableVertexAttribArray(textureAddress);
+
+
+var loadImg = () => {
+    // 创建纹理对象
+    var texture = gl.createTexture();
+    var u_Sampler = gl.getUniformLocation(gl._program, 'u_Sampler');
+    var img = new Image();
+    img.onload = () => {
+        // 纹理 y 轴反转 因为图片的坐标和 webgl 坐标不同
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+        // 启用 0 号纹理单元
+        gl.activeTexture(gl.TEXTURE0);
+        // 绑定纹理对象
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+
+        // 将 0 号纹理传给着色器
+        gl.uniform1i(u_Sampler, 0);
+
+        // 指定清空 canvas 的颜色
+        //gl.clearColor(0, 0, 0, .4);
+        // 清空 canvas
+        //gl.clear(gl.COLOR_BUFFER_BIT);
+        // 绘制
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    };
+    img.setAttribute('crossOrigin', 'Anonymous');
+    // img.src = 'http://apic.douyucdn.cn/upload/avatar/face/201606/08/1f80e29ee775716af7894b724c1171e7_middle.jpg';
+    img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAOCAMAAAAliK2kAAAAOVBMVEUAAADNzc3Nzc3Pz8/MzMzMzMzMzMzNzc3Nzc3Nzc3Nzc3Ozs7Pz8/Nzc3MzMzOzs7Ozs7R0dHMzMz/TVRQAAAAEnRSTlMA+4Mi8ujj4dPJs4x0ZlVJLxZa8zqkAAAAPklEQVQI1z3NSRIAIQgDQHHGfc//H6twCKeuAhLnpTkbAbyhQtAVpzwN1ZefpikC/1LtACSCKx7znYGsYOkFuvIC9dhSjM4AAAAASUVORK5CYII='
+};
+
+// 加载图片
+loadImg()
+
+})();
+</script>
+</body>
+</html>
