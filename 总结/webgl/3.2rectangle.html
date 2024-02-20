@@ -51,10 +51,10 @@ gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 // 从第二个点到第四个点构成第二个三角
 // 以此类推
 var points = new Float32Array([
-    -0.5, 0.5,
-    0.5, 0.5,
-    -0.5, -0.5,
-    0.5, -0.5
+    -0.5, 0.5,  // 左上
+    0.5, 0.5,  // 右上
+    -0.5, -0.5,  // 左下
+    0.5, -0.5  // 右下
 ]);
 gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW);
 gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);

@@ -19,18 +19,18 @@
 		|_ 指针的本质是一个操作受限的非负整数
 		|	对于32位电脑内存最大为 2^32 = 4GB 地址编号是从 0 - 4G-1 的非负数
 		|_ int * p; -- 不是定义了一个名为 *p 的变量 而是定义了一个存地址的变量 变量名为 p 类型为 int *
-		|_ *p -- 如果 p 中存放了地址 那么 *p 就是以这个地址为地址的一个变量 ( 以 p 的内容为地址的变量|表示 p 中的地址指向的变量 )
+		|_ *p -- 如果 p 中存放了地址 那么 *p 可以理解为一个匿名变量 ( 以 p 的内容为地址的变量|表示 p 中的地址指向的变量 )
 			int i = 0;
 			int * p = &i; -- p 中存放了地址
 			*p = 10; -- 相当于 i = 10
-			类似的有 a[0] 等同于 *(a+0)  // 以首地址位地址的变量即 a[0]
-	
+			类似的有 a[0] 等同于 *(a+0)  // 以首地址为地址的变量即 a[0]
+
 	2). 指针和数组
 		指针和一维数组
 			数组名
 			下标和指针的关系
 			指针变量的运算
-	
+
 	3). 结构体
 		|_ 为什么出现结构体
 		|	为了表示一些复杂的数据 而普通的基本类型变量无法满足要求
@@ -42,14 +42,14 @@
 		|			char name[50];
 		|			int age;
 		|		};  // 分号不能少
-		|		
+		|
 		|		int main(void) {
 		|			struct Student s = {0001, "lisi", 23};
 		|			s.sid = 0002; // 第一种方式赋值
-		|			
+		|
 		|			struct Student * p;  // 第二种方式赋值
 		|			p = &s;
-		|			p->sid = 0003;  // 等价于 (*p).sid 而 (*p).sid 等价于 s.sid 
+		|			p->sid = 0003;  // 等价于 (*p).sid 而 (*p).sid 等价于 s.sid
 		|		}
 		|_ 如何使用结构体
 		|	1. 通过 点 的方式
@@ -86,13 +86,13 @@
 		|	void outInfo2(struct Student * p) {
 		|		printf("%d %s %d\n", p->sid, p->name, p->age);
 		|	}
-				
+
 	4). 动态内存的分配和释放
 		|_ 动态分配一段空间并把首地址赋给 addr
 		|	int * addr = (int *)malloc(sizeof(int) * length);
 		|_ 用 free 释放
 			free(addr);
-		
+
 		#include <stdio.h>
 		#include <malloc.h>
 		struct Student {
@@ -116,15 +116,15 @@
 		void showStudent(struct Student * ps) {
 			printf("%d %d", ps->sid, ps->age);
 		}
-	
+
 	5). typedef 用法
 		typedef 是为某类型起一个别名
 		typedef int myint;  // 为 int 类型起个别名为 myint
 		myint i = 10;
-		
+
 3. 线性结构
 	1). 连续存储[数组]
-		
+
 	2). 离散存储[链表]
 		定义:
 			n 个节点离散分配 彼此通过指针相连
@@ -144,7 +144,7 @@
 		算法:
 			狭义的算法是与数据的存储方式密切相关
 			广义的算法是与数据的存储方式无关
-	
+
 	3). 线性结构的两种常见应用
 		栈:
 			特点: 一种可以实现 先进后出 的存储结构
@@ -170,7 +170,7 @@
 					5). 循环队列出队伪算法
 					6). 如何判断循环队列是否为空
 					7). 如何判断循环队列是否已满
-	
+
 专题: 递归
 	定义:
 		一个函数自己直接或间接调用自己
@@ -178,9 +178,9 @@
 		1). 递归必须得有个明确的终止条件
 		2). 该函数所处理的数据规模必须在递减
 		3). 这个转化必须是可解的
-		
+
 //例子
-/** 
+/**
  * ====================================
  *	链表
  * ====================================
@@ -193,7 +193,7 @@ typedef struct Node {
 
 int main(void) {
 	PNODE head = NULL;  // struct Node * head = NULL;
-	
+
 	return 0;
 }
 
@@ -230,7 +230,7 @@ void push(PSTACK pS, data) {
 	pNew->data = data;  // 赋值
 	pNew->pNew = pTop;  // 把新的 Node 的指针域指向原来的栈顶
 	pS->pTop = pNew;  // 把 pTop 指向新的栈顶
-	
+
 }
 
 void traverse(PSTACK pS) {
@@ -267,7 +267,7 @@ int pop(PSTACK pS) {
 bool clear(PSTACK pS) {
 	if(empty(pS)) {
 		return true;
-	} 
+	}
 	PNODE p = pS-pTop;
 	PNODE q = NULL;
 	while(p != pS->pBottom) {
@@ -285,10 +285,10 @@ int main(void) {
 	push(&s, 1);
 	push(&s, 2);
 	push(&s, 3);
-	
+
 	pop(&s)
 	traverse();
-	
+
 	return 0;
 }
 

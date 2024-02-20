@@ -1015,9 +1015,13 @@ POSTROUTING 对数据包作路由选择后应用此链中的规则
         开启服务
             service crond restart
         检查是否开启
+            chkconfig 没有参数运行时会显示用法
+            如果加上服务名 那么就检查这个服务是否在当前运行级启动 如果是返回 true 否则返回 false
+            如果在服务名后面指定了 on off 或者 reset 那么 chkconfig 会改变指定服务的启动信息
             chkconfig crond on
 
     crontab [选项]
+        crontab 命令依赖 crond 服务
         -e  -- 编辑 crontab 定时任务
         -l  -- 查询当前定时任务
         -r  -- 删除当前定时任务

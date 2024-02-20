@@ -51,10 +51,13 @@
 
     mode 绘制方式
         gl.LINES
+            绘制单独的线段 线段由 xy 两点连接组成 如果点的个数为奇数 那么最后一个点将被忽略
         gl.LINE_STRIP
         gl.LINE_LOOP
         gl.TRIANGLES
+            绘制单独的三角形 如果点的个数不是 3 的倍数 那么最后的 1 个 或者 2 个点将被忽略
         gl.TRIANGLE_STRIP
+            绘制相连的三角形 前三个点构成第一个三角形 从第 2 个开始的三个点构成第二个三角形 以此类推
         gl.TRIANGLES_FAN
 
     first 从哪个点开始绘制
